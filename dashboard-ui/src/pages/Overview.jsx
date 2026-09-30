@@ -51,7 +51,7 @@ export default function Overview() {
           <p className="text-[12.5px] text-muted leading-relaxed mb-3">
             This is tracking of an <span className="font-semibold text-ink">observed event on reanalysis</span>,
             not a forecast — nothing here measures forecast skill. Detection, tracking and validation are
-            implemented and run on two Bay of Bengal cyclones; the GNN tracker and diffusion downscaler below
+            implemented and run on {Object.keys(CASES).length} Bay of Bengal cyclones; the GNN tracker and diffusion downscaler below
             are designed, not implemented.
           </p>
           <ul className="text-[12px] text-ink space-y-1.5">

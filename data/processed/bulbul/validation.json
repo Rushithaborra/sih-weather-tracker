@@ -1,0 +1,33 @@
+{
+  "case": "bulbul",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "n_objects": 11,
+  "n_tracks": 3,
+  "track_id": 2,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 8,
+    "mean_km": 68.6,
+    "median_km": 60.6,
+    "min_km": 33.8,
+    "max_km": 159.6
+  },
+  "pmin": {
+    "n": 8,
+    "mean_km": 25.0,
+    "median_km": 23.7,
+    "min_km": 10.4,
+    "max_km": 40.3
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2019-10-29T18:00:00",
+    "first_usa_wind_ge_34kt": "2019-10-29T21:00:00",
+    "first_detection": "2019-11-07T12:00:00"
+  }
+}

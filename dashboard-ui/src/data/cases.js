@@ -3,6 +3,8 @@
 // is copied from that pipeline's output for the two validated cases, Amphan (2020) and Yaas (2021).
 // See ../../README.md and ../../DEV_LOG.md for how these were produced.
 
+import { EXTRA_CASES } from './casesExtra'
+
 export const CASES = {
   amphan: {
     id: 'amphan',
@@ -91,6 +93,9 @@ export const CASES = {
       { time: '2021-05-26T00:00:00Z', box: [20.875, 21.875, 89.875, 90.875], maxWs: 17.73, minMsl: 992.91 },
     ],
   },
+
+  // More held-out storms, same pipeline and frozen parameters (scripts/build_extra_cases.py).
+  ...EXTRA_CASES,
 }
 
 export const ALERT_TIERS_DEF = {
@@ -102,7 +107,7 @@ export const ALERT_TIERS_DEF = {
 export const PIPELINE_META = {
   source: 'ERA5 reanalysis, 0.25° (~28 km), WeatherBench2 / Copernicus / ECMWF',
   bestTrack: 'IBTrACS v04r01 (NOAA), North Indian basin',
-  climatology: '115 samples per UTC hour (00/06/12/18), 2015–2019',
+  climatology: '110–135 samples per UTC hour (00/06/12/18), 2015–2019, same season as each storm',
   detection: 'wind z ≥ 2 AND MSLP z ≤ −2 AND wind ≥ 17 m/s (gale), 8-connected, ≥ 6 cells',
   tracking: 'Hungarian assignment on great-circle distance, gated at 400 km / 6 h',
 }

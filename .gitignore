@@ -19,3 +19,11 @@ data/raw/yaas_gefs/
 data/raw/*_fetch.log
 data/raw/gefs_live/
 data/clim/parts/
+data/raw/*_clim.nc
+# Extra-case ERA5 slices: re-download with scripts/build_extra_cases.py
+data/raw/phailin_case.nc
+data/raw/hudhud_case.nc
+data/raw/titli_case.nc
+data/raw/fani_case.nc
+data/raw/bulbul_case.nc
+data/raw/nivar_case.nc

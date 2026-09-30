@@ -1,0 +1,29 @@
+{
+  "case": "hudhud",
+  "label": "Hudhud, Oct 2014",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "clim_n_samples": 130,
+  "clim_n_per_hour": "{0: 130, 6: 130, 12: 130, 18: 130}",
+  "clim_years": "2015-2019",
+  "std_floor": {
+    "ws": 1.0,
+    "msl": 1.0
+  },
+  "alert_tiers": {
+    "low_z": 1.5,
+    "low_ws": 8.7,
+    "moderate_z": 2.0,
+    "moderate_ws": 17.0,
+    "severe_z": 3.0,
+    "severe_ws": 25.0
+  },
+  "alert_box_pad_deg": 1.0,
+  "has_tp": true,
+  "defaults": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  }
+}

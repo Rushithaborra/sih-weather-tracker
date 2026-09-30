@@ -15,6 +15,7 @@ Usage:
 """
 import argparse
 import json
+import os
 import shutil
 import sys
 import time
@@ -199,3 +200,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # The GRIB/netCDF C libraries can segfault during interpreter teardown (exit 139
+    # on GitHub runners) after all output is written; skip teardown instead.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)

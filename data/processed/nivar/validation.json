@@ -1,0 +1,33 @@
+{
+  "case": "nivar",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "n_objects": 8,
+  "n_tracks": 1,
+  "track_id": 0,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 8,
+    "mean_km": 108.8,
+    "median_km": 112.2,
+    "min_km": 78.6,
+    "max_km": 140.9
+  },
+  "pmin": {
+    "n": 8,
+    "mean_km": 43.4,
+    "median_km": 28.7,
+    "min_km": 15.6,
+    "max_km": 101.3
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2020-11-24T00:00:00",
+    "first_usa_wind_ge_34kt": "2020-11-23T18:00:00",
+    "first_detection": "2020-11-24T12:00:00"
+  }
+}

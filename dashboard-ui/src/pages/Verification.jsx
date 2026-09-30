@@ -16,8 +16,8 @@ export default function Verification() {
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-1">Done: track error vs IBTrACS</h3>
         <p className="text-[12px] text-muted mb-3">
-          Track position chosen on Amphan (in-sample), confirmed on Yaas (held out, nothing adjusted). One ERA5
-          grid cell ≈ 28 km.
+          Parameters chosen on Amphan (in-sample); every other storm is held out — run with the same frozen
+          parameters, nothing adjusted. One ERA5 grid cell ≈ 28 km.
         </p>
         <table className="w-full text-[12px]">
           <thead>
@@ -32,7 +32,7 @@ export default function Verification() {
               <tr key={c.id} className="border-b border-line">
                 <td className="py-2 pr-4 text-ink font-medium">{c.label} {c.role === 'in-sample' ? '(in-sample)' : '(held out)'}</td>
                 <td className="py-2 pr-4 text-ink">{c.track.length}</td>
-                <td className="py-2 pr-4 text-ink">1</td>
+                <td className="py-2 pr-4 text-ink">{c.validation.nTracks ?? 1}</td>
                 <td className="py-2 pr-4 text-ink">{c.validation.matchedSteps}</td>
                 <td className="py-2 pr-4 text-ink">
                   {c.validation.pmin.meanKm} / {c.validation.pmin.medianKm} / {c.validation.pmin.minKm} / {c.validation.pmin.maxKm}
@@ -45,9 +45,10 @@ export default function Verification() {
           </tbody>
         </table>
         <p className="text-[11.5px] text-muted mt-3">
-          Two cases is a small sample. Amphan's last three steps (near landfall) and Yaas's first three steps
-          have the largest errors — the pressure-minimum position degrades right at and after landfall, as the
-          wind-anomaly centroid drifts over the sea.
+          Eight Bay of Bengal storms is still a small sample. The largest errors sit at the ends of tracks —
+          Amphan's last three steps (near landfall) and Yaas's first three — as the pressure-minimum position
+          degrades right at and after landfall and the wind-anomaly centroid drifts over the sea. Titli matches
+          only 4 steps: ERA5 resolves it as a weaker, shorter-lived system than observed.
         </p>
       </div>
 

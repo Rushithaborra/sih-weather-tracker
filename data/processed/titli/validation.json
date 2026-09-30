@@ -1,0 +1,33 @@
+{
+  "case": "titli",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "n_objects": 5,
+  "n_tracks": 2,
+  "track_id": 1,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 4,
+    "mean_km": 74.7,
+    "median_km": 75.5,
+    "min_km": 27.5,
+    "max_km": 120.3
+  },
+  "pmin": {
+    "n": 4,
+    "mean_km": 24.4,
+    "median_km": 19.6,
+    "min_km": 11.9,
+    "max_km": 46.4
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2018-10-09T06:00:00",
+    "first_usa_wind_ge_34kt": "2018-10-09T00:00:00",
+    "first_detection": "2018-10-10T06:00:00"
+  }
+}

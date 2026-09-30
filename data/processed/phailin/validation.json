@@ -1,0 +1,33 @@
+{
+  "case": "phailin",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "n_objects": 13,
+  "n_tracks": 2,
+  "track_id": 1,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 12,
+    "mean_km": 96.9,
+    "median_km": 112.8,
+    "min_km": 23.5,
+    "max_km": 209.5
+  },
+  "pmin": {
+    "n": 12,
+    "mean_km": 34.0,
+    "median_km": 30.2,
+    "min_km": 15.4,
+    "max_km": 67.6
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2013-10-09T12:00:00",
+    "first_usa_wind_ge_34kt": "2013-10-09T00:00:00",
+    "first_detection": "2013-10-08T12:00:00"
+  }
+}

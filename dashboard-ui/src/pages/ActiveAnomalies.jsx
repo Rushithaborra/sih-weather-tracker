@@ -43,7 +43,7 @@ export default function ActiveAnomalies() {
                   <td className="py-2 pr-4 text-ink">{p.maxWs.toFixed(1)}</td>
                   <td className="py-2 pr-4 text-ink">{p.minMsl.toFixed(1)}</td>
                   <td className="py-2 pr-4 text-ink">{p.maxZ.toFixed(1)}</td>
-                  <td className="py-2 pr-4 text-ink">{p.pminErrKm.toFixed(0)}</td>
+                  <td className="py-2 pr-4 text-ink">{p.pminErrKm == null ? '—' : p.pminErrKm.toFixed(0)}</td>
                 </tr>
               )
             })}
@@ -52,10 +52,10 @@ export default function ActiveAnomalies() {
       </div>
       {data.extraObjects && (
         <div className="bg-card rounded-card px-5 py-4">
-          <h3 className="font-bold text-ink text-[13.5px] mb-2">Unmatched single-step objects</h3>
+          <h3 className="font-bold text-ink text-[13.5px] mb-2">Objects outside the main track</h3>
           <p className="text-[11.5px] text-muted mb-2">
-            Detected but not linked into the main track (displacement gate or short-lived) — roughly 300 km
-            from the best-track centre in both cases.
+            Detected but not linked into the main track — short-lived, beyond the 400 km displacement gate, or a
+            separate system.
           </p>
           <div className="space-y-1.5">
             {data.extraObjects.map((o) => (

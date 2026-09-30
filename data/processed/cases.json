@@ -6,5 +6,29 @@
   "yaas": {
     "label": "Yaas, May 2021",
     "role": "held out (parameters frozen, nothing adjusted)"
+  },
+  "phailin": {
+    "label": "Phailin, Oct 2013",
+    "role": "held out (parameters frozen, nothing adjusted)"
+  },
+  "hudhud": {
+    "label": "Hudhud, Oct 2014",
+    "role": "held out (parameters frozen, nothing adjusted)"
+  },
+  "titli": {
+    "label": "Titli, Oct 2018",
+    "role": "held out (parameters frozen, nothing adjusted)"
+  },
+  "fani": {
+    "label": "Fani, May 2019",
+    "role": "held out (parameters frozen, nothing adjusted)"
+  },
+  "bulbul": {
+    "label": "Bulbul, Nov 2019",
+    "role": "held out (parameters frozen, nothing adjusted)"
+  },
+  "nivar": {
+    "label": "Nivar, Nov 2020",
+    "role": "held out (parameters frozen, nothing adjusted)"
   }
 }

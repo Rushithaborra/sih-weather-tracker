@@ -1,0 +1,33 @@
+{
+  "case": "hudhud",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "n_objects": 18,
+  "n_tracks": 2,
+  "track_id": 1,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 17,
+    "mean_km": 63.9,
+    "median_km": 48.9,
+    "min_km": 11.4,
+    "max_km": 190.7
+  },
+  "pmin": {
+    "n": 17,
+    "mean_km": 35.3,
+    "median_km": 27.3,
+    "min_km": 12.0,
+    "max_km": 106.9
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2014-10-08T03:00:00",
+    "first_usa_wind_ge_34kt": "2014-10-08T00:00:00",
+    "first_detection": "2014-10-08T06:00:00"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "case": "fani",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "n_objects": 18,
+  "n_tracks": 1,
+  "track_id": 0,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 18,
+    "mean_km": 69.3,
+    "median_km": 51.4,
+    "min_km": 14.0,
+    "max_km": 215.8
+  },
+  "pmin": {
+    "n": 18,
+    "mean_km": 34.1,
+    "median_km": 24.8,
+    "min_km": 5.6,
+    "max_km": 143.0
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2019-04-27T06:00:00",
+    "first_usa_wind_ge_34kt": "2019-04-27T00:00:00",
+    "first_detection": "2019-04-29T18:00:00"
+  }
+}

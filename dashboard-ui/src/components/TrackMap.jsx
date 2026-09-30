@@ -11,7 +11,7 @@ export default function TrackMap() {
   const track = data.track
 
   const pminLine = useMemo(() => track.map((p) => [p.pminLat, p.pminLon]), [track])
-  const btLine = useMemo(() => track.map((p) => p.bt), [track])
+  const btLine = useMemo(() => track.filter((p) => p.bt).map((p) => p.bt), [track])
   const boxTs = useMemo(() => [24, 48, 72, 96].filter((bt) => bt <= track[track.length - 1].t), [track])
   const now = useMemo(() => interpolateTrack(track, t), [track, t])
   const nearest = useMemo(() => track.reduce((b, p) => (Math.abs(p.t - t) < Math.abs(b.t - t) ? p : b), track[0]), [track, t])
@@ -47,7 +47,7 @@ export default function TrackMap() {
       })}
 
       <Polyline positions={btLine} pathOptions={{ color: '#16293D', weight: 1.5, dashArray: '6 5' }} />
-      {track.map((p) => (
+      {track.filter((p) => p.bt).map((p) => (
         <CircleMarker key={`bt-${p.t}`} center={p.bt} radius={2.5} pathOptions={{ color: '#16293D', fillColor: '#16293D', fillOpacity: 1 }} />
       ))}
 
@@ -66,7 +66,7 @@ export default function TrackMap() {
                 <div className="font-semibold">{cat.label} ({cat.code})</div>
                 <div>{fmtTime(p.time)}</div>
                 <div>{p.maxWs.toFixed(1)} m/s · {p.minMsl.toFixed(1)} hPa</div>
-                <div className="text-muted">Track error {p.pminErrKm.toFixed(0)} km vs IBTrACS</div>
+                {p.pminErrKm != null && <div className="text-muted">Track error {p.pminErrKm.toFixed(0)} km vs IBTrACS</div>}
               </div>
             </Tooltip>
           </CircleMarker>

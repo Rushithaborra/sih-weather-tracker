@@ -41,7 +41,7 @@ export default function App() {
 
 const FOOTER_TEXT = {
   live: 'Research prototype — live NOAA GEFS ensemble run through the pipeline daily. Forecast only, unvalidated. Not an operational warning system.',
-  validated: 'Concept prototype — real ERA5/IBTrACS pipeline output, replayed for two historical cyclones. Not an operational warning system.',
+  validated: 'Concept prototype — real ERA5/IBTrACS pipeline output, replayed for eight historical Bay of Bengal cyclones. Not an operational warning system.',
   gefs: 'Concept prototype — real NOAA GEFS ensemble forecast, tracked and validated against IBTrACS. Not an operational warning system.',
 }
 
