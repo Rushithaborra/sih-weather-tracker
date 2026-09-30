@@ -37,13 +37,17 @@ export default function App() {
   )
 }
 
+const FOOTER_TEXT = {
+  concept: 'Concept prototype — illustrative, synthetic data replay for the pitch deck. Not an operational warning system.',
+  validated: 'Concept prototype — real ERA5/IBTrACS pipeline output, replayed for two historical cyclones. Not an operational warning system.',
+  gefs: 'Concept prototype — real NOAA GEFS ensemble forecast, tracked and validated against IBTrACS. Not an operational warning system.',
+}
+
 function Footer() {
   const { mode } = useCase()
   return (
     <footer className="fixed bottom-0 left-[196px] right-0 bg-bg/95 backdrop-blur text-center text-[10.5px] text-muted py-2 border-t border-line">
-      {mode === 'concept'
-        ? 'Concept prototype — illustrative, synthetic data replay for the pitch deck. Not an operational warning system.'
-        : 'Concept prototype — real ERA5/IBTrACS pipeline output, replayed for two historical cyclones. Not an operational warning system.'}
+      {FOOTER_TEXT[mode]}
     </footer>
   )
 }

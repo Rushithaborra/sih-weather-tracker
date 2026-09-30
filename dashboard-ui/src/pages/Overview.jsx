@@ -2,8 +2,10 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import KpiCards from '../components/KpiCards'
 import ConceptKpis from '../components/ConceptKpis'
+import GefsKpis from '../components/GefsKpis'
 import { useCase } from '../context/CaseContext'
-import { PIPELINE_META } from '../data/cases'
+import { PIPELINE_META, CASES } from '../data/cases'
+import { GEFS_META, GEFS_SUMMARY } from '../data/gefsEnsemble'
 
 const PIPELINE_STEPS = [
   { label: '4D ensemble ingest', desc: 'NEPS-G 12 km, 23 members + NCUM · ERA5 / IMDAA 30-yr climate' },
@@ -23,6 +25,39 @@ const UNIQUE = [
 
 export default function Overview() {
   const { mode, data } = useCase()
+  if (mode === 'gefs') {
+    return (
+      <div className="space-y-4">
+        <TopBar title="Overview" gefsSubtitle="The real ensemble-forecast step of the roadmap, actually run" />
+        <GefsKpis />
+        <div className="bg-card rounded-card px-5 py-4">
+          <h3 className="font-bold text-ink text-[14.5px] mb-2">What this closes from the roadmap</h3>
+          <p className="text-[12.5px] text-muted leading-relaxed mb-3">
+            The ERA5 pipeline tracks a single reanalysis member — the observed past, zero lead time. This run
+            instead tracks a real <span className="font-semibold text-ink">30-member NOAA GEFSv12 ensemble
+            forecast</span> (0.25°, same grid as the ERA5 climatology, no regridding) for Yaas, initialized{' '}
+            {GEFS_META.init.replace('T', ' ').slice(0, 16)}Z — {'~'}5 days before landfall. Same detector, same
+            tracker, same IBTrACS validation code as the ERA5 cases; only the input data source changed.
+          </p>
+          <p className="text-[12.5px] text-muted leading-relaxed">
+            The numbers are honest, not tuned to look good: {GEFS_SUMMARY.track_error_by_lead_time.median_km_all_members} km
+            median forecast error (vs {CASES.yaas.validation.pmin.medianKm} km for the zero-lead reanalysis case) is what
+            real medium-range forecast error looks like, and {GEFS_SUMMARY.peak_members_agreeing.members}/
+            {GEFS_SUMMARY.peak_members_agreeing.of} member agreement is a genuinely strict bar, not the deck's invented 19/23.
+          </p>
+        </div>
+        <div className="bg-card rounded-card px-5 py-4">
+          <h3 className="font-bold text-ink text-[14.5px] mb-2">Still not implemented</h3>
+          <ol className="text-[12.5px] text-muted list-decimal list-inside space-y-1">
+            <li>GNN tracker on an icosahedral mesh — this still uses the classical connected-component + Hungarian tracker, just run once per member.</li>
+            <li>Conditional diffusion downscaler — no 5 km output for the GEFS case yet.</li>
+            <li>Ensemble EFI proper (vs a model's own reforecast climate) — the severe-fraction score here is a simpler, defensible stand-in.</li>
+            <li>NEPS-G itself — GEFS was used as the open, no-credential-needed substitute.</li>
+          </ol>
+        </div>
+      </div>
+    )
+  }
   if (mode === 'concept') {
     return (
       <div className="space-y-4">

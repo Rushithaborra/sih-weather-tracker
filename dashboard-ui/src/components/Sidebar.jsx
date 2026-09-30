@@ -62,8 +62,12 @@ export default function Sidebar() {
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
           <span className="text-emerald-400 font-semibold">Operational</span>
         </div>
-        <div className="text-stone-300">{mode === 'concept' ? 'NEPS-G 00 UTC (concept)' : 'ERA5 reanalysis, 0.25°'}</div>
-        <div className="text-stone-400">{mode === 'concept' ? 'Replay mode (synthetic)' : 'Replay mode (validated cases)'}</div>
+        <div className="text-stone-300">
+          {mode === 'concept' ? 'NEPS-G 00 UTC (concept)' : mode === 'gefs' ? 'GEFSv12, 0.25° (real)' : 'ERA5 reanalysis, 0.25°'}
+        </div>
+        <div className="text-stone-400">
+          {mode === 'concept' ? 'Replay mode (synthetic)' : mode === 'gefs' ? 'Forecast replay (real)' : 'Replay mode (validated cases)'}
+        </div>
       </div>
     </aside>
   )

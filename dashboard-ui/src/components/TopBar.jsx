@@ -2,16 +2,22 @@ import React from 'react'
 import { Download } from 'lucide-react'
 import { useCase } from '../context/CaseContext'
 import { CASES } from '../data/cases'
+import { GEFS_META } from '../data/gefsEnsemble'
 
-export default function TopBar({ title, subtitle, conceptSubtitle }) {
+export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle }) {
   const { mode, setMode, caseId, setCaseId, data, maxT } = useCase()
   const isConcept = mode === 'concept'
+  const isGefs = mode === 'gefs'
 
   const exportFile = () => {
-    const href = isConcept ? `${import.meta.env.BASE_URL}BOB-2020-01.xml` : `${import.meta.env.BASE_URL}${caseId}_alerts_sample.geojson`
+    const href = isConcept
+      ? `${import.meta.env.BASE_URL}BOB-2020-01.xml`
+      : isGefs
+        ? `${import.meta.env.BASE_URL}yaas_alerts_sample.geojson`
+        : `${import.meta.env.BASE_URL}${caseId}_alerts_sample.geojson`
     const a = document.createElement('a')
     a.href = href
-    a.download = isConcept ? 'BOB-2020-01.xml' : `${caseId}_alerts_ws_sample.geojson`
+    a.download = isConcept ? 'BOB-2020-01.xml' : isGefs ? 'yaas_gefs_alerts_sample.geojson' : `${caseId}_alerts_ws_sample.geojson`
     document.body.appendChild(a)
     a.click()
     a.remove()
@@ -24,7 +30,11 @@ export default function TopBar({ title, subtitle, conceptSubtitle }) {
         <div>
           <h1 className="text-[19px] font-bold text-ink leading-tight">{title}</h1>
           <p className="text-[12.5px] text-muted mt-0.5">
-            {isConcept ? (conceptSubtitle ?? 'Bay of Bengal super-cyclone replay — illustrative data') : subtitle}
+            {isConcept
+              ? (conceptSubtitle ?? 'Bay of Bengal super-cyclone replay — illustrative data')
+              : isGefs
+                ? (gefsSubtitle ?? `${GEFS_META.label} — real NOAA GEFS ensemble`)
+                : subtitle}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -33,6 +43,12 @@ export default function TopBar({ title, subtitle, conceptSubtitle }) {
               <Chip>NEPS-G 00 UTC</Chip>
               <Chip>23 members</Chip>
               <Chip>T+0 → 240 h</Chip>
+            </>
+          ) : isGefs ? (
+            <>
+              <Chip>GEFS v12, init {GEFS_META.init.replace('T', ' ').slice(0, 16)}Z</Chip>
+              <Chip>{GEFS_META.nMembers} members</Chip>
+              <Chip>T+0 → 144 h</Chip>
             </>
           ) : (
             <>
@@ -67,11 +83,17 @@ export default function TopBar({ title, subtitle, conceptSubtitle }) {
 }
 
 function ModeToggle({ mode, setMode }) {
+  const NOTE = {
+    concept: 'Matches the pitch deck mock-up (synthetic)',
+    validated: 'Real ERA5/IBTrACS pipeline output',
+    gefs: 'Real NOAA GEFS ensemble forecast run',
+  }
   return (
-    <div className="flex items-center gap-1 bg-card rounded-full p-1 w-fit">
+    <div className="flex items-center gap-1 bg-card rounded-full p-1 w-fit flex-wrap">
       {[
         { id: 'concept', label: 'Concept mock-up' },
         { id: 'validated', label: 'Validated results' },
+        { id: 'gefs', label: 'GEFS forecast' },
       ].map((m) => (
         <button
           key={m.id}
@@ -83,9 +105,7 @@ function ModeToggle({ mode, setMode }) {
           {m.label}
         </button>
       ))}
-      <span className="text-[10.5px] text-muted px-2 hidden md:inline">
-        {mode === 'concept' ? 'Matches the pitch deck mock-up (synthetic)' : 'Real ERA5/IBTrACS pipeline output'}
-      </span>
+      <span className="text-[10.5px] text-muted px-2 hidden lg:inline">{NOTE[mode]}</span>
     </div>
   )
 }
