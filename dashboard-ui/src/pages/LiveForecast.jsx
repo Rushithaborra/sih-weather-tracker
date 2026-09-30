@@ -170,28 +170,16 @@ function LiveView({ data }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-4 items-start">
-        <div className="bg-card rounded-card px-5 py-4">
-          <h3 className="font-bold text-ink text-[14.5px] mb-2">General weather (all conditions, not just anomalies)</h3>
-          {data.field ? <LiveWeatherField field={data.field} leadH={leadH} /> : (
-            <p className="text-[11.5px] text-muted italic py-8 text-center">
-              This run predates the general-weather field export — re-run to see it.
-            </p>
-          )}
+      <div className="bg-card rounded-card px-5 py-4">
+        <div className="flex items-baseline justify-between flex-wrap gap-1 mb-2">
+          <h3 className="font-bold text-ink text-[14.5px]">General weather</h3>
+          <span className="text-[11px] text-muted">real wind field, shown every day — not just when there's a cyclone</span>
         </div>
-        <div className="bg-card rounded-card px-5 py-4">
-          <h3 className="font-bold text-ink text-[14.5px] mb-2">Why show this too</h3>
-          <p className="text-[12.5px] text-muted leading-relaxed mb-2">
-            Everything else on this page only exists while a cyclone-scale anomaly is present — most days, like
-            today, the members-tracking-a-system count is 0 and the map above is empty. That's correct, not
-            broken: most days genuinely have no cyclone.
+        {data.field ? <LiveWeatherField field={data.field} leadH={leadH} /> : (
+          <p className="text-[11.5px] text-muted italic py-8 text-center">
+            This run predates the general-weather field export — re-run to see it.
           </p>
-          <p className="text-[12.5px] text-muted leading-relaxed">
-            This panel is the same GEFS run's real ensemble-mean wind field regardless of anomaly status, so the
-            page has real content every day — the ordinary monsoon flow and wind pattern the anomaly detector
-            is quietly comparing everything against.
-          </p>
-        </div>
+        )}
       </div>
     </div>
   )
