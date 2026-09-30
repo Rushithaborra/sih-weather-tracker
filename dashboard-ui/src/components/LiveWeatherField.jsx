@@ -68,7 +68,7 @@ export default function LiveWeatherField({ field, leadH }) {
     <div>
       <canvas ref={ref} width={360} height={360} className="w-full rounded-md border border-line" style={{ background: '#08111F' }} />
       <div className="flex items-center justify-between mt-2 text-[10.5px] text-muted">
-        <span>{field.lat[field.lat.length - 1]}°N–{field.lat[0]}°N, {field.lon[0]}°E–{field.lon[field.lon.length - 1]}°E</span>
+        <span>{field.lat[0]}°N–{field.lat[field.lat.length - 1]}°N, {field.lon[0]}°E–{field.lon[field.lon.length - 1]}°E</span>
         <span>T+{lead} h</span>
       </div>
       <div className="mt-1.5 flex items-center gap-2 text-[10px] text-muted">
