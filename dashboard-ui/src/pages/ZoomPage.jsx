@@ -13,7 +13,7 @@ export default function ZoomPage() {
     <div className="space-y-4">
       <TopBar
         title="5 km zoom"
-        subtitle={`${data.label} — interpolation placeholder around the tracked object`}
+        subtitle={`${data.label} — real bilinear-interpolated wind field around the tracked object`}
         forceMode={mode === 'gefs' ? 'validated' : mode}
       />
       <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 items-start">
@@ -25,16 +25,16 @@ export default function ZoomPage() {
         <div className="bg-card rounded-card px-5 py-4 space-y-3">
           <h3 className="font-bold text-ink text-[14.5px]">Why this is a placeholder, not a downscaler</h3>
           <p className="text-[12.5px] text-muted leading-relaxed">
-            The working prototype's 5 km layer is bilinear interpolation from 0.25° to 0.05° inside the
-            object's box — it stands in for the conditional diffusion downscaler, which is designed but not
-            implemented. Per the prototype's own documentation: <span className="italic">"Bilinear interpolation
-            from 0.25° to 0.05°. Adds no new information."</span>
+            The field on the left is real: <code className="bg-bg px-1 rounded">pipeline/downscale.bilinear_box</code>,
+            the same function the working Streamlit prototype's 5 km panel calls, run on this case's actual
+            ERA5 wind field and exported once per track step. It stands in for the conditional diffusion
+            downscaler, which is designed but not implemented. Per the prototype's own documentation:{' '}
+            <span className="italic">"Bilinear interpolation from 0.25° to 0.05°. Adds no new information."</span>
           </p>
           <p className="text-[12.5px] text-muted leading-relaxed">
-            This concept view goes one step further for presentation purposes — it draws an illustrative vortex
-            shape rather than a real interpolated grid — so treat the picture as a placeholder for a placeholder.
-            The real numbers driving it are genuine: peak wind, minimum MSLP and max anomaly z-score at this
-            timestep, pulled directly from <code className="bg-bg px-1 rounded">data/processed/{data.id}/tracks.json</code>.
+            Interpolation only draws a smoother picture of the same coarse cells — it cannot recover detail the
+            0.25° analysis never had. A real downscaler would need to add genuinely new, physically plausible
+            detail, which is exactly what the diffusion stage is designed (not implemented) to do.
           </p>
           <div className="grid grid-cols-3 gap-3 pt-1">
             <Fact label="Max wind" value={`${now.maxWs.toFixed(1)} m/s`} />
