@@ -17,3 +17,5 @@ data/raw/clim_sample_combined.nc
 data/raw/gefs_cache/
 data/raw/yaas_gefs/
 data/raw/*_fetch.log
+data/raw/gefs_live/
+data/clim/parts/

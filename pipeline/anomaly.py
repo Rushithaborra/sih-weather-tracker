@@ -82,6 +82,30 @@ def compute_anomalies(case: xr.Dataset, clim: xr.Dataset) -> xr.Dataset:
     return out
 
 
+def compute_anomalies_from_stats(case: xr.Dataset, stats: xr.Dataset) -> xr.Dataset:
+    """z_ws and z_msl against precomputed per-(month, UTC hour) mean/std.
+
+    For live forecasts at any time of year, where carrying the raw climatology
+    sample for every month is impractical. `stats` has mean_ws, std_ws, mean_msl,
+    std_msl on (month, hour, lat, lon) -- see scripts/build_live_climatology.py.
+    Each step uses the stats for its own valid month and hour. Percentiles need
+    the raw sample, so they are not produced; the tracker only uses z-scores.
+    """
+    out = case.copy()
+    st = stats.sel(lat=case.lat, lon=case.lon, method="nearest")
+    if not (np.allclose(st.lat, case.lat) and np.allclose(st.lon, case.lon)):
+        raise ValueError("climatology stats grid does not match the case grid")
+    months, hours = case.time.dt.month.values, case.time.dt.hour.values
+    for var in ("ws", "msl"):
+        z = np.empty(case[var].shape, "float32")
+        for t, (m, h) in enumerate(zip(months, hours)):
+            s = st.sel(month=m, hour=h)
+            z[t] = zscore(case[var].values[t], s[f"mean_{var}"].values, s[f"std_{var}"].values, STD_FLOOR[var])
+        out[f"z_{var}"] = (("time", "lat", "lon"), z)
+    out.attrs["clim_source"] = stats.attrs.get("source", "per-month stats")
+    return out
+
+
 def summary(ds: xr.Dataset) -> pd.DataFrame:
     """Per-timestep table: max ws, min msl, max z_ws, min z_msl."""
     return pd.DataFrame({

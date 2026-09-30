@@ -1,12 +1,13 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import {
-  Wind, LayoutGrid, Activity, Waypoints, ZoomIn, Bell, ShieldCheck, Database, Sun, Moon,
+  Wind, Radio, LayoutGrid, Activity, Waypoints, ZoomIn, Bell, ShieldCheck, Database, Sun, Moon,
 } from 'lucide-react'
 import { useCase } from '../context/CaseContext'
 import { useTheme } from '../context/ThemeContext'
 
 const NAV = [
+  { to: '/live', label: 'Live forecast', icon: Radio, live: true },
   { to: '/overview', label: 'Overview', icon: LayoutGrid },
   { to: '/active-anomalies', label: 'Active anomalies', icon: Activity },
   { to: '/tracks', label: 'Tracks & 4D boxes', icon: Waypoints },
@@ -40,7 +41,7 @@ export default function Sidebar() {
       <div className="px-4 pb-4 -mt-1 text-[10.5px] text-stone-400">Medium-range AI pilot</div>
 
       <nav className="flex-1 px-2.5 space-y-0.5">
-        {NAV.map(({ to, label, icon: Icon }) => (
+        {NAV.map(({ to, label, icon: Icon, live }) => (
           <NavLink
             key={to}
             to={to}
@@ -54,6 +55,7 @@ export default function Sidebar() {
           >
             <Icon size={15} strokeWidth={2} />
             <span>{label}</span>
+            {live && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
           </NavLink>
         ))}
       </nav>

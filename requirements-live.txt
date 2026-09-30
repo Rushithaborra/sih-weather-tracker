@@ -1,0 +1,12 @@
+# Extra dependencies for the live GEFS run and the climatology build (GitHub Actions).
+xarray>=2024.6
+netCDF4>=1.7
+numpy>=1.26
+scipy>=1.13
+pandas>=2.2
+herbie-data>=2024.8
+cfgrib>=0.9.14
+eccodes>=2.37
+gcsfs>=2024.6
+zarr>=2.18,<3
+dask>=2024.6

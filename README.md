@@ -96,6 +96,26 @@ pytest -q
 timeouts and retries, because long reads from the public bucket sometimes hung. If `step1_get_data.py --clim`
 hangs, run `python ../../scripts/fetch_clim_resumable.py` instead; it writes the same `clim_sample.nc`.
 
+## Live GEFS forecast (daily)
+
+The dashboard's **Live forecast** page shows the latest NOAA GEFS v12 ensemble (control + 30 members,
+0.25°, T+0 to 144 h) over the same 5–30°N, 75–100°E region, run through the same detector and tracker.
+The GitHub Action `.github/workflows/gefs-live.yml` does this every day at 06:30 UTC and commits
+`dashboard-ui/public/live/gefs_latest.json` and `gefs_history.json`; the page reads them straight from
+GitHub, so a new run appears without a redeploy.
+
+Because a live run can fall in any month, anomalies use per-(calendar month, UTC hour) ERA5 mean and std
+(`data/clim/era5_monthly_stats.nc`, from `scripts/build_live_climatology.py`, 2010–2019, every 3rd day)
+instead of the May sample the case studies use. There is no best track for a live forecast, so nothing on
+that page is validated.
+
+```bash
+pip install -r requirements-live.txt
+python scripts/build_live_climatology.py     # once; ~20 GB read from WeatherBench2
+python scripts/run_gefs_live.py              # latest complete 00/12 UTC run
+python scripts/run_gefs_live.py --init 2026-09-30T00:00 --members 2 --fxx-end 24   # quick test
+```
+
 ## Changes from the original plan
 
 - **Climatology years**: the first download was 00 UTC only, 2010–2019 (230 samples). Comparing 06–18 UTC
