@@ -13,12 +13,12 @@ export default function Verification() {
           title="Verification"
           conceptSubtitle="How we will validate — from the pitch deck's Research and References slide"
         />
-        <div className="bg-white rounded-card px-5 py-4">
+        <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-3">Validation plan</h3>
           <ul className="text-[12.5px] text-ink space-y-2.5">
             {VALIDATION_PLAN.map((v) => (
               <li key={v.label} className="flex gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-brand mt-1.5 shrink-0" />
                 <div>
                   <span className="font-semibold text-ink">{v.label}</span>
                   <span className="text-muted"> — {v.desc}</span>
@@ -27,7 +27,7 @@ export default function Verification() {
             ))}
           </ul>
         </div>
-        <div className="bg-white rounded-card px-5 py-4">
+        <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-2">Already proven on real data</h3>
           <p className="text-[12.5px] text-muted leading-relaxed">
             Switch to <span className="font-semibold text-ink">Validated results</span> mode (top bar) to see
@@ -42,7 +42,7 @@ export default function Verification() {
     <div className="space-y-4">
       <TopBar title="Verification" subtitle="What's actually been validated, vs. what's planned" />
 
-      <div className="bg-white rounded-card px-5 py-4">
+      <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-1">Done: track error vs IBTrACS</h3>
         <p className="text-[12px] text-muted mb-3">
           Track position chosen on Amphan (in-sample), confirmed on Yaas (held out, nothing adjusted). One ERA5
@@ -50,7 +50,7 @@ export default function Verification() {
         </p>
         <table className="w-full text-[12px]">
           <thead>
-            <tr className="text-left text-muted border-b border-slate-100">
+            <tr className="text-left text-muted border-b border-line">
               {['Case', 'Objects', 'Tracks', 'Matched steps', 'Pmin error: mean / median / min / max (km)', 'Centroid error: mean / median / min / max (km)'].map((h) => (
                 <th key={h} className="py-2 pr-4 font-medium">{h}</th>
               ))}
@@ -58,7 +58,7 @@ export default function Verification() {
           </thead>
           <tbody>
             {Object.values(CASES).map((c) => (
-              <tr key={c.id} className="border-b border-slate-50">
+              <tr key={c.id} className="border-b border-line">
                 <td className="py-2 pr-4 text-ink font-medium">{c.label} {c.role === 'in-sample' ? '(in-sample)' : '(held out)'}</td>
                 <td className="py-2 pr-4 text-ink">{c.track.length}</td>
                 <td className="py-2 pr-4 text-ink">1</td>
@@ -80,7 +80,7 @@ export default function Verification() {
         </p>
       </div>
 
-      <div className="bg-white rounded-card px-5 py-4">
+      <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-2">Planned, not yet implemented</h3>
         <ul className="text-[12.5px] text-ink space-y-2">
           <PlannedRow title="CRPS, rank histogram" desc="Needs an ensemble (NEPS-G); this pipeline currently tracks a single reanalysis member." />

@@ -51,7 +51,7 @@ export default function ZoomCanvas() {
     const px = size / 2, py = size / 2
     ctx.beginPath()
     ctx.arc(px, py, 5, 0, Math.PI * 2)
-    ctx.fillStyle = '#12344B'
+    ctx.fillStyle = '#3B2A20'
     ctx.fill()
     ctx.lineWidth = 2
     ctx.strokeStyle = '#ffffff'
@@ -60,7 +60,7 @@ export default function ZoomCanvas() {
 
   return (
     <div>
-      <canvas ref={ref} width={320} height={320} className="w-full rounded-md border border-slate-200" />
+      <canvas ref={ref} width={320} height={320} className="w-full rounded-md border border-line" />
       <div className="mt-2 text-[11px] text-muted leading-snug">
         Illustrative anomaly shape at the tracked object's 0.25° box (peak z {nearest.maxZ.toFixed(1)},{' '}
         {nearest.maxWs.toFixed(1)} m/s, {nearest.minMsl.toFixed(1)} hPa · {fmtTime(nearest.time)}). The real

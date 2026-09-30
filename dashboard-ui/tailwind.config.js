@@ -1,15 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  darkMode: ['class'],
   theme: {
     extend: {
       colors: {
-        navy: '#0F2438',
-        navyActive: '#1C3D5C',
-        teal: '#0E7C86',
-        pagebg: '#EEF2F6',
-        ink: '#12344B',
-        muted: '#5B6B7C',
+        bg: 'var(--bg)',
+        card: 'var(--card)',
+        ink900: 'var(--ink900)',
+        ink800: 'var(--ink800)',
+        brand: 'var(--brand)',
+        ink: 'var(--ink)',
+        muted: 'var(--muted)',
+        line: 'var(--line)',
       },
       fontFamily: {
         sans: ['Lato', 'ui-sans-serif', 'system-ui', 'sans-serif'],

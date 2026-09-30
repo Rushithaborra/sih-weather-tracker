@@ -11,3 +11,9 @@ screenshots/
 data/build_log.txt
 data/streamlit.log
 data/clim_download_061218.log
+# GEFS ensemble raw downloads (data/raw/) -- large, regenerate with scripts/fetch_gefs.py
+# and scripts/fetch_clim_resumable.py. Only the small processed/ summary is committed.
+data/raw/clim_sample_combined.nc
+data/raw/gefs_cache/
+data/raw/yaas_gefs/
+data/raw/*_fetch.log

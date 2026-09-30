@@ -20,7 +20,7 @@ export default function TopBar({ title, subtitle, conceptSubtitle }) {
   return (
     <div className="space-y-2.5">
       <ModeToggle mode={mode} setMode={setMode} />
-      <div className="bg-white rounded-card px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
+      <div className="bg-card rounded-card px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-[19px] font-bold text-ink leading-tight">{title}</h1>
           <p className="text-[12.5px] text-muted mt-0.5">
@@ -39,7 +39,7 @@ export default function TopBar({ title, subtitle, conceptSubtitle }) {
               <select
                 value={caseId}
                 onChange={(e) => setCaseId(e.target.value)}
-                className="text-[11.5px] font-medium bg-pagebg text-ink rounded-full px-3.5 py-1.5 border-none outline-none cursor-pointer"
+                className="text-[11.5px] font-medium bg-bg text-ink rounded-full px-3.5 py-1.5 border-none outline-none cursor-pointer"
               >
                 {Object.values(CASES).map((c) => (
                   <option key={c.id} value={c.id}>{c.label}</option>
@@ -52,12 +52,12 @@ export default function TopBar({ title, subtitle, conceptSubtitle }) {
           )}
           <button
             onClick={exportFile}
-            className="flex items-center gap-1.5 bg-teal hover:bg-teal/90 text-white text-[12px] font-semibold px-3.5 py-1.5 rounded-full transition-colors"
+            className="flex items-center gap-1.5 bg-brand hover:bg-brand/90 text-white text-[12px] font-semibold px-3.5 py-1.5 rounded-full transition-colors"
           >
             <Download size={13} strokeWidth={2.5} />
             {isConcept ? 'Export CAP' : 'Export alerts GeoJSON'}
           </button>
-          <div className="w-8 h-8 rounded-full bg-navy text-white text-[11px] font-bold flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-ink900 text-white text-[11px] font-bold flex items-center justify-center">
             FC
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function TopBar({ title, subtitle, conceptSubtitle }) {
 
 function ModeToggle({ mode, setMode }) {
   return (
-    <div className="flex items-center gap-1 bg-white rounded-full p-1 w-fit">
+    <div className="flex items-center gap-1 bg-card rounded-full p-1 w-fit">
       {[
         { id: 'concept', label: 'Concept mock-up' },
         { id: 'validated', label: 'Validated results' },
@@ -77,7 +77,7 @@ function ModeToggle({ mode, setMode }) {
           key={m.id}
           onClick={() => setMode(m.id)}
           className={`text-[11.5px] font-semibold px-3.5 py-1.5 rounded-full transition-colors ${
-            mode === m.id ? 'bg-navy text-white' : 'text-muted hover:text-ink'
+            mode === m.id ? 'bg-ink900 text-white' : 'text-muted hover:text-ink'
           }`}
         >
           {m.label}
@@ -91,5 +91,5 @@ function ModeToggle({ mode, setMode }) {
 }
 
 function Chip({ children }) {
-  return <span className="text-[11.5px] font-medium bg-pagebg text-ink rounded-full px-3.5 py-1.5">{children}</span>
+  return <span className="text-[11.5px] font-medium bg-bg text-ink rounded-full px-3.5 py-1.5">{children}</span>
 }

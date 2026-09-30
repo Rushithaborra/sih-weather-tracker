@@ -23,7 +23,7 @@ export default function TracksBoxes() {
       />
       {isConcept ? <ConceptKpis /> : <KpiCards />}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-4 items-start">
-        <div className="bg-white rounded-card px-5 py-4">
+        <div className="bg-card rounded-card px-5 py-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-ink text-[14.5px]">{isConcept ? 'Ensemble tracks' : 'Tracked path'}</h3>
             <Legend concept={isConcept} />
@@ -36,7 +36,7 @@ export default function TracksBoxes() {
           )}
         </div>
         <div className="space-y-4">
-          <div className="bg-white rounded-card px-5 py-4">
+          <div className="bg-card rounded-card px-5 py-4">
             <div className="flex items-baseline justify-between mb-2">
               <h3 className="font-bold text-ink text-[14.5px]">
                 {isConcept ? '5 km zoom — landfall, T+96 h' : '5 km zoom — near peak intensity'}
@@ -56,9 +56,9 @@ export default function TracksBoxes() {
 function Legend({ concept }) {
   return (
     <div className="flex items-center gap-3.5 text-[10.5px] text-muted flex-wrap">
-      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#12213A] inline-block" /> mean</span>
+      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#3B2A20] inline-block" /> mean</span>
       {concept && <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#8a94a3] inline-block" style={{ opacity: 0.5 }} /> members</span>}
-      {!concept && <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#12213A] inline-block" style={{ backgroundImage: 'repeating-linear-gradient(90deg,#12213A 0 4px,transparent 4px 7px)' }} /> IBTrACS best track</span>}
+      {!concept && <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#3B2A20] inline-block" style={{ backgroundImage: 'repeating-linear-gradient(90deg,#3B2A20 0 4px,transparent 4px 7px)' }} /> IBTrACS best track</span>}
       <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 border border-dashed inline-block" style={{ borderColor: '#C2185B' }} /> 4D box</span>
     </div>
   )

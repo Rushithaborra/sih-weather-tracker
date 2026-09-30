@@ -2,19 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: #F2E9DB;
+  --card: #FFFFFF;
+  --ink900: #3B2A20;
+  --ink800: #4E3A2C;
+  --brand: #9C6B3E;
+  --ink: #2E211A;
+  --muted: #8A7660;
+  --line: #E4D6C3;
+}
+
+:root[data-theme='dark'] {
+  --bg: #17130F;
+  --card: #2C2419;
+  --ink900: #0E0A08;
+  --ink800: #2C2318;
+  --brand: #D9A066;
+  --ink: #F0E6D8;
+  --muted: #A8967D;
+  --line: #443725;
+}
+
 html, body, #root {
   height: 100%;
 }
 
 body {
   font-family: 'Lato', ui-sans-serif, system-ui, sans-serif;
-  background: #EEF2F6;
-  color: #12344B;
+  background: var(--bg);
+  color: var(--ink);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .leaflet-container {
   font-family: 'Lato', ui-sans-serif, system-ui, sans-serif;
-  background: #EEF2F6;
+  background: var(--bg);
 }
 
 ::-webkit-scrollbar {
@@ -22,6 +45,14 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c7d0da;
+  background: var(--line);
   border-radius: 8px;
+}
+
+.bg-card {
+  box-shadow: 0 1px 2px rgba(59, 42, 32, 0.06), 0 1px 4px rgba(59, 42, 32, 0.05);
+}
+:root[data-theme='dark'] .bg-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--line);
 }

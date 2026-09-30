@@ -33,8 +33,8 @@ export default function AlertsApi() {
         subtitle="Shape of the alert records the pipeline actually produces (this is the concept UI's read of a static export, not a live endpoint)"
         conceptSubtitle="Planned REST endpoint, from the pitch deck's technical approach — not yet built"
       />
-      <div className="bg-white rounded-card px-5 py-4">
-        <div className="font-mono text-[12px] text-ink bg-pagebg rounded-lg px-4 py-2.5 mb-3">
+      <div className="bg-card rounded-card px-5 py-4">
+        <div className="font-mono text-[12px] text-ink bg-bg rounded-lg px-4 py-2.5 mb-3">
           GET /v1/alerts?{isConcept ? `lat=${ALERT_API_SAMPLE.core[0]}&lon=${ALERT_API_SAMPLE.core[1]}` : `case=${data.id}&lat=${ex.lat}&lon=${ex.lon}`}
         </div>
         <p className="text-[12px] text-muted mb-3">
@@ -43,7 +43,7 @@ export default function AlertsApi() {
             : "There is no live endpoint yet — the real pipeline exports GeoJSON per timestep from the Streamlit app's download buttons. This is one record from that export, reshaped as JSON."}
         </p>
         <div className="relative">
-          <pre className="text-[12px] bg-navy text-slate-100 rounded-lg px-4 py-3.5 overflow-x-auto"><code>{jsonStr}</code></pre>
+          <pre className="text-[12px] bg-ink900 text-stone-100 rounded-lg px-4 py-3.5 overflow-x-auto"><code>{jsonStr}</code></pre>
           <button
             onClick={copy}
             className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white text-[11px] px-2.5 py-1 rounded-md transition-colors"
@@ -53,7 +53,7 @@ export default function AlertsApi() {
           </button>
         </div>
       </div>
-      <div className="bg-white rounded-card px-5 py-4">
+      <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[13.5px] mb-2">
           {isConcept ? 'What fields mean (planned service)' : 'What fields mean (from pipeline/alerts.py)'}
         </h3>
@@ -83,8 +83,8 @@ export default function AlertsApi() {
 
 function FieldRow({ field, desc }) {
   return (
-    <tr className="border-b border-slate-50">
-      <td className="py-2 pr-4 font-mono text-teal whitespace-nowrap align-top">{field}</td>
+    <tr className="border-b border-line">
+      <td className="py-2 pr-4 font-mono text-brand whitespace-nowrap align-top">{field}</td>
       <td className="py-2 text-muted">{desc}</td>
     </tr>
   )

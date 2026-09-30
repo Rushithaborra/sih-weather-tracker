@@ -29,12 +29,12 @@ export default function Overview() {
         <TopBar title="Overview" conceptSubtitle="SIH 2026 · PS 26078 — two-stage hybrid AI: track globally on a sphere, sharpen locally to 5 km" />
         <ConceptKpis />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="bg-white rounded-card px-5 py-4">
+          <div className="bg-card rounded-card px-5 py-4">
             <h3 className="font-bold text-ink text-[14.5px] mb-3">Proposed solution</h3>
             <ol className="text-[12.5px] space-y-2.5">
               {PIPELINE_STEPS.map((s, i) => (
                 <li key={s.label} className="flex gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-teal/10 text-teal text-[10.5px] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                  <span className="w-5 h-5 rounded-full bg-brand/10 text-brand text-[10.5px] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
                   <div>
                     <span className="font-semibold text-ink">{s.label}</span>
                     <div className="text-muted">{s.desc}</div>
@@ -43,12 +43,12 @@ export default function Overview() {
               ))}
             </ol>
           </div>
-          <div className="bg-white rounded-card px-5 py-4">
+          <div className="bg-card rounded-card px-5 py-4">
             <h3 className="font-bold text-ink text-[14.5px] mb-3">What makes our solution unique</h3>
             <ul className="text-[12.5px] space-y-2.5">
               {UNIQUE.map((u) => (
                 <li key={u.title} className="flex gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal mt-1.5 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand mt-1.5 shrink-0" />
                   <div>
                     <span className="font-semibold text-ink">{u.title}:</span>{' '}
                     <span className="text-muted">{u.desc}</span>
@@ -58,7 +58,7 @@ export default function Overview() {
             </ul>
           </div>
         </div>
-        <div className="bg-white rounded-card px-5 py-4">
+        <div className="bg-card rounded-card px-5 py-4">
           <p className="text-[12.5px] text-muted leading-relaxed">
             Switch to <span className="font-semibold text-ink">Validated results</span> mode (top bar) to see the
             part of this pipeline that's already built and run on real data — ERA5 tracking and IBTrACS
@@ -73,7 +73,7 @@ export default function Overview() {
       <TopBar title="Overview" subtitle="SIH 2026 · PS 26078 — AI-driven spatio-temporal tracking of extreme weather anomalies" />
       <KpiCards />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-card px-5 py-4">
+        <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-2">What's actually running</h3>
           <p className="text-[12.5px] text-muted leading-relaxed mb-3">
             This is tracking of an <span className="font-semibold text-ink">observed event on reanalysis</span>,
@@ -89,7 +89,7 @@ export default function Overview() {
             <MetaRow label="Tracking" value={PIPELINE_META.tracking} />
           </ul>
         </div>
-        <div className="bg-white rounded-card px-5 py-4">
+        <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-2">Current case: {data.label}</h3>
           <p className="text-[12.5px] text-muted leading-relaxed mb-3">
             <span className="font-semibold text-ink capitalize">{data.role}.</span> {data.roleNote}
@@ -102,7 +102,7 @@ export default function Overview() {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-card px-5 py-4">
+      <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-2">Roadmap (designed, not implemented)</h3>
         <ol className="text-[12.5px] text-muted list-decimal list-inside space-y-1">
           <li>NEPS-G ensemble ingestion in place of single-member reanalysis.</li>
@@ -127,9 +127,9 @@ function MetaRow({ label, value }) {
 
 function Stat({ label, value }) {
   return (
-    <div className="bg-pagebg rounded-lg px-3 py-2.5">
+    <div className="bg-bg rounded-lg px-3 py-2.5">
       <div className="text-[10.5px] text-muted">{label}</div>
-      <div className="text-[16px] font-bold text-teal">{value}</div>
+      <div className="text-[16px] font-bold text-brand">{value}</div>
     </div>
   )
 }

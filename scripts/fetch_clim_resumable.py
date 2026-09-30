@@ -44,7 +44,7 @@ def fetch_year(y, hours):
     out = part_path(y, hours)
     tmp = out.with_suffix(".tmp")
     part.load().to_netcdf(tmp)
-    tmp.rename(out)
+    tmp.replace(out)  # .replace(), not .rename(): Windows raises FileExistsError on rename-over
     print(f"  {y}: {part.sizes['time']} steps", flush=True)
 
 
@@ -53,7 +53,7 @@ def fetch_case_child(name):
     ds = s1.cut(s1.open_era5(), s1.CASE_VARS).sel(time=slice(*c["time"]))
     tmp = Path(c["out"] + ".tmp")
     ds.load().to_netcdf(tmp)
-    tmp.rename(c["out"])
+    tmp.replace(c["out"])
     print(f"Saved {c['out']}: {ds.sizes['time']} steps", flush=True)
 
 
@@ -98,6 +98,9 @@ def main():
             print(f"  {y}: cached", flush=True)
             continue
         for attempt in range(1, RETRIES + 1):
+            if part_path(y, hours).exists():  # a "timed out" attempt can still have finished the rename
+                print(f"  {y}: file appeared despite earlier timeout, using it", flush=True)
+                break
             try:
                 subprocess.run([sys.executable, __file__, "--year", str(y), "--hours", a.hours],
                                check=True, timeout=TIMEOUT_S)

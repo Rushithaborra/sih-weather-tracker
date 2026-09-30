@@ -1,0 +1,22 @@
+{
+  "case": "yaas_gefs",
+  "storm": "YAAS",
+  "init": "2021-05-21T00:00",
+  "n_members": 30,
+  "n_members_with_tracks": 30,
+  "peak_members_agreeing": {
+    "members": 7,
+    "of": 30,
+    "lead_h": 126.0,
+    "time": "2021-05-26 06:00:00"
+  },
+  "peak_severe_fraction": {
+    "fraction": 0.733,
+    "lead_h": 96.0,
+    "time": "2021-05-25 00:00:00"
+  },
+  "track_error_by_lead_time": {
+    "median_km_all_members": 269.6,
+    "n_members_validated": 30
+  }
+}

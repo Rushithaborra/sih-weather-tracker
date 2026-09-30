@@ -9,7 +9,7 @@ const STYLE = {
 
 export default function ConceptAlerts() {
   return (
-    <div className="bg-white rounded-card px-5 py-4">
+    <div className="bg-card rounded-card px-5 py-4">
       <div className="flex items-baseline justify-between mb-3">
         <h3 className="font-bold text-ink text-[14.5px]">Alerts</h3>
         <span className="text-[10.5px] text-muted">auto-ranked, forecaster sign-off for Severe</span>

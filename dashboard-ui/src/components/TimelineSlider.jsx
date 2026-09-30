@@ -19,11 +19,11 @@ export default function TimelineSlider({ value, onChange, max, step = 6, tickSte
         step={step}
         value={v}
         onChange={(e) => set(Number(e.target.value))}
-        className="w-full accent-teal"
+        className="w-full accent-brand"
       />
       <div className="flex justify-between text-[10.5px] text-muted mt-1 px-0.5">
         {ticks.map((x) => (
-          <span key={x} className={x === v ? 'text-teal font-bold' : ''}>{x === 0 ? '0' : `+${x}`}</span>
+          <span key={x} className={x === v ? 'text-brand font-bold' : ''}>{x === 0 ? '0' : `+${x}`}</span>
         ))}
       </div>
     </div>

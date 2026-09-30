@@ -20,7 +20,7 @@ export default function AlertsCard() {
   const { alertSnapshot } = data
 
   return (
-    <div className="bg-white rounded-card px-5 py-4">
+    <div className="bg-card rounded-card px-5 py-4">
       <div className="flex items-baseline justify-between mb-3">
         <h3 className="font-bold text-ink text-[14.5px]">Alerts</h3>
         <span className="text-[10.5px] text-muted">auto-ranked · forecaster sign-off for severe</span>
@@ -32,7 +32,7 @@ export default function AlertsCard() {
           const def = ALERT_TIERS_DEF[tier]
           if (!ex) {
             return (
-              <div key={tier} className="rounded-lg px-3.5 py-3 bg-slate-50 text-[11.5px] text-muted italic">
+              <div key={tier} className="rounded-lg px-3.5 py-3 bg-bg text-[11.5px] text-muted italic">
                 No {tier} cells at {fmtTime(alertSnapshot.time)} — ERA5's analyzed wind for {data.label} never
                 reached the {def.windMs} m/s ({def.windKt} kt, IMD {def.imd}) gate at this step.
               </div>

@@ -15,12 +15,12 @@ export default function ZoomPage() {
       <div className="space-y-4">
         <TopBar title="5 km zoom" conceptSubtitle="Landfall, T+96 h — conditional diffusion downscaler output (concept)" />
         <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 items-start">
-          <div className="bg-white rounded-card px-5 py-4">
+          <div className="bg-card rounded-card px-5 py-4">
             <h3 className="font-bold text-ink text-[14.5px] mb-2">Rain field at T+{conceptT} h</h3>
             <ConceptZoom />
             <TimelineSlider value={conceptT} onChange={setConceptT} max={240} step={24} tickStep={24} />
           </div>
-          <div className="bg-white rounded-card px-5 py-4 space-y-3">
+          <div className="bg-card rounded-card px-5 py-4 space-y-3">
             <h3 className="font-bold text-ink text-[14.5px]">Why peaks matter</h3>
             <p className="text-[12.5px] text-muted leading-relaxed">
               An MSE-trained CNN/U-Net spreads a storm's peak rain across a wide, smooth blob — averaging a real
@@ -49,12 +49,12 @@ export default function ZoomPage() {
     <div className="space-y-4">
       <TopBar title="5 km zoom" subtitle={`${data.label} — interpolation placeholder around the tracked object`} />
       <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 items-start">
-        <div className="bg-white rounded-card px-5 py-4">
+        <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-2">Field shape at T+{t} h</h3>
           <ZoomCanvas />
           <TimelineSlider />
         </div>
-        <div className="bg-white rounded-card px-5 py-4 space-y-3">
+        <div className="bg-card rounded-card px-5 py-4 space-y-3">
           <h3 className="font-bold text-ink text-[14.5px]">Why this is a placeholder, not a downscaler</h3>
           <p className="text-[12.5px] text-muted leading-relaxed">
             The working prototype's 5 km layer is bilinear interpolation from 0.25° to 0.05° inside the
@@ -66,7 +66,7 @@ export default function ZoomPage() {
             This concept view goes one step further for presentation purposes — it draws an illustrative vortex
             shape rather than a real interpolated grid — so treat the picture as a placeholder for a placeholder.
             The real numbers driving it are genuine: peak wind, minimum MSLP and max anomaly z-score at this
-            timestep, pulled directly from <code className="bg-pagebg px-1 rounded">data/processed/{data.id}/tracks.json</code>.
+            timestep, pulled directly from <code className="bg-bg px-1 rounded">data/processed/{data.id}/tracks.json</code>.
           </p>
           <div className="grid grid-cols-3 gap-3 pt-1">
             <Fact label="Max wind" value={`${now.maxWs.toFixed(1)} m/s`} />
@@ -86,9 +86,9 @@ export default function ZoomPage() {
 
 function Fact({ label, value }) {
   return (
-    <div className="bg-pagebg rounded-lg px-3 py-2.5">
+    <div className="bg-bg rounded-lg px-3 py-2.5">
       <div className="text-[10.5px] text-muted">{label}</div>
-      <div className="text-[14px] font-bold text-teal">{value}</div>
+      <div className="text-[14px] font-bold text-brand">{value}</div>
     </div>
   )
 }

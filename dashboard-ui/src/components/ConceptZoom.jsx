@@ -57,14 +57,14 @@ export default function ConceptZoom() {
     })
     ctx.beginPath()
     ctx.arc(px, py, 4.5, 0, Math.PI * 2)
-    ctx.fillStyle = '#12344B'
+    ctx.fillStyle = '#3B2A20'
     ctx.fill()
     ctx.lineWidth = 2
     ctx.strokeStyle = '#ffffff'
     ctx.stroke()
   }, [])
 
-  return <canvas ref={ref} width={320} height={320} className="w-full rounded-md border border-slate-200" />
+  return <canvas ref={ref} width={320} height={320} className="w-full rounded-md border border-line" />
 }
 
 function pseudoRandom(seed) {
