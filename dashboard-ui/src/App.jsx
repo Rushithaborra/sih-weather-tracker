@@ -18,7 +18,7 @@ export default function App() {
       <CaseProvider>
         <div className="flex min-h-screen bg-bg">
           <Sidebar />
-          <main className="flex-1 p-5 pb-14">
+          <main className="flex-1 min-w-0 p-5 flex flex-col">
             <Routes>
               <Route path="/" element={<Navigate to="/tracks" replace />} />
               <Route path="/live" element={<LiveForecast />} />
@@ -31,9 +31,9 @@ export default function App() {
               <Route path="/data-sources" element={<DataSources />} />
               <Route path="*" element={<Navigate to="/tracks" replace />} />
             </Routes>
+            <Footer />
           </main>
         </div>
-        <Footer />
       </CaseProvider>
     </ThemeProvider>
   )
@@ -41,16 +41,18 @@ export default function App() {
 
 const FOOTER_TEXT = {
   live: 'Research prototype — live NOAA GEFS ensemble run through the pipeline daily. Forecast only, unvalidated. Not an operational warning system.',
-  validated: 'Concept prototype — real ERA5/IBTrACS pipeline output, replayed for eight historical Bay of Bengal cyclones. Not an operational warning system.',
-  gefs: 'Concept prototype — real NOAA GEFS ensemble forecast, tracked and validated against IBTrACS. Not an operational warning system.',
+  validated: 'Research prototype: tracking validated on 8 storms (1 in-sample, 7 held out) on ERA5 reanalysis; live output unvalidated.',
+  gefs: 'Research prototype: tracking validated on 8 storms (1 in-sample, 7 held out) on ERA5 reanalysis; live output unvalidated.',
 }
 
 function Footer() {
   const { mode } = useCase()
   const { pathname } = useLocation()
   return (
-    <footer className="fixed bottom-0 left-[196px] right-0 bg-bg/95 backdrop-blur text-center text-[10.5px] text-muted py-2 border-t border-line">
+    <footer className="mt-auto pt-6 text-center text-[10.5px] text-muted">
+      <div className="border-t border-line pt-3">
       {pathname === '/live' ? FOOTER_TEXT.live : FOOTER_TEXT[mode]}
+      </div>
     </footer>
   )
 }

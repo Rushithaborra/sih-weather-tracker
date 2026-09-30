@@ -16,7 +16,7 @@ import xarray as xr
 
 # Physical floors on the std, so calm, steady places don't turn small changes
 # into huge z-scores.
-STD_FLOOR = {"ws": 1.0, "msl": 1.0}  # m/s, hPa
+STD_FLOOR = {"ws": 1.0, "msl": 1.0, "t2m": 0.5}  # m/s, hPa, K
 
 
 def zscore(x: np.ndarray, mean: np.ndarray, std: np.ndarray, floor: float) -> np.ndarray:

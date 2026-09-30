@@ -28,8 +28,7 @@ from pipeline import anomaly, preprocess, tracker, validate  # noqa: E402
 
 RAW = ROOT / "data" / "raw"
 PROC = ROOT / "data" / "processed"
-DEFAULTS = {"threshold": 2.0, "min_size": 6, "max_disp_km": 400.0, "rule": "ws_and_msl",
-            "ws_min": tracker.GALE_MS}
+DEFAULTS = tracker.DEFAULTS  # frozen parameters, defined once in pipeline/tracker.py
 SEVERE_WS = 25.0  # IMD Severe Cyclonic Storm, m/s -- same gate as pipeline/alerts.py
 AGREE_RADIUS_KM = 100.0
 

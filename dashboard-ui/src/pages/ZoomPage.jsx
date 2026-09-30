@@ -13,7 +13,7 @@ export default function ZoomPage() {
     <div className="space-y-4">
       <TopBar
         title="5 km zoom"
-        subtitle={`${data.label} — real bilinear-interpolated wind field around the tracked object`}
+        subtitle={`${data.label} — ERA5 wind around the tracked object, bilinear interpolation (adds no information)`}
         forceMode={mode === 'gefs' ? 'validated' : mode}
       />
       <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 items-start">
@@ -25,7 +25,7 @@ export default function ZoomPage() {
         <div className="bg-card rounded-card px-5 py-4 space-y-3">
           <h3 className="font-bold text-ink text-[14.5px]">Why this is a placeholder, not a downscaler</h3>
           <p className="text-[12.5px] text-muted leading-relaxed">
-            The field on the left is real: <code className="bg-bg px-1 rounded">pipeline/downscale.bilinear_box</code>,
+            The field on the left is interpolation, not a downscaler: <code className="bg-bg px-1 rounded">pipeline/downscale.bilinear_box</code>,
             the same function the working Streamlit prototype's 5 km panel calls, run on this case's actual
             ERA5 wind field and exported once per track step. It stands in for the conditional diffusion
             downscaler, which is designed but not implemented. Per the prototype's own documentation:{' '}

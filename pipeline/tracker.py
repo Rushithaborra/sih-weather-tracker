@@ -24,6 +24,12 @@ def cell_area_km2(lat, dlat, dlon):
 
 GALE_MS = 17.0  # gale force, the usual cutoff for a named tropical storm
 
+# Frozen detection + tracking parameters: chosen on Amphan (in-sample) and used
+# unchanged for every held-out case and live run. Scripts import this; they must
+# not define their own (tests/test_defaults.py enforces it).
+DEFAULTS = {"threshold": 2.0, "min_size": 6, "max_disp_km": 400.0, "rule": "ws_and_msl",
+            "ws_min": GALE_MS}
+
 
 def detection_mask(z_ws, z_msl, threshold, rule="ws_and_msl", ws=None, ws_min=0.0):
     """rule: 'ws' -> z_ws >= thr; 'ws_and_msl' -> also z_msl <= -thr; 'msl' -> z_msl <= -thr.

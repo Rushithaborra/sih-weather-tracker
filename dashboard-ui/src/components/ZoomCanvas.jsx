@@ -93,7 +93,7 @@ export default function ZoomCanvas() {
     <div>
       <canvas ref={ref} width={320} height={320} className="w-full rounded-md border border-line" style={{ background: '#08111F' }} />
       <div className="mt-2 text-[11px] text-muted leading-snug">
-        Real bilinear interpolation of the ERA5 wind field inside the tracked object's 0.25° box
+        ERA5 wind field inside the tracked object's 0.25° box, bilinearly interpolated — interpolation only, it adds no information
         ({ZOOM_GRID_N}×{ZOOM_GRID_N} display grid, smooth-shaded) — the same method
         (<code>pipeline/downscale.bilinear_box</code>) the working Streamlit prototype's 5 km panel uses.
         Peak {nearest.maxWs.toFixed(1)} m/s, {nearest.minMsl.toFixed(1)} hPa · {fmtTime(nearest.time)}. The

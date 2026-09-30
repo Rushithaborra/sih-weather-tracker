@@ -38,8 +38,7 @@ CLIM = ROOT / "data" / "clim" / "era5_monthly_stats.nc"
 RAW = ROOT / "data" / "raw" / "gefs_live"
 OUT_DIR = ROOT / "dashboard-ui" / "public" / "live"
 LAT, LON = (5, 30), (75, 100)
-DEFAULTS = {"threshold": 2.0, "min_size": 6, "max_disp_km": 400.0, "rule": "ws_and_msl",
-            "ws_min": tracker.GALE_MS}
+DEFAULTS = tracker.DEFAULTS  # frozen parameters, defined once in pipeline/tracker.py
 SEVERE_WS = 25.0  # IMD Severe Cyclonic Storm gate, same as pipeline/alerts.py
 MIN_TRACK_STEPS = 2  # single-step blobs are not shown as systems
 HISTORY_LEN = 60

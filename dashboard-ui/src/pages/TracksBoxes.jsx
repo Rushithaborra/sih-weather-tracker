@@ -47,7 +47,7 @@ export default function TracksBoxes() {
                   <h3 className="font-bold text-ink text-[14.5px]">
                     5 km zoom — near peak intensity
                   </h3>
-                  <span className="text-[10.5px] text-muted">real bilinear interpolation</span>
+                  <span className="text-[10.5px] text-muted">interpolation, adds no information</span>
                 </div>
                 <ZoomCanvas />
               </div>

@@ -80,7 +80,8 @@ function LiveView({ data }) {
   const cards = [
     {
       label: 'Members tracking a system', icon: Users,
-      value: `${s.membersWithSystem} / ${data.nMembers}`,
+      value: s.membersWithSystem === 0 ? `No system detected in any of ${data.nMembers} members` : `${s.membersWithSystem} / ${data.nMembers}`,
+      text: s.membersWithSystem === 0,
       sub: s.firstDetectionLeadH == null ? `none through T+${data.fxxEnd} h` : `first appears at T+${s.firstDetectionLeadH} h`,
     },
     {
@@ -114,7 +115,7 @@ function LiveView({ data }) {
               </span>
               <div className="text-[12px] text-muted">{c.label}</div>
             </div>
-            <div className="text-[26px] font-bold leading-none text-brand">{c.value}</div>
+            <div className={`font-bold text-brand ${c.text ? 'text-[15px] leading-snug' : 'text-[26px] leading-none'}`}>{c.value}</div>
             <div className="text-[11px] text-muted mt-2 leading-snug">{c.sub}</div>
           </div>
         ))}

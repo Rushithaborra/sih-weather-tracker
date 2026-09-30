@@ -3,10 +3,12 @@ import { useCase } from '../context/CaseContext'
 import { ALERT_TIERS_DEF } from '../data/cases'
 import { fmtTime } from '../lib/format'
 
+// Card background is a translucent tint of the tier colour, so it reads as a pale
+// pastel on the light theme and a dark tint on the dark theme (text stays legible).
 const STYLE = {
-  severe: { bg: '#FDECEA', fg: '#C0392B', label: 'SEVERE' },
-  moderate: { bg: '#FEF1E6', fg: '#D35400', label: 'MODERATE' },
-  low: { bg: '#FEF9E7', fg: '#B7950B', label: 'LOW' },
+  severe: { fg: '#C0392B', label: 'SEVERE' },
+  moderate: { fg: '#D35400', label: 'MODERATE' },
+  low: { fg: '#B7950B', label: 'LOW' },
 }
 
 const TITLE = {
@@ -39,7 +41,7 @@ export default function AlertsCard() {
             )
           }
           return (
-            <div key={tier} className="rounded-lg px-3.5 py-3 flex items-center justify-between gap-3" style={{ background: s.bg }}>
+            <div key={tier} className="rounded-lg px-3.5 py-3 flex items-center justify-between gap-3" style={{ background: `${s.fg}1f` }}>
               <div>
                 <span className="text-[10px] font-bold tracking-wide px-2 py-0.5 rounded" style={{ background: s.fg, color: 'white' }}>
                   {s.label}
