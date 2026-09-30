@@ -4,24 +4,21 @@ import { useCase } from '../context/CaseContext'
 import { CASES } from '../data/cases'
 import { GEFS_META } from '../data/gefsEnsemble'
 
-export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle, forceMode }) {
+export default function TopBar({ title, subtitle, gefsSubtitle, forceMode }) {
   const { mode: realMode, setMode, caseId, setCaseId, data, maxT } = useCase()
   // forceMode lets a page that has no dedicated content for the real mode (e.g. GEFS)
   // render as if a different mode were active, so chips/subtitle/export match what's
   // actually on screen instead of advertising GEFS while showing ERA5 case data.
   const mode = forceMode ?? realMode
-  const isConcept = mode === 'concept'
   const isGefs = mode === 'gefs'
 
   const exportFile = () => {
-    const href = isConcept
-      ? `${import.meta.env.BASE_URL}BOB-2020-01.xml`
-      : isGefs
-        ? `${import.meta.env.BASE_URL}yaas_alerts_sample.geojson`
-        : `${import.meta.env.BASE_URL}${caseId}_alerts_sample.geojson`
+    const href = isGefs
+      ? `${import.meta.env.BASE_URL}yaas_alerts_sample.geojson`
+      : `${import.meta.env.BASE_URL}${caseId}_alerts_sample.geojson`
     const a = document.createElement('a')
     a.href = href
-    a.download = isConcept ? 'BOB-2020-01.xml' : isGefs ? 'yaas_gefs_alerts_sample.geojson' : `${caseId}_alerts_ws_sample.geojson`
+    a.download = isGefs ? 'yaas_gefs_alerts_sample.geojson' : `${caseId}_alerts_ws_sample.geojson`
     document.body.appendChild(a)
     a.click()
     a.remove()
@@ -34,11 +31,7 @@ export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle,
         <div>
           <h1 className="text-[19px] font-bold text-ink leading-tight">{title}</h1>
           <p className="text-[12.5px] text-muted mt-0.5">
-            {isConcept
-              ? (conceptSubtitle ?? 'Bay of Bengal super-cyclone replay — illustrative data')
-              : isGefs
-                ? (gefsSubtitle ?? `${GEFS_META.label} — real NOAA GEFS ensemble`)
-                : subtitle}
+            {isGefs ? (gefsSubtitle ?? `${GEFS_META.label} — real NOAA GEFS ensemble`) : subtitle}
           </p>
           {forceMode && forceMode !== realMode && (
             <p className="text-[11px] text-brand mt-1">
@@ -47,13 +40,7 @@ export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle,
           )}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          {isConcept ? (
-            <>
-              <Chip>NEPS-G 00 UTC</Chip>
-              <Chip>23 members</Chip>
-              <Chip>T+0 → 240 h</Chip>
-            </>
-          ) : isGefs ? (
+          {isGefs ? (
             <>
               <Chip>GEFS v12, init {GEFS_META.init.replace('T', ' ').slice(0, 16)}Z</Chip>
               <Chip>{GEFS_META.nMembers} members</Chip>
@@ -80,7 +67,7 @@ export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle,
             className="flex items-center gap-1.5 bg-brand hover:bg-brand/90 text-white text-[12px] font-semibold px-3.5 py-1.5 rounded-full transition-colors"
           >
             <Download size={13} strokeWidth={2.5} />
-            {isConcept ? 'Export CAP' : 'Export alerts GeoJSON'}
+            Export alerts GeoJSON
           </button>
           <div className="w-8 h-8 rounded-full bg-ink900 text-white text-[11px] font-bold flex items-center justify-center">
             FC
@@ -93,14 +80,12 @@ export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle,
 
 function ModeToggle({ mode, setMode }) {
   const NOTE = {
-    concept: 'Matches the pitch deck mock-up (synthetic)',
     validated: 'Real ERA5/IBTrACS pipeline output',
     gefs: 'Real NOAA GEFS ensemble forecast run',
   }
   return (
     <div className="flex items-center gap-1 bg-card rounded-full p-1 w-fit flex-wrap">
       {[
-        { id: 'concept', label: 'Concept mock-up' },
         { id: 'validated', label: 'Validated results' },
         { id: 'gefs', label: 'GEFS forecast' },
       ].map((m) => (

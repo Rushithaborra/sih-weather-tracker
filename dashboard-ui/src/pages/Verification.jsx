@@ -1,43 +1,10 @@
 import React from 'react'
 import TopBar from '../components/TopBar'
 import { CASES } from '../data/cases'
-import { VALIDATION_PLAN } from '../data/concept'
 import { useCase } from '../context/CaseContext'
 
 export default function Verification() {
   const { mode } = useCase()
-  if (mode === 'concept') {
-    return (
-      <div className="space-y-4">
-        <TopBar
-          title="Verification"
-          conceptSubtitle="How we will validate — from the pitch deck's Research and References slide"
-        />
-        <div className="bg-card rounded-card px-5 py-4">
-          <h3 className="font-bold text-ink text-[14.5px] mb-3">Validation plan</h3>
-          <ul className="text-[12.5px] text-ink space-y-2.5">
-            {VALIDATION_PLAN.map((v) => (
-              <li key={v.label} className="flex gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand mt-1.5 shrink-0" />
-                <div>
-                  <span className="font-semibold text-ink">{v.label}</span>
-                  <span className="text-muted"> — {v.desc}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="bg-card rounded-card px-5 py-4">
-          <h3 className="font-bold text-ink text-[14.5px] mb-2">Already proven on real data</h3>
-          <p className="text-[12.5px] text-muted leading-relaxed">
-            Switch to <span className="font-semibold text-ink">Validated results</span> mode (top bar) to see
-            actual track-error numbers against IBTrACS for Amphan 2020 and the held-out Yaas 2021 — the tracking
-            half of this validation plan is already implemented and run, not just planned.
-          </p>
-        </div>
-      </div>
-    )
-  }
   return (
     <div className="space-y-4">
       <TopBar

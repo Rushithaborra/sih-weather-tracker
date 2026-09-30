@@ -5,7 +5,7 @@ import { GEFS_SUMMARY } from '../data/gefsEnsemble'
 const CaseCtx = createContext(null)
 
 export function CaseProvider({ children }) {
-  const [mode, setMode] = useState('concept') // 'concept' (deck mock-up) | 'validated' (real pipeline) | 'gefs' (real ensemble forecast)
+  const [mode, setMode] = useState('validated') // 'validated' (real pipeline) | 'gefs' (real ensemble forecast)
 
   const [caseId, setCaseId] = useState('amphan')
   const c = CASES[caseId]
@@ -19,15 +19,14 @@ export function CaseProvider({ children }) {
     setT((prev) => Math.min(prev, nextMax))
   }
 
-  const [conceptT, setConceptT] = useState(96)
   const [gefsLeadH, setGefsLeadH] = useState(GEFS_SUMMARY.peak_severe_fraction.lead_h)
 
   const value = useMemo(
     () => ({
-      mode, setMode, caseId, setCaseId: setCaseAndClampT, data: c, t, setT, maxT, conceptT, setConceptT,
+      mode, setMode, caseId, setCaseId: setCaseAndClampT, data: c, t, setT, maxT,
       gefsLeadH, setGefsLeadH,
     }),
-    [mode, caseId, c, t, maxT, conceptT, gefsLeadH],
+    [mode, caseId, c, t, maxT, gefsLeadH],
   )
   return <CaseCtx.Provider value={value}>{children}</CaseCtx.Provider>
 }

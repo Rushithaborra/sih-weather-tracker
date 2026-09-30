@@ -2,47 +2,11 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import TimelineSlider from '../components/TimelineSlider'
 import ZoomCanvas from '../components/ZoomCanvas'
-import ConceptZoom from '../components/ConceptZoom'
 import { useCase, interpolateTrack } from '../context/CaseContext'
 import { fmtTime } from '../lib/format'
-import { RAIN_PEAK_MM } from '../data/concept'
 
 export default function ZoomPage() {
-  const { mode, data, t, conceptT, setConceptT } = useCase()
-
-  if (mode === 'concept') {
-    return (
-      <div className="space-y-4">
-        <TopBar title="5 km zoom" conceptSubtitle="Landfall, T+96 h — conditional diffusion downscaler output (concept)" />
-        <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 items-start">
-          <div className="bg-card rounded-card px-5 py-4">
-            <h3 className="font-bold text-ink text-[14.5px] mb-2">Rain field at T+{conceptT} h</h3>
-            <ConceptZoom />
-            <TimelineSlider value={conceptT} onChange={setConceptT} max={240} step={24} tickStep={24} />
-          </div>
-          <div className="bg-card rounded-card px-5 py-4 space-y-3">
-            <h3 className="font-bold text-ink text-[14.5px]">Why peaks matter</h3>
-            <p className="text-[12.5px] text-muted leading-relaxed">
-              An MSE-trained CNN/U-Net spreads a storm's peak rain across a wide, smooth blob — averaging a real
-              300 mm/24h extreme down to roughly 147 mm, below IMD's "extremely heavy" mark (204.5 mm/24h), so
-              the alert never fires. The proposed conditional diffusion downscaler is trained to keep that peak
-              instead of blurring it.
-            </p>
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              <Fact label="Peak rain kept" value={`${RAIN_PEAK_MM} mm/24h`} />
-              <Fact label="IMD 'extremely heavy'" value="204.5 mm/24h" />
-            </div>
-            <h3 className="font-bold text-ink text-[13.5px] pt-2">Status</h3>
-            <p className="text-[12.5px] text-muted leading-relaxed">
-              This panel is illustrative — the conditional diffusion downscaler (12 km → 5 km, physics-informed
-              loss) is designed, not yet trained or implemented. See <span className="font-semibold text-ink">Validated
-              results</span> mode for what's actually running today.
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const { mode, data, t } = useCase()
 
   const now = interpolateTrack(data.track, t)
   return (

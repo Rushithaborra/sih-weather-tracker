@@ -38,7 +38,6 @@ export default function App() {
 }
 
 const FOOTER_TEXT = {
-  concept: 'Concept prototype — illustrative, synthetic data replay for the pitch deck. Not an operational warning system.',
   validated: 'Concept prototype — real ERA5/IBTrACS pipeline output, replayed for two historical cyclones. Not an operational warning system.',
   gefs: 'Concept prototype — real NOAA GEFS ensemble forecast, tracked and validated against IBTrACS. Not an operational warning system.',
 }

@@ -3,48 +3,9 @@ import TopBar from '../components/TopBar'
 import { useCase } from '../context/CaseContext'
 import { fmtTime } from '../lib/format'
 import { categoryFor } from '../lib/category'
-import { ALERTS } from '../data/concept'
-import ConceptAlerts from '../components/ConceptAlerts'
-
-const TIER_COLOR = { severe: '#C0392B', moderate: '#D35400', low: '#B7950B' }
 
 export default function ActiveAnomalies() {
   const { mode, data, t, setT } = useCase()
-  if (mode === 'concept') {
-    return (
-      <div className="space-y-4">
-        <TopBar title="Active anomalies" conceptSubtitle="The 3 anomalies currently flagged in the replay — 1 severe, 1 moderate, 1 low" />
-        <div className="bg-card rounded-card px-5 py-4 overflow-x-auto">
-          <table className="w-full text-[12px]">
-            <thead>
-              <tr className="text-left text-muted border-b border-line">
-                {['Tier', 'Anomaly', 'Location', 'Zone', 'Metric', 'Lead time'].map((h) => (
-                  <th key={h} className="py-2 pr-4 font-medium">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {ALERTS.map((a) => (
-                <tr key={a.title} className="border-b border-line hover:bg-bg transition-colors">
-                  <td className="py-2 pr-4">
-                    <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full text-white uppercase" style={{ background: TIER_COLOR[a.tier] }}>
-                      {a.tier}
-                    </span>
-                  </td>
-                  <td className="py-2 pr-4 text-ink font-medium">{a.title}</td>
-                  <td className="py-2 pr-4 text-ink">{a.location}</td>
-                  <td className="py-2 pr-4 text-ink">{a.radius}</td>
-                  <td className="py-2 pr-4 text-ink">{a.metric}</td>
-                  <td className="py-2 pr-4 text-ink">{a.lead}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <ConceptAlerts />
-      </div>
-    )
-  }
   return (
     <div className="space-y-4">
       <TopBar
