@@ -40,7 +40,8 @@ def load_cases():
 
 @st.cache_resource
 def load_fields(case):
-    return xr.open_dataset(PROC / case / "fields.nc").load()
+    with xr.open_dataset(PROC / case / "fields.nc") as f:  # close the file so rebuilds can overwrite it
+        return f.load()
 
 
 @st.cache_data
@@ -209,7 +210,9 @@ st.header("Validation against IBTrACS")
 st.markdown(f"**{cases[case]['label']}: {cases[case]['role']}.** "
             + ("Amphan was used while choosing the detection rules, so its numbers are in-sample. "
                "Yaas was run afterwards with every parameter frozen." if case == "amphan" else
-               "Every parameter was fixed on Amphan before Yaas was downloaded; nothing was adjusted for Yaas."))
+               "Every parameter was fixed on Amphan before Yaas was downloaded; nothing was adjusted for Yaas.")
+            + " Track method (pressure minimum) chosen on Amphan, confirmed on Yaas (held out). "
+              "Two storms; tracking on reanalysis, not forecast skill.")
 if not at_defaults:
     st.info("Settings differ from the frozen defaults, so the numbers below are live and differ from the logged result.")
 tid, err = validate.position_errors(tracks, bt)
@@ -274,31 +277,39 @@ with d2:
     a_var = "msl" if var == "msl" else "ws"
     pct_all = ds["pct_ws" if a_var == "ws" else "pct_msl_low"].values
     z_all = ds.z_ws.values if a_var == "ws" else -ds.z_msl.values
-    tg = alerts.tier_grid(pct_all[t_idx], z_all[t_idx], T)
+    ws_all = ds.ws.values
+    amask = alerts.box_mask(now, lat, lon, meta["alert_box_pad_deg"])
+    tg = alerts.tier_grid(pct_all[t_idx], z_all[t_idx], ws_all[t_idx], T, amask)
     af = go.Figure()
-    for k, name, rule_txt in ((1, "low", f"≥ {T['low']:.0f}th pct"), (2, "moderate", f"≥ {T['moderate']:.0f}th pct"),
-                              (3, "severe", f"|z| ≥ {T['severe_z']:.0f}")):
+    for k, name, rule_txt in ((1, "low", f"z ≥ {T['low_z']:.1f} & ≥ {T['low_ws']:.1f} m/s"),
+                              (2, "moderate", f"z ≥ {T['moderate_z']:.0f} & ≥ {T['moderate_ws']:.0f} m/s"),
+                              (3, "severe", f"z ≥ {T['severe_z']:.0f} & ≥ {T['severe_ws']:.0f} m/s")):
         m = tg == k
         af.add_trace(go.Scattergeo(lat=LAT2[m], lon=LON2[m], mode="markers", name=f"{name} ({rule_txt})",
                                    marker=dict(symbol="square", size=5, color=STATUS[name], line_width=0),
-                                   customdata=np.c_[pct_all[t_idx][m], z_all[t_idx][m]],
+                                   customdata=np.c_[pct_all[t_idx][m], z_all[t_idx][m], ws_all[t_idx][m]],
                                    hovertemplate=(f"{name}<br>%{{lat:.2f}}°N %{{lon:.2f}}°E<br>"
-                                                  "pct %{customdata[0]:.1f} · z %{customdata[1]:.1f}<extra></extra>")))
+                                                  "pct %{customdata[0]:.1f} · z %{customdata[1]:.1f} · "
+                                                  "wind %{customdata[2]:.1f} m/s<extra></extra>")))
     base_geo(af, height=380)
     st.plotly_chart(af, width="stretch")
     counts = {n: int((tg == k).sum()) for k, n in ((1, "low"), (2, "moderate"), (3, "severe"))}
-    st.caption(f"{'Wind speed' if a_var == 'ws' else 'Low MSLP'} vs the per-hour reanalysis climatology. "
-               f"Low / moderate use the percentile; severe uses the z-score, because with "
-               f"{meta['clim_n_samples']} samples the percentile saturates at 100 for these storms. "
-               f"Cells: {counts}. Single member, not an ensemble EFI.")
+    share = 100 * (tg > 0).sum() / tg.size
+    st.caption(f"Anomaly basis: {'wind speed' if a_var == 'ws' else 'low MSLP'} z-score vs the per-hour reanalysis "
+               "climatology. Each tier also needs the wind to reach an IMD category: Depression "
+               f"({T['low_ws']} m/s, 17 kt), Cyclonic Storm ({T['moderate_ws']:.0f} m/s, 34 kt), Severe Cyclonic "
+               f"Storm ({T['severe_ws']:.0f} m/s, 48 kt). Alerts are only issued inside tracked-object boxes "
+               f"extended by {meta['alert_box_pad_deg']:.0f}°. Cells: {counts} ({share:.1f}% of the map). "
+               "**Alert tiers are anchored to IMD wind categories and were adjusted after observing results; they are not validated against observed impacts. Tracking validation is independent of the alert layer.** Single member, not an ensemble EFI.")
 
 # ---------------- Downloads ----------------
 st.header("Downloads (current settings)")
 b1, b2, b3 = st.columns(3)
 b1.download_button("Tracks CSV", tracks.drop(columns=["t_index"], errors="ignore").to_csv(index=False),
                    f"{case}_tracks.csv", "text/csv")
-gj = alerts.alerts_geojson(pct_all[t_idx:t_idx + 1], z_all[t_idx:t_idx + 1], ds[a_var].values[t_idx:t_idx + 1],
-                           lat, lon, times.values[t_idx:t_idx + 1], a_var, T)
+gj = alerts.alerts_geojson(pct_all[t_idx:t_idx + 1], z_all[t_idx:t_idx + 1], ws_all[t_idx:t_idx + 1],
+                           ds[a_var].values[t_idx:t_idx + 1],
+                           lat, lon, times.values[t_idx:t_idx + 1], a_var, T, amask)
 b2.download_button("Alerts GeoJSON (this time)", alerts.dumps(gj),
                    f"{case}_alerts_{a_var}_{t_now:%Y%m%d%H}.geojson", "application/geo+json")
 b3.download_button("Tracks JSON", alerts.dumps(alerts.tracks_json(tracks)), f"{case}_tracks.json", "application/json")

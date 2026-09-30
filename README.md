@@ -24,9 +24,11 @@ and checks the tracks against the **IBTrACS** observed best track, for two Bay o
    (union of boxes, start and end time).
 5. **Validation**: the most intense track (lowest minimum MSLP; never chosen by distance to the best track)
    is compared step by step with IBTrACS, for both position methods.
-6. **Alerts**: per cell, *low* ≥ 90th percentile, *moderate* ≥ 95th percentile, *severe* |z| ≥ 3.
-   The severe tier uses the z-score because with 115 samples the percentile saturates at 100 for these storms.
-   GeoJSON export per time step.
+6. **Alerts**: per cell, *low* z ≥ 1.5 AND wind ≥ 8.7 m/s (17 kt, IMD Depression); *moderate* z ≥ 2 AND
+   wind ≥ 17 m/s (34 kt, Cyclonic Storm); *severe* z ≥ 3 AND wind ≥ 25 m/s (48 kt, Severe Cyclonic Storm).
+   Alerts are only issued inside tracked-object bounding boxes extended by 1°. A z-score only says
+   "unusual for this place"; the wind gate says "dangerous". GeoJSON export per time step.
+   **Alert tiers are anchored to IMD wind categories and were adjusted after observing results; they are not validated against observed impacts. Tracking validation is independent of the alert layer.**
 7. **5 km view**: bilinear interpolation from 0.25° to 0.05° inside a track box.
    **An interpolation placeholder that adds no new information.**
 8. **Dashboard**: Streamlit app with case selector, adjustable detection settings, map, tables,
@@ -45,8 +47,9 @@ The detection settings were chosen while looking at Amphan, so **Amphan is in-sa
 | Amphan 2020 (in-sample) | 17 | 1 | 17 | 31.5 / 24.8 / 5.6 / 152.0 km | 58.1 / 38.7 / 14.0 / 240.6 km |
 | Yaas 2021 (held out) | 15 | 3 | 13 | 73.0 / 58.2 / 5.2 / 185.3 km | 125.1 / 121.9 / 40.9 / 219.7 km |
 
-- The minimum-MSLP position has the lower error in both cases, so it is the default track position.
-  One ERA5 grid cell is about 28 km.
+- **Track method (pressure minimum) chosen on Amphan, confirmed on Yaas (held out). Two storms; tracking on
+  reanalysis, not forecast skill.** The pressure minimum already had the lower error on Amphan alone
+  (median 24.8 vs 38.7 km), so it is the default track position. One ERA5 grid cell is about 28 km.
 - Amphan's last three steps (20 May 06/12/18 UTC, around and after landfall): min-MSLP 30.9 / 19.0 / 152.0 km,
   centroid 108.1 / 149.2 / 240.6 km. The wind-anomaly centroid drifts over the sea after landfall.
 - Yaas: one unbroken 13-step main track (23 May 12 UTC to 26 May 12 UTC) plus two single-step extra objects
@@ -103,7 +106,15 @@ hangs, run `python ../../scripts/fetch_clim_resumable.py` instead; it writes the
 - **Detection rule**: wind and pressure anomaly together, plus an absolute 17 m/s gale threshold.
 - **Validated track**: lowest minimum MSLP (earlier: longest track, which picked a post-landfall fragment).
 - **Track position**: minimum MSLP in the box as the default; the anomaly centroid is shown alongside.
-- **Severe alert tier**: z-score instead of 99th percentile.
+- **Alert tiers** (four changes, all made **after** observing results; details in `DEV_LOG.md`):
+  1. `|z| ≥ 3` alone marked 1,067 cells as severe for Yaas at 26 May 00 UTC, so moderate and severe were
+     gated on IMD wind thresholds (17 and 25 m/s).
+  2. The percentile-only low tier then covered ~53% of the map, so low was gated on 8.7 m/s (IMD Depression).
+  3. Low still covered 21–31% of the map, so alerts are now only issued inside tracked-object boxes + 1°.
+
+  Final counts (wind basis): Yaas 26 May 00 UTC 347 low / 167 moderate / 0 severe (5.0% of the map);
+  Amphan 19 May 06 UTC 445 / 315 / 71 (8.1%). Yaas has no severe cells there because ERA5's strongest wind
+  at that step is 23.5 m/s. Alerts are a separate layer, so detection and validation are unaffected.
 - **Alert GeoJSON**: exported per time step (app download) plus one sample time per case in
   `data/processed/`; a file covering all steps would be about 70 MB.
 
@@ -118,6 +129,8 @@ hangs, run `python ../../scripts/fetch_clim_resumable.py` instead; it writes the
 - Validation covers two cases, one in-sample and one held out.
 - Precipitation is display only (no precipitation climatology) and is not used in detection or alerts.
 - The 5 km layer is interpolation and adds no information.
+- Alert tiers are not validated against observed impacts, and their thresholds were set after seeing results.
+  Because they are tied to tracked objects, a storm the tracker misses gets no alerts.
 - The GNN tracker and diffusion downscaler below are **designed, not implemented**.
 
 ## Roadmap (designed, not implemented)

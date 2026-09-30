@@ -94,15 +94,17 @@ def build_case(name, cfg, clim):
     t = ds.time.values
     i = int(np.argmin(np.abs(pd.to_datetime(t) - pd.Timestamp(cfg["sample_time"]))))
     for var, pct, zx in (("ws", "pct_ws", ds.z_ws.values), ("msl", "pct_msl_low", -ds.z_msl.values)):
-        gj = alerts.alerts_geojson(ds[pct].values[i:i + 1], zx[i:i + 1], ds[var].values[i:i + 1],
-                                   ds.lat.values, ds.lon.values, t[i:i + 1], var)
+        gj = alerts.alerts_geojson(ds[pct].values[i:i + 1], zx[i:i + 1], ds.ws.values[i:i + 1],
+                                   ds[var].values[i:i + 1],
+                                   ds.lat.values, ds.lon.values, t[i:i + 1], var,
+                                   mask=alerts.box_mask(tracks[tracks.t_index == i], ds.lat.values, ds.lon.values))
         (out / f"alerts_{var}_sample.geojson").write_text(alerts.dumps(gj))
     (out / "tracks.json").write_text(alerts.dumps(alerts.tracks_json(tracks)))
 
     meta = {"case": name, "label": cfg["label"], "role": cfg["role"],
             "clim_n_samples": ds.attrs["clim_n_samples"], "clim_n_per_hour": ds.attrs["clim_n_per_hour"],
             "clim_years": ds.attrs["clim_years"], "std_floor": anomaly.STD_FLOOR,
-            "alert_tiers": alerts.TIERS, "has_tp": "tp" in ds, "defaults": DEFAULTS}
+            "alert_tiers": alerts.TIERS, "alert_box_pad_deg": alerts.BOX_PAD_DEG, "has_tp": "tp" in ds, "defaults": DEFAULTS}
     (out / "meta.json").write_text(json.dumps(meta, indent=2))
     return val
 

@@ -55,3 +55,51 @@ Two positions per object: `centroid` (intensity-weighted anomaly centroid) and
   - Yaas: WMO (IMD) 24 May 00 UTC, USA 23 May 18 UTC, detection 23 May 12 UTC.
 - Decision: pmin has the lower median error on both cases, so it becomes the default track
   position in the app; centroid is shown alongside.
+
+## 2026-09-30: alert tiers gated on IMD wind thresholds (post-hoc)
+
+**Changed after observing Yaas's severe-cell count** (1,067 cells at 26 May 00 UTC under `|z| >= 3`,
+most of the storm's wind field). Detection, tracking and validation are unchanged (rerun: same numbers).
+
+- low: percentile >= 90 (unchanged)
+- moderate: z >= 2 AND wind >= 17 m/s (34 kt, IMD Cyclonic Storm)
+- severe: z >= 3 AND wind >= 25 m/s (48 kt, IMD Severe Cyclonic Storm)
+
+| Case / time | Old severe (z only) | New low / moderate / severe |
+|---|---|---|
+| Yaas 26 May 00 UTC, wind basis | 1,067 | 5,388 / 167 / 0 |
+| Amphan 19 May 06 UTC (min MSLP), wind basis | 950 | 4,773 / 315 / 71 |
+
+- Yaas severe = 0 at 26 May 00 UTC because ERA5's max wind there is 23.5 m/s (ERA5 peak for Yaas: 28.2 m/s, 25 May 06 UTC).
+- Side effect: cells that were moderate by percentile now fall to low, so low covers ~53% of the
+  101x101 domain for Yaas at that time. Open question, not yet changed.
+
+## 2026-09-30: low tier gated on wind (third post-hoc alert change)
+
+Third alert change made after seeing results. The percentile-only low tier covered ~53% of the map
+for Yaas at 26 May 00 UTC once moderate was wind-gated.
+
+- low: z >= 1.5 AND wind >= 8.7 m/s (17 kt, IMD Depression)
+
+Share of the 101x101 map (10,201 cells) in the low tier:
+
+| Case / time | Wind basis | Low-MSLP basis |
+|---|---|---|
+| Yaas 26 May 00 UTC | 31.2% (3,178 cells) | 20.9% (2,130) |
+| Amphan 19 May 06 UTC | 25.6% (2,611) | 31.3% (3,195) |
+
+Still above 15% in both cases, so the fourth change below was applied.
+
+## 2026-09-30: alerts only inside tracked-object boxes + 1 deg (fourth post-hoc alert change)
+
+Alert cells are kept only inside a tracked object's bounding box extended by 1 degree
+(`alerts.box_mask`, `BOX_PAD_DEG = 1.0`).
+
+| Case / time (wind basis) | Low | Moderate | Severe | Any tier (share of map) |
+|---|---|---|---|---|
+| Yaas 26 May 00 UTC | 347 (3.4%) | 167 | 0 | 5.0% |
+| Amphan 19 May 06 UTC | 445 (4.4%) | 315 | 71 | 8.1% |
+
+Low-MSLP basis: Yaas 349 / 167 / 0 (5.1%), Amphan 482 / 315 / 71 (8.5%).
+Tracking validation rerun: unchanged (medians 24.8 / 58.2 km pressure minimum, 38.7 / 121.9 km centroid).
+Alert tiers are not validated against observed impacts.

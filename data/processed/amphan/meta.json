@@ -10,10 +10,14 @@
     "msl": 1.0
   },
   "alert_tiers": {
-    "low": 90.0,
-    "moderate": 95.0,
-    "severe_z": 3.0
+    "low_z": 1.5,
+    "low_ws": 8.7,
+    "moderate_z": 2.0,
+    "moderate_ws": 17.0,
+    "severe_z": 3.0,
+    "severe_ws": 25.0
   },
+  "alert_box_pad_deg": 1.0,
   "has_tp": true,
   "defaults": {
     "threshold": 2.0,
