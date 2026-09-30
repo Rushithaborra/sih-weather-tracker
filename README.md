@@ -89,6 +89,45 @@ storms were added afterwards and run with every parameter frozen — nothing was
 - Eight cases is still a small sample. Development history, including a superseded first run and the
   four post-hoc alert-tier changes, is in `DEV_LOG.md`.
 
+### Detection skill: hits, misses, objects outside the storm
+
+Computed by `scripts/evaluate_detection.py` from the files above (read-only; nothing re-run), also in
+`data/processed/detection_skill.json`. Best-track steps are IBTrACS positions at 00/06/12/18 UTC inside each
+case window and the 5–30°N, 75–100°E region with wind ≥ 34 kt; a **hit** is a detected object whose pressure
+minimum is within 300 km. POD uses WMO wind (IMD, 3-min sustained), JTWC 1-min in brackets. An **object outside
+the storm** is one more than 300 km (or 200 km) from the best track, or outside the best-track period.
+
+| Case | Role | In climatology years (2015–2019)? | POD, WMO (JTWC) | Hits / steps | Objects outside the storm (300 / 200 km) | Pmin median (km) | Centroid median (km) |
+|---|---|---|---|---|---|---|---|
+| Amphan 2020 | in-sample | no | 90% (81%) | 17 / 19 | 0 / 0 | 24.8 | 38.7 |
+| Yaas 2021 | held out | no | 100% (92%) | 11 / 11 | 0 / 2 | 58.2 | 121.9 |
+| Phailin 2013 | held out | no | 71% (63%) | 12 / 17 | 0 / 0 | 30.2 | 112.8 |
+| Hudhud 2014 | held out | no | 95% (82%) | 18 / 19 | 0 / 0 | 27.3 | 48.9 |
+| Titli 2018 | held out | yes | 40% (31%) | 4 / 10 | 0 / 0 | 19.6 | 75.5 |
+| Fani 2019 | held out | yes | 64% (64%) | 18 / 28 | 0 / 0 | 24.8 | 51.4 |
+| Bulbul 2019 | held out | yes | 67% (48%) | 10 / 15 | 0 / 0 | 23.7 | 60.6 |
+| Nivar 2020 | held out | no | 80% (62%) | 8 / 10 | 0 / 0 | 28.7 | 112.2 |
+| **Pooled, 7 held out** | | 3 of 7 | **74%** (64%) | 81 / 110 | 0 / 2 | **28.0** (mean 40.2) | 71.1 (mean 85.5) |
+| **Fragmented tracks** | | 5 of 7 storms | Yaas 229, 253 km · Phailin 29 km · Hudhud 54 km · Titli 96 km · Bulbul 31, 75, 115 km (extra-track objects' distance from the best track) | | | | |
+
+- **Median error is on the order of one ERA5 grid cell (~28 km):** pooled over all 80 matched
+  steps of the seven held-out storms, the pressure-minimum error has median 28.0 km and mean
+  40.2 km. The anomaly centroid is 1.6–3.9× worse for every storm (median 71.1 km),
+  because the wind-anomaly ring is not centred on the eye.
+- **POD is 74%, not 100%.** Of 29 missed steps,
+  22 fall before the first detection — the early 35–55 kt stage, where ERA5's analysed wind has not
+  yet reached the 17 m/s gate — 5 after the last (decay over land) and 2 mid-life. Titli
+  (40%) and Fani (64%) are the weakest.
+- **3 of 7 held-out storms fall within the 2015–2019 climatology** they are compared against (Titli, Fani,
+  Bulbul). A storm inside its own baseline raises the climatological mean and spread, which is expected to make
+  detection harder, not easier.
+- **No objects outside the storm within the case windows (300 km); 2 at 200 km** (the two
+  single-step Yaas objects). Quiet periods without cyclones were not tested. The extra "tracks" in the first
+  table are the same storm split into fragments (distances above), not other systems.
+- **Why 81 hits but 80 error steps:** a hit is any detected object, fragments included, within
+  300 km of a ≥ 34 kt best-track step, while the error uses only the main track's steps inside the best-track
+  period at any wind speed (Hudhud and Bulbul gain 3 hits from fragments; Yaas has 2 error steps below 34 kt).
+
 ## Run locally
 
 ```bash

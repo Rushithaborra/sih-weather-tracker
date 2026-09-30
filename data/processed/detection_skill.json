@@ -1,0 +1,333 @@
+{
+  "definitions": {
+    "bestTrackSteps": "IBTrACS at 00/06/12/18 UTC, inside the case window and 5-30N 75-100E, wind >= 34 kt",
+    "hit": "a detected object's pressure minimum within 300 km",
+    "falseAlarm": "object pressure minimum > 300 km from the best track, or outside the best-track period",
+    "wind": "WMO = IMD 3-min sustained (primary); USA = JTWC 1-min"
+  },
+  "cases": [
+    {
+      "case": "amphan",
+      "season": 2020,
+      "role": "in-sample",
+      "climYears": "2015-2019",
+      "inClimatology": false,
+      "podWmo": {
+        "hits": 17,
+        "steps": 19,
+        "pod": 0.895,
+        "missesByStage": {
+          "before": 1,
+          "during": 0,
+          "after": 1
+        }
+      },
+      "podUsa": {
+        "hits": 17,
+        "steps": 21,
+        "pod": 0.81,
+        "missesByStage": {
+          "before": 3,
+          "during": 0,
+          "after": 1
+        }
+      },
+      "objects": 17,
+      "falseAlarms": 0,
+      "falseAlarms200km": 0,
+      "fragmentKm": [],
+      "matchedSteps": 17,
+      "pminMedianKm": 24.8,
+      "centroidMedianKm": 38.7
+    },
+    {
+      "case": "yaas",
+      "season": 2021,
+      "role": "held out",
+      "climYears": "2015-2019",
+      "inClimatology": false,
+      "podWmo": {
+        "hits": 11,
+        "steps": 11,
+        "pod": 1.0,
+        "missesByStage": {
+          "before": 0,
+          "during": 0,
+          "after": 0
+        }
+      },
+      "podUsa": {
+        "hits": 12,
+        "steps": 13,
+        "pod": 0.923,
+        "missesByStage": {
+          "before": 0,
+          "during": 0,
+          "after": 1
+        }
+      },
+      "objects": 15,
+      "falseAlarms": 0,
+      "falseAlarms200km": 2,
+      "fragmentKm": [
+        229,
+        253
+      ],
+      "matchedSteps": 13,
+      "pminMedianKm": 58.2,
+      "centroidMedianKm": 121.9
+    },
+    {
+      "case": "phailin",
+      "season": 2013,
+      "role": "held out",
+      "climYears": "2015-2019",
+      "inClimatology": false,
+      "podWmo": {
+        "hits": 12,
+        "steps": 17,
+        "pod": 0.706,
+        "missesByStage": {
+          "before": 3,
+          "during": 0,
+          "after": 2
+        }
+      },
+      "podUsa": {
+        "hits": 12,
+        "steps": 19,
+        "pod": 0.632,
+        "missesByStage": {
+          "before": 5,
+          "during": 0,
+          "after": 2
+        }
+      },
+      "objects": 13,
+      "falseAlarms": 0,
+      "falseAlarms200km": 0,
+      "fragmentKm": [
+        29
+      ],
+      "matchedSteps": 12,
+      "pminMedianKm": 30.2,
+      "centroidMedianKm": 112.8
+    },
+    {
+      "case": "hudhud",
+      "season": 2014,
+      "role": "held out",
+      "climYears": "2015-2019",
+      "inClimatology": false,
+      "podWmo": {
+        "hits": 18,
+        "steps": 19,
+        "pod": 0.947,
+        "missesByStage": {
+          "before": 0,
+          "during": 1,
+          "after": 0
+        }
+      },
+      "podUsa": {
+        "hits": 18,
+        "steps": 22,
+        "pod": 0.818,
+        "missesByStage": {
+          "before": 1,
+          "during": 1,
+          "after": 2
+        }
+      },
+      "objects": 18,
+      "falseAlarms": 0,
+      "falseAlarms200km": 0,
+      "fragmentKm": [
+        54
+      ],
+      "matchedSteps": 17,
+      "pminMedianKm": 27.3,
+      "centroidMedianKm": 48.9
+    },
+    {
+      "case": "titli",
+      "season": 2018,
+      "role": "held out",
+      "climYears": "2015-2019",
+      "inClimatology": true,
+      "podWmo": {
+        "hits": 4,
+        "steps": 10,
+        "pod": 0.4,
+        "missesByStage": {
+          "before": 4,
+          "during": 0,
+          "after": 2
+        }
+      },
+      "podUsa": {
+        "hits": 4,
+        "steps": 13,
+        "pod": 0.308,
+        "missesByStage": {
+          "before": 5,
+          "during": 0,
+          "after": 4
+        }
+      },
+      "objects": 5,
+      "falseAlarms": 0,
+      "falseAlarms200km": 0,
+      "fragmentKm": [
+        96
+      ],
+      "matchedSteps": 4,
+      "pminMedianKm": 19.6,
+      "centroidMedianKm": 75.5
+    },
+    {
+      "case": "fani",
+      "season": 2019,
+      "role": "held out",
+      "climYears": "2015-2019",
+      "inClimatology": true,
+      "podWmo": {
+        "hits": 18,
+        "steps": 28,
+        "pod": 0.643,
+        "missesByStage": {
+          "before": 10,
+          "during": 0,
+          "after": 0
+        }
+      },
+      "podUsa": {
+        "hits": 18,
+        "steps": 28,
+        "pod": 0.643,
+        "missesByStage": {
+          "before": 10,
+          "during": 0,
+          "after": 0
+        }
+      },
+      "objects": 18,
+      "falseAlarms": 0,
+      "falseAlarms200km": 0,
+      "fragmentKm": [],
+      "matchedSteps": 18,
+      "pminMedianKm": 24.8,
+      "centroidMedianKm": 51.4
+    },
+    {
+      "case": "bulbul",
+      "season": 2019,
+      "role": "held out",
+      "climYears": "2015-2019",
+      "inClimatology": true,
+      "podWmo": {
+        "hits": 10,
+        "steps": 15,
+        "pod": 0.667,
+        "missesByStage": {
+          "before": 3,
+          "during": 1,
+          "after": 1
+        }
+      },
+      "podUsa": {
+        "hits": 10,
+        "steps": 21,
+        "pod": 0.476,
+        "missesByStage": {
+          "before": 8,
+          "during": 1,
+          "after": 2
+        }
+      },
+      "objects": 11,
+      "falseAlarms": 0,
+      "falseAlarms200km": 0,
+      "fragmentKm": [
+        31,
+        75,
+        115
+      ],
+      "matchedSteps": 8,
+      "pminMedianKm": 23.7,
+      "centroidMedianKm": 60.6
+    },
+    {
+      "case": "nivar",
+      "season": 2020,
+      "role": "held out",
+      "climYears": "2015-2019",
+      "inClimatology": false,
+      "podWmo": {
+        "hits": 8,
+        "steps": 10,
+        "pod": 0.8,
+        "missesByStage": {
+          "before": 2,
+          "during": 0,
+          "after": 0
+        }
+      },
+      "podUsa": {
+        "hits": 8,
+        "steps": 13,
+        "pod": 0.615,
+        "missesByStage": {
+          "before": 3,
+          "during": 0,
+          "after": 2
+        }
+      },
+      "objects": 8,
+      "falseAlarms": 0,
+      "falseAlarms200km": 0,
+      "fragmentKm": [],
+      "matchedSteps": 8,
+      "pminMedianKm": 28.7,
+      "centroidMedianKm": 112.2
+    }
+  ],
+  "pooledHeldOut": {
+    "storms": 7,
+    "matchedSteps": 80,
+    "pminMeanKm": 40.2,
+    "pminMedianKm": 28.0,
+    "centroidMeanKm": 85.5,
+    "centroidMedianKm": 71.1,
+    "podWmo": {
+      "hits": 81,
+      "steps": 110,
+      "pod": 0.736
+    },
+    "podUsa": {
+      "hits": 82,
+      "steps": 129,
+      "pod": 0.636
+    },
+    "falseAlarms": 0,
+    "falseAlarms200km": 2,
+    "objects": 88,
+    "fragmentedStorms": [
+      "yaas",
+      "phailin",
+      "hudhud",
+      "titli",
+      "bulbul"
+    ],
+    "missesByStageWmo": {
+      "before": 22,
+      "during": 2,
+      "after": 5
+    },
+    "inClimatology": [
+      "titli",
+      "fani",
+      "bulbul"
+    ]
+  }
+}

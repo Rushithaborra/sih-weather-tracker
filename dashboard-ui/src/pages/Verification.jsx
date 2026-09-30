@@ -2,6 +2,7 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import { CASES } from '../data/cases'
 import { ENSO } from '../data/enso'
+import { DETECTION_SKILL } from '../data/detectionSkill'
 import { useCase } from '../context/CaseContext'
 
 export default function Verification() {
@@ -63,6 +64,8 @@ export default function Verification() {
         </p>
       </div>
 
+      <DetectionSkill />
+
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-2">Planned, not yet implemented</h3>
         <ul className="text-[12.5px] text-ink space-y-2">
@@ -85,5 +88,88 @@ function PlannedRow({ title, desc }) {
         <span className="text-muted"> — {desc}</span>
       </div>
     </li>
+  )
+}
+
+const pct = (x) => (x == null ? '—' : `${Math.round(x * 100)}%`)
+
+function DetectionSkill() {
+  const { cases, pooledHeldOut: P } = DETECTION_SKILL
+  const label = (id) => CASES[id]?.label ?? id
+  const miss = P.missesByStageWmo
+  return (
+    <div className="bg-card rounded-card px-5 py-4">
+      <h3 className="font-bold text-ink text-[14.5px] mb-1">Done: detection skill — hits, misses, objects outside the storm</h3>
+      <p className="text-[12px] text-muted mb-3">
+        Best-track steps: IBTrACS at 00/06/12/18 UTC inside each case window and the 5–30°N, 75–100°E region, with
+        wind ≥ 34 kt. A hit is any detected object whose pressure minimum is within 300 km. POD uses WMO wind
+        (IMD, 3-min sustained); JTWC 1-min in brackets.
+      </p>
+      <table className="w-full text-[12px]">
+        <thead>
+          <tr className="text-left text-muted border-b border-line">
+            {['Case', 'In climatology years?', 'POD, WMO (JTWC)', 'Hits / steps', 'Objects outside the storm (300 / 200 km)', 'Pmin median (km)', 'Centroid median (km)'].map((h) => (
+              <th key={h} className="py-2 pr-4 font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {cases.map((c) => (
+            <tr key={c.case} className="border-b border-line">
+              <td className="py-2 pr-4 text-ink font-medium">{label(c.case)} ({c.role})</td>
+              <td className="py-2 pr-4 text-ink">{c.inClimatology ? `yes (${c.climYears})` : 'no'}</td>
+              <td className="py-2 pr-4 text-ink">{pct(c.podWmo.pod)} ({pct(c.podUsa.pod)})</td>
+              <td className="py-2 pr-4 text-ink">{c.podWmo.hits} / {c.podWmo.steps}</td>
+              <td className="py-2 pr-4 text-ink">{c.falseAlarms} / {c.falseAlarms200km}</td>
+              <td className="py-2 pr-4 text-ink">{c.pminMedianKm}</td>
+              <td className="py-2 pr-4 text-ink">{c.centroidMedianKm}</td>
+            </tr>
+          ))}
+          <tr className="font-semibold">
+            <td className="py-2 pr-4 text-ink">Pooled, {P.storms} held-out storms</td>
+            <td className="py-2 pr-4 text-ink">{P.inClimatology.length} of {P.storms}</td>
+            <td className="py-2 pr-4 text-ink">{pct(P.podWmo.pod)} ({pct(P.podUsa.pod)})</td>
+            <td className="py-2 pr-4 text-ink">{P.podWmo.hits} / {P.podWmo.steps}</td>
+            <td className="py-2 pr-4 text-ink">{P.falseAlarms} / {P.falseAlarms200km}</td>
+            <td className="py-2 pr-4 text-ink">{P.pminMedianKm} (mean {P.pminMeanKm})</td>
+            <td className="py-2 pr-4 text-ink">{P.centroidMedianKm} (mean {P.centroidMeanKm})</td>
+          </tr>
+          <tr className="border-t border-line">
+            <td className="py-2 pr-4 text-ink font-semibold">Fragmented tracks</td>
+            <td className="py-2 pr-4 text-ink">{P.fragmentedStorms.length} of {P.storms} storms</td>
+            <td className="py-2 pr-4 text-muted" colSpan={5}>
+              {cases.filter((c) => c.fragmentKm.length).map((c) => `${label(c.case).split(',')[0]} ${c.fragmentKm.join(', ')} km`).join(' · ')}
+              {' '}— extra-track objects' distance from the best track
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ul className="text-[11.5px] text-muted mt-3 space-y-1.5 list-disc pl-4">
+        <li>
+          Pooled over all {P.matchedSteps} matched steps, the median pressure-minimum error is {P.pminMedianKm} km — on the
+          order of one ERA5 grid cell (~28 km).
+        </li>
+        <li>
+          Of {miss.before + miss.during + miss.after} missed steps, {miss.before} fall before the first detection (the
+          early 35–55 kt stage, where ERA5's analysed wind hasn't yet reached the 17 m/s gate), {miss.after} after the
+          last (decay over land) and {miss.during} mid-life. Titli (40%) and Fani (64%) are the weakest.
+        </li>
+        <li>
+          {P.inClimatology.length} of {P.storms} held-out storms ({P.inClimatology.map(label).join(', ')}) fall within the
+          2015–2019 climatology they are compared against; a storm inside its own baseline raises the mean and spread,
+          which is expected to make detection harder, not easier.
+        </li>
+        <li>
+          No objects outside the storm within the case windows (300 km); {P.falseAlarms200km} at 200 km (the two
+          single-step Yaas objects). Quiet periods without cyclones were not tested.
+        </li>
+        <li>
+          POD counts {P.podWmo.hits} hit steps and the error uses {P.matchedSteps}: a hit is any detected object, fragments
+          included, within 300 km of a ≥ 34 kt best-track step, while the error uses only the main track's steps inside
+          the best-track period at any wind speed (Hudhud and Bulbul gain 3 hits from fragments; Yaas has 2 error steps
+          below 34 kt).
+        </li>
+      </ul>
+    </div>
   )
 }
