@@ -43,6 +43,7 @@ DEFAULTS = {"threshold": 2.0, "min_size": 6, "max_disp_km": 400.0, "rule": "ws_a
 SEVERE_WS = 25.0  # IMD Severe Cyclonic Storm gate, same as pipeline/alerts.py
 MIN_TRACK_STEPS = 2  # single-step blobs are not shown as systems
 HISTORY_LEN = 60
+FIELD_STRIDE = 2  # downsample the 0.25 deg domain grid for the general-weather field export
 
 
 def latest_init(fxx_end, n_members):
@@ -114,12 +115,23 @@ def main():
     if not paths:
         sys.exit("no member downloaded completely")
 
+    field_leads = [h for h in fxx_list if h % 24 == 0]  # every 24 h, for the general-weather field
+    field_lat = field_lon = None
+    ws_by_lead = {h: [] for h in field_leads}  # per lead time: list of each member's ws grid
+
     members, domain, per_step = [], [], []
     for label, p in sorted(paths.items()):
         ds = anomaly.compute_anomalies_from_stats(preprocess.load_case(p), stats)
         s = anomaly.summary(ds)
         s["member"] = label
         domain.append(s)
+        if field_lat is None:
+            field_lat = ds.lat.values[::FIELD_STRIDE]
+            field_lon = ds.lon.values[::FIELD_STRIDE]
+        times = pd.to_datetime(ds.time.values)
+        for h in field_leads:
+            idx = int(np.argmin(np.abs((times - init).total_seconds() / 3600.0 - h)))
+            ws_by_lead[h].append(ds.ws.values[idx, ::FIELD_STRIDE, ::FIELD_STRIDE])
         tr = tracker.run(ds, **DEFAULTS)
         tracks = []
         if len(tr):
@@ -169,6 +181,21 @@ def main():
         "strongest": None if top is None else {"member": top[0], **{k: top[1][k] for k in ("leadH", "time", "maxWs", "minMsl", "pminLat", "pminLon")}},
         "firstDetectionLeadH": first,
     }
+
+    # Ensemble-mean wind field over the whole domain, every 24 h -- general weather
+    # (monsoon flow, everyday wind pattern), not just cyclone-scale anomalies. Shown
+    # on the Live forecast page even when no member is tracking a system.
+    field_grids = {}
+    for h in field_leads:
+        stack = np.stack(ws_by_lead[h])  # (n_members, lat, lon)
+        field_grids[str(int(h))] = [round(float(v), 1) for v in np.nanmean(stack, axis=0).ravel()]
+    field = {
+        "variable": "ws", "units": "m/s", "note": "ensemble-mean 10 m wind speed, all members, every 24 h",
+        "leadHours": field_leads,
+        "lat": [round(float(v), 2) for v in field_lat], "lon": [round(float(v), 2) for v in field_lon],
+        "grids": field_grids,
+    }
+
     out = {
         "generatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "init": init.isoformat() + "Z", "model": "NOAA GEFS v12, 0.25 deg (AWS Open Data)",
@@ -178,7 +205,7 @@ def main():
         "detection": "z(wind) >= 2 and z(MSLP) <= -2 and wind >= 17 m/s, >= 6 cells; tracks of >= 2 steps",
         "runSeconds": round(time.time() - t_start),
         "failedFetches": len(failed),
-        "summary": summary, "leads": leads, "members": members,
+        "summary": summary, "leads": leads, "members": members, "field": field,
     }
 
     out_dir.mkdir(parents=True, exist_ok=True)
