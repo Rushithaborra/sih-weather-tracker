@@ -79,6 +79,13 @@ storms were added afterwards and run with every parameter frozen — nothing was
   | Yaas | 23 May 12 UTC | 24 May 00 UTC | 23 May 18 UTC |
 
   Onset for the other six cases is in each `data/processed/<case>/validation.json`.
+- **ENSO phase, for context (not a detection input):** the NOAA Oceanic Niño Index (ONI) at each storm's
+  formation month, from `dashboard-ui/src/data/enso.js` — Phailin (ASO 2013, −0.3, Neutral), Hudhud
+  (SON 2014, +0.5, El Niño), Titli (SON 2018, +0.8, El Niño), Fani (AMJ 2019, +0.7, El Niño), Bulbul
+  (SON 2019, +0.5, El Niño), Nivar (OND 2020, −1.1, La Niña), Amphan (AMJ 2020, 0.0, Neutral), Yaas
+  (AMJ 2021, −0.4, Neutral). The eight-case sample happens to span El Niño, La Niña and neutral years,
+  and the same frozen detection rule holds up across all of them without any ENSO-specific tuning — see
+  the **Verification** page in the dashboard for the full table alongside track error.
 - Eight cases is still a small sample. Development history, including a superseded first run and the
   four post-hoc alert-tier changes, is in `DEV_LOG.md`.
 
@@ -191,6 +198,9 @@ python scripts/run_gefs_live.py --init 2026-09-30T00:00 --members 2 --fxx-end 24
    and an alert API.
 5. **5 km truth data**: training the downscaler needs high-resolution observations or regional reanalysis for
    India, which are scarce. This is the main open risk.
+6. **ENSO-conditioned climatology**: our eight cases already span El Niño, La Niña and neutral years (see
+   above), but splitting the ~115-sample-per-hour climatology further by ENSO phase would leave too few
+   samples per bucket to be reliable — needs more years of ERA5 climatology first.
 
 ## Repository layout
 
@@ -228,3 +238,7 @@ DEV_LOG.md                          development log
   (`s3://noaa-gefs-pds`, `noaa-gefs-pds.s3.amazonaws.com`), fetched with
   [Herbie](https://github.com/blaylockbk/Herbie). Used for both the Yaas GEFS case study and the daily
   live forecast. Public domain (NOAA / US Government work).
+- **NOAA CPC Oceanic Niño Index (ONI)**, from
+  [cpc.ncep.noaa.gov/.../enso/oni/v6](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/oni/v6/),
+  used only as descriptive context for each case's ENSO phase (see Validation result above) — not an input
+  to detection or climatology. Public domain (NOAA).

@@ -6,6 +6,7 @@ import GnnSphereConcept from '../components/GnnSphereConcept'
 import { useCase } from '../context/CaseContext'
 import { PIPELINE_META, CASES } from '../data/cases'
 import { GEFS_META, GEFS_SUMMARY } from '../data/gefsEnsemble'
+import { ENSO } from '../data/enso'
 
 export default function Overview() {
   const { mode, data } = useCase()
@@ -78,6 +79,18 @@ export default function Overview() {
             <Stat label="Median track error" value={`${data.validation.pmin.medianKm.toFixed(1)} km`} />
             <Stat label="Peak wind (ERA5)" value={`${data.peak.maxWs.toFixed(1)} m/s`} />
           </div>
+          {ENSO[data.id] && (
+            <div className="mt-3 pt-3 border-t border-line">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-muted">ENSO phase at formation (NOAA ONI, {ENSO[data.id].season})</span>
+                <span className="text-[11px] font-bold text-brand">{ENSO[data.id].oni > 0 ? '+' : ''}{ENSO[data.id].oni}</span>
+              </div>
+              <div className="text-[12px] font-semibold text-ink mt-0.5">{ENSO[data.id].phase}</div>
+              <div className="text-[10.5px] text-muted mt-1 leading-snug">
+                Context only — the detection/climatology pipeline does not condition on ENSO phase.
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <div className="bg-card rounded-card px-5 py-4">
@@ -89,6 +102,9 @@ export default function Overview() {
           <li>GNN tracker on an icosahedral mesh per ensemble member — probabilistic 4D tracked boxes. Designed, not implemented.</li>
           <li>Conditional diffusion downscaler with a physics-informed loss — probabilistic ~5 km exceedance maps. Designed, not implemented.</li>
           <li>5 km truth data for training the downscaler (scarce for India — the main open risk).</li>
+          <li>ENSO-conditioned climatology — our 8 cases already span El Niño, La Niña and neutral years
+            (see the ENSO panel alongside), but splitting the ~115-sample-per-hour climatology further
+            by ENSO phase would leave too few samples per bucket to be reliable; needs more years of data first.</li>
         </ol>
         <div className="pt-3 border-t border-line">
           <h4 className="font-semibold text-ink text-[12.5px] mb-2">Stage 1 · GNN on a sphere</h4>

@@ -1,6 +1,7 @@
 import React from 'react'
 import TopBar from '../components/TopBar'
 import { CASES } from '../data/cases'
+import { ENSO } from '../data/enso'
 import { useCase } from '../context/CaseContext'
 
 export default function Verification() {
@@ -22,7 +23,7 @@ export default function Verification() {
         <table className="w-full text-[12px]">
           <thead>
             <tr className="text-left text-muted border-b border-line">
-              {['Case', 'Objects', 'Tracks', 'Matched steps', 'Pmin error: mean / median / min / max (km)', 'Centroid error: mean / median / min / max (km)'].map((h) => (
+              {['Case', 'ENSO phase (ONI)', 'Objects', 'Tracks', 'Matched steps', 'Pmin error: mean / median / min / max (km)', 'Centroid error: mean / median / min / max (km)'].map((h) => (
                 <th key={h} className="py-2 pr-4 font-medium">{h}</th>
               ))}
             </tr>
@@ -31,6 +32,9 @@ export default function Verification() {
             {Object.values(CASES).map((c) => (
               <tr key={c.id} className="border-b border-line">
                 <td className="py-2 pr-4 text-ink font-medium">{c.label} {c.role === 'in-sample' ? '(in-sample)' : '(held out)'}</td>
+                <td className="py-2 pr-4 text-ink whitespace-nowrap">
+                  {ENSO[c.id] ? `${ENSO[c.id].phase.split(' (')[0]} (${ENSO[c.id].oni > 0 ? '+' : ''}${ENSO[c.id].oni})` : '—'}
+                </td>
                 <td className="py-2 pr-4 text-ink">{c.track.length}</td>
                 <td className="py-2 pr-4 text-ink">{c.validation.nTracks ?? 1}</td>
                 <td className="py-2 pr-4 text-ink">{c.validation.matchedSteps}</td>
@@ -49,6 +53,13 @@ export default function Verification() {
           Amphan's last three steps (near landfall) and Yaas's first three — as the pressure-minimum position
           degrades right at and after landfall and the wind-anomaly centroid drifts over the sea. Titli matches
           only 4 steps: ERA5 resolves it as a weaker, shorter-lived system than observed.
+        </p>
+        <p className="text-[11.5px] text-muted mt-2">
+          <span className="font-semibold text-ink">ENSO phase</span> (NOAA ONI, per storm's formation month) is
+          context, not a detection input — but the sample happens to span El Niño years (Hudhud, Titli, Fani,
+          Bulbul), a strong La Niña year (Nivar) and neutral years (Phailin, Amphan, Yaas), and the same frozen
+          detection rule (with each storm's own seasonal climatology) holds up across all of them without any
+          ENSO-specific tuning.
         </p>
       </div>
 
