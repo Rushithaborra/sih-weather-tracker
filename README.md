@@ -4,11 +4,19 @@ Prototype for *AI-Driven Spatio-Temporal Tracking of Extreme Weather Anomalies i
 (Ministry of Earth Sciences / NCMRWF).
 
 It finds and tracks extreme wind and low-pressure anomalies in **ERA5 reanalysis (0.25°, ~28 km)**
-and checks the tracks against the **IBTrACS** observed best track, for two Bay of Bengal cyclones:
-**Amphan (May 2020)** and **Yaas (May 2021)**.
+and checks the tracks against the **IBTrACS** observed best track, for eight Bay of Bengal / east-coast
+cyclones: **Amphan (2020), Yaas (2021), Phailin (2013), Hudhud (2014), Titli (2018), Fani (2019),
+Bulbul (2019)** and **Nivar (2020)**.
 
-> This is tracking of observed events on reanalysis. There is no forecast in this pipeline, so
-> nothing here measures forecast skill. The GNN and diffusion stages are **designed, not implemented**.
+A second, separate pipeline tracks a real **NOAA GEFS v12 ensemble forecast** (control + 30 members,
+0.25°) instead of reanalysis — see [Live GEFS forecast](#live-gefs-forecast-daily) below. That one
+is an actual forecast; the reanalysis tracking above is not, and the two are not mixed.
+
+**Live dashboard:** https://dashboard-ui-indol-nu.vercel.app (source in `dashboard-ui/`)
+
+> The reanalysis pipeline tracks observed events after the fact, so nothing from it measures forecast
+> skill. The GNN and diffusion stages are **designed, not implemented**; the live GEFS pipeline uses the
+> same classical detector/tracker as the reanalysis cases, not a GNN.
 
 ## What it does
 
@@ -36,33 +44,43 @@ and checks the tracks against the **IBTrACS** observed best track, for two Bay o
 
 ## Validation result
 
-Computed by `scripts/build_processed.py` with the default settings above
-(also in `data/processed/<case>/validation.json`).
+Computed by `scripts/build_processed.py` (Amphan, Yaas) and `scripts/build_extra_cases.py` (the other
+six) with the same frozen settings throughout (also in `data/processed/<case>/validation.json`).
 
-The detection settings were chosen while looking at Amphan, so **Amphan is in-sample**.
-**Yaas is held out**: it was downloaded afterwards and run with every parameter frozen.
+The detection settings were chosen while looking at Amphan, so **Amphan is in-sample**. All seven other
+storms were added afterwards and run with every parameter frozen — nothing was tuned per storm.
 
-| Case | Objects | Tracks | Matched steps | Min-MSLP position: mean / median / min / max | Anomaly centroid: mean / median / min / max |
+| Case | Role | Objects | Tracks | Matched steps | Min-MSLP position: mean / median / min / max |
 |---|---|---|---|---|---|
-| Amphan 2020 (in-sample) | 17 | 1 | 17 | 31.5 / 24.8 / 5.6 / 152.0 km | 58.1 / 38.7 / 14.0 / 240.6 km |
-| Yaas 2021 (held out) | 15 | 3 | 13 | 73.0 / 58.2 / 5.2 / 185.3 km | 125.1 / 121.9 / 40.9 / 219.7 km |
+| Amphan 2020 | in-sample | 17 | 1 | 17 | 31.5 / 24.8 / 5.6 / 152.0 km |
+| Yaas 2021 | held out | 15 | 3 | 13 | 73.0 / 58.2 / 5.2 / 185.3 km |
+| Phailin 2013 | held out | 13 | 2 | 12 | 34.0 / 30.2 / 15.4 / 67.6 km |
+| Hudhud 2014 | held out | 18 | 2 | 17 | 35.3 / 27.3 / 12.0 / 106.9 km |
+| Titli 2018 | held out | 5 | 2 | 4 | 24.4 / 19.6 / 11.9 / 46.4 km |
+| Fani 2019 | held out | 18 | 1 | 18 | 34.1 / 24.8 / 5.6 / 143.0 km |
+| Bulbul 2019 | held out | 11 | 3 | 8 | 25.0 / 23.7 / 10.4 / 40.3 km |
+| Nivar 2020 | held out | 8 | 1 | 8 | 43.4 / 28.7 / 15.6 / 101.3 km |
 
-- **Track method (pressure minimum) chosen on Amphan, confirmed on Yaas (held out). Two storms; tracking on
-  reanalysis, not forecast skill.** The pressure minimum already had the lower error on Amphan alone
-  (median 24.8 vs 38.7 km), so it is the default track position. One ERA5 grid cell is about 28 km.
-- Amphan's last three steps (20 May 06/12/18 UTC, around and after landfall): min-MSLP 30.9 / 19.0 / 152.0 km,
-  centroid 108.1 / 149.2 / 240.6 km. The wind-anomaly centroid drifts over the sea after landfall.
-- Yaas: one unbroken 13-step main track (23 May 12 UTC to 26 May 12 UTC) plus two single-step extra objects
-  (24 May 00 UTC and 26 May 00 UTC), each roughly 300 km from the best-track centre.
-  The first three Yaas steps have the largest errors (min-MSLP 136–185 km).
-- Detection onset vs first best-track wind ≥ 34 kt:
+- **Median position error clusters 19.6–30.2 km across seven of the eight cases; Yaas (58.2 km) is the
+  outlier**, degraded by the wind-anomaly centroid drifting over the sea after landfall (same failure mode
+  documented for Amphan below). The pressure-minimum position was chosen on Amphan alone and never
+  re-tuned, so this spread reflects the method holding up out of sample, not curve-fitting to each storm.
+- Amphan's last three steps (20 May 06/12/18 UTC, around and after landfall): min-MSLP 30.9 / 19.0 / 152.0 km.
+  Anomaly-centroid errors (shown alongside pmin in the app, not tabulated above) grow the same way at
+  landfall for every case where the storm makes landfall inside the analysis window.
+- Bulbul began life as Pacific tropical storm Matmo and only entered the Bay of Bengal analysis region
+  partway through its life, so its first-detection time is not comparable to its IBTrACS genesis time —
+  see `data/processed/bulbul/` and the region-filtered onset logic in `scripts/export_cases_for_dashboard.py`.
+- Detection onset vs first best-track wind ≥ 34 kt, for the original two cases:
 
   | Case | First detection | IMD (WMO) ≥ 34 kt | JTWC (USA) ≥ 34 kt |
   |---|---|---|---|
   | Amphan | 16 May 18 UTC | 16 May 12 UTC | 16 May 00 UTC |
   | Yaas | 23 May 12 UTC | 24 May 00 UTC | 23 May 18 UTC |
 
-- Two cases are a small sample. Development history, including a superseded first run, is in `DEV_LOG.md`.
+  Onset for the other six cases is in each `data/processed/<case>/validation.json`.
+- Eight cases is still a small sample. Development history, including a superseded first run and the
+  four post-hoc alert-tier changes, is in `DEV_LOG.md`.
 
 ## Run locally
 
@@ -95,6 +113,11 @@ pytest -q
 `fetch_clim_resumable.py` imports its settings from `step1_get_data.py` and fetches year by year with
 timeouts and retries, because long reads from the public bucket sometimes hung. If `step1_get_data.py --clim`
 hangs, run `python ../../scripts/fetch_clim_resumable.py` instead; it writes the same `clim_sample.nc`.
+
+The other six cases (Phailin, Hudhud, Titli, Fani, Bulbul, Nivar) are downloaded and run the same way by
+`scripts/build_extra_cases.py`, which reuses `step1_get_data.py`'s ERA5 slice logic for each storm's dates.
+`scripts/export_cases_for_dashboard.py` then turns every case's `data/processed/<case>/` into the record
+shape `dashboard-ui/src/data/casesExtra.js` needs — nothing there is hand-edited.
 
 ## Live GEFS forecast (daily)
 
@@ -146,17 +169,23 @@ python scripts/run_gefs_live.py --init 2026-09-30T00:00 --members 2 --fxx-end 24
   climate. These percentiles rank one reanalysis value against a 115-sample reanalysis climatology.
 - Storms are only detected once winds reach gale force (17 m/s); weaker depression stages are missed.
 - The min-MSLP position is limited to the 0.25° grid; the anomaly centroid is not a cyclone centre.
-- Validation covers two cases, one in-sample and one held out.
+- Validation covers eight cases, one in-sample and seven held out — still a small sample, and all from
+  the same Bay of Bengal / east-coast basin and May–November season window.
 - Precipitation is display only (no precipitation climatology) and is not used in detection or alerts.
 - The 5 km layer is interpolation and adds no information.
 - Alert tiers are not validated against observed impacts, and their thresholds were set after seeing results.
   Because they are tied to tracked objects, a storm the tracker misses gets no alerts.
+- The live GEFS forecast (below) has no best track to check against yet, since it runs on whatever is
+  currently forecast — nothing on that page is validated the way the eight reanalysis cases are.
 - The GNN tracker and diffusion downscaler below are **designed, not implemented**.
 
 ## Roadmap (designed, not implemented)
 
-1. **NEPS-G ingestion**: read NCMRWF ensemble members instead of reanalysis.
-2. **Ensemble EFI** against NEPS-G reforecasts (the model's own climate).
+1. ~~**Ensemble ingestion**: read an ensemble instead of single-member reanalysis.~~ **Done, with GEFS
+   instead of NEPS-G** — the live forecast pipeline reads the real NOAA GEFS v12 ensemble (no NCMRWF
+   credentials needed); swapping in NEPS-G itself is still open if access becomes available.
+2. **Ensemble EFI** against the model's own reforecast climate (the live pipeline currently ranks each
+   member's wind speed against the same ERA5 climatology the reanalysis cases use, not a GEFS reforecast).
 3. **GNN tracker** on an icosahedral mesh over each member, giving probabilistic 4D tracked boxes.
 4. **Conditional diffusion downscaler** with a physics-informed loss, giving probabilistic ~5 km exceedance maps
    and an alert API.
@@ -166,15 +195,25 @@ python scripts/run_gefs_live.py --init 2026-09-30T00:00 --members 2 --fxx-end 24
 ## Repository layout
 
 ```
-app.py                         Streamlit UI
-pipeline/                      preprocess, anomaly, tracker, validate, downscale, alerts
-scripts/build_processed.py     runs the pipeline for all cases, writes data/processed/
-scripts/fetch_clim_resumable.py  resumable climatology and extra-case downloads
-step1_get_data.py              original ERA5 download script
-tests/test_tracker.py          synthetic-blob tracker tests
-data/raw/                      amphan_case.nc, yaas_case.nc, ibtracs_amphan.csv (large raw files gitignored)
-data/processed/<case>/         fields.nc, tracks, validation, alerts sample, meta
-DEV_LOG.md                     development log
+app.py                              Streamlit UI (the eight reanalysis cases; no live/forecast content)
+pipeline/                           preprocess, anomaly, tracker, validate, downscale, alerts
+scripts/build_processed.py          runs the pipeline for Amphan + Yaas, writes data/processed/
+scripts/build_extra_cases.py        same pipeline for the other six held-out storms
+scripts/export_cases_for_dashboard.py  data/processed/<case>/ -> dashboard-ui/src/data/casesExtra.js
+scripts/export_zoom_fields.py       real bilinear-interpolated field per track step -> zoomFields.js
+scripts/fetch_clim_resumable.py     resumable climatology download (case-study climatology)
+scripts/build_live_climatology.py   per-(month, UTC hour) ERA5 climatology for the live pipeline
+scripts/run_gefs_live.py            fetches the latest GEFS run, tracks it, writes dashboard-ui/public/live/
+scripts/fetch_gefs.py               one-off GEFS ensemble fetch used to build the Yaas GEFS case study
+scripts/run_gefs_ensemble.py        runs detection/tracking on a fetched GEFS ensemble, aggregates stats
+step1_get_data.py                   original ERA5 download script (Amphan case + climatology)
+tests/test_tracker.py               synthetic-blob tracker tests
+data/raw/                           <case>_case.nc, ibtracs CSVs (large raw files gitignored)
+data/processed/<case>/              fields.nc, tracks, validation, alerts sample, meta
+data/clim/                          live pipeline's per-(month, hour) climatology (gitignored, ~GB scale)
+dashboard-ui/                       React/Vite dashboard (Validated results, GEFS forecast, Live forecast)
+.github/workflows/                  gefs-live.yml (daily forecast run), build-climatology.yml
+DEV_LOG.md                          development log
 ```
 
 ## Data sources and credits
@@ -185,3 +224,7 @@ DEV_LOG.md                     development log
   is responsible for any use of it.
 - **IBTrACS v04r01** (Knapp et al., 2010, BAMS), NOAA National Centers for Environmental Information,
   North Indian basin CSV. Public domain (NOAA).
+- **NOAA GEFS v12** (30-member ensemble + control, 0.25°), via the public **AWS Open Data** copy
+  (`s3://noaa-gefs-pds`, `noaa-gefs-pds.s3.amazonaws.com`), fetched with
+  [Herbie](https://github.com/blaylockbk/Herbie). Used for both the Yaas GEFS case study and the daily
+  live forecast. Public domain (NOAA / US Government work).
