@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import {
   Wind, LayoutGrid, Activity, Waypoints, ZoomIn, Bell, ShieldCheck, Database,
 } from 'lucide-react'
+import { useCase } from '../context/CaseContext'
 
 const NAV = [
   { to: '/overview', label: 'Overview', icon: LayoutGrid },
@@ -15,6 +16,7 @@ const NAV = [
 ]
 
 export default function Sidebar() {
+  const { mode } = useCase()
   return (
     <aside className="w-[196px] shrink-0 bg-navy text-white flex flex-col h-screen sticky top-0">
       <div className="flex items-center gap-2.5 px-4 pt-5 pb-4">
@@ -51,8 +53,8 @@ export default function Sidebar() {
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
           <span className="text-emerald-400 font-semibold">Operational</span>
         </div>
-        <div className="text-slate-300">ERA5 reanalysis, 0.25°</div>
-        <div className="text-slate-400">Replay mode (validated cases)</div>
+        <div className="text-slate-300">{mode === 'concept' ? 'NEPS-G 00 UTC (concept)' : 'ERA5 reanalysis, 0.25°'}</div>
+        <div className="text-slate-400">{mode === 'concept' ? 'Replay mode (synthetic)' : 'Replay mode (validated cases)'}</div>
       </div>
     </aside>
   )

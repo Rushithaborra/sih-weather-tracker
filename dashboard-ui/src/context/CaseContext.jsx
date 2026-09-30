@@ -4,6 +4,8 @@ import { CASES } from '../data/cases'
 const CaseCtx = createContext(null)
 
 export function CaseProvider({ children }) {
+  const [mode, setMode] = useState('concept') // 'concept' (deck mock-up) | 'validated' (real pipeline)
+
   const [caseId, setCaseId] = useState('amphan')
   const c = CASES[caseId]
   const maxT = c.track[c.track.length - 1].t
@@ -16,7 +18,12 @@ export function CaseProvider({ children }) {
     setT((prev) => Math.min(prev, nextMax))
   }
 
-  const value = useMemo(() => ({ caseId, setCaseId: setCaseAndClampT, data: c, t, setT, maxT }), [caseId, c, t, maxT])
+  const [conceptT, setConceptT] = useState(96)
+
+  const value = useMemo(
+    () => ({ mode, setMode, caseId, setCaseId: setCaseAndClampT, data: c, t, setT, maxT, conceptT, setConceptT }),
+    [mode, caseId, c, t, maxT, conceptT],
+  )
   return <CaseCtx.Provider value={value}>{children}</CaseCtx.Provider>
 }
 

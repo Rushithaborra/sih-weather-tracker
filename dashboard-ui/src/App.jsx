@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
-import { CaseProvider } from './context/CaseContext'
+import { CaseProvider, useCase } from './context/CaseContext'
 import Overview from './pages/Overview'
 import ActiveAnomalies from './pages/ActiveAnomalies'
 import TracksBoxes from './pages/TracksBoxes'
@@ -29,9 +29,18 @@ export default function App() {
           </Routes>
         </main>
       </div>
-      <footer className="fixed bottom-0 left-[196px] right-0 bg-pagebg/95 backdrop-blur text-center text-[10.5px] text-muted py-2 border-t border-slate-200">
-        Concept prototype — real ERA5/IBTrACS pipeline output, replayed for two historical cyclones. Not an operational warning system.
-      </footer>
+      <Footer />
     </CaseProvider>
+  )
+}
+
+function Footer() {
+  const { mode } = useCase()
+  return (
+    <footer className="fixed bottom-0 left-[196px] right-0 bg-pagebg/95 backdrop-blur text-center text-[10.5px] text-muted py-2 border-t border-slate-200">
+      {mode === 'concept'
+        ? 'Concept prototype — illustrative, synthetic data replay for the pitch deck. Not an operational warning system.'
+        : 'Concept prototype — real ERA5/IBTrACS pipeline output, replayed for two historical cyclones. Not an operational warning system.'}
+    </footer>
   )
 }

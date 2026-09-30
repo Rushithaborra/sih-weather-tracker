@@ -1,6 +1,8 @@
 import React from 'react'
 import TopBar from '../components/TopBar'
 import { CheckCircle2, Circle } from 'lucide-react'
+import { DATA_SOURCES } from '../data/concept'
+import { useCase } from '../context/CaseContext'
 
 const IN_USE = [
   { name: 'ERA5 reanalysis', detail: '0.25° (~28 km), via WeatherBench 2 on Google Cloud (gs://weatherbench2/datasets/era5/). Hersbach et al. 2020, Copernicus/ECMWF.' },
@@ -17,6 +19,27 @@ const PLANNED = [
 ]
 
 export default function DataSources() {
+  const { mode } = useCase()
+  if (mode === 'concept') {
+    return (
+      <div className="space-y-4">
+        <TopBar title="Data sources" conceptSubtitle="From the pitch deck's Research and References slide" />
+        <div className="bg-white rounded-card px-5 py-4">
+          <div className="space-y-3">
+            {DATA_SOURCES.map((s) => (
+              <div key={s.name} className="flex gap-3">
+                <span className="text-[11px] font-bold text-teal bg-teal/10 rounded-full px-2.5 py-0.5 h-fit shrink-0">deck</span>
+                <div>
+                  <div className="font-semibold text-ink text-[13px]">{s.name}</div>
+                  <div className="text-[12px] text-muted">{s.detail}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="space-y-4">
       <TopBar title="Data sources" subtitle="What the pipeline reads today vs. what the roadmap calls for" />
