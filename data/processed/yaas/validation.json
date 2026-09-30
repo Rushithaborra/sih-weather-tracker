@@ -1,0 +1,33 @@
+{
+  "case": "yaas",
+  "role": "held out (parameters frozen, nothing adjusted)",
+  "n_objects": 15,
+  "n_tracks": 3,
+  "track_id": 0,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 13,
+    "mean_km": 125.1,
+    "median_km": 121.9,
+    "min_km": 40.9,
+    "max_km": 219.7
+  },
+  "pmin": {
+    "n": 13,
+    "mean_km": 73.0,
+    "median_km": 58.2,
+    "min_km": 5.2,
+    "max_km": 185.3
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2021-05-24T00:00:00",
+    "first_usa_wind_ge_34kt": "2021-05-23T18:00:00",
+    "first_detection": "2021-05-23T12:00:00"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "case": "amphan",
+  "role": "in-sample (parameters set while looking at this case)",
+  "n_objects": 17,
+  "n_tracks": 1,
+  "track_id": 0,
+  "params": {
+    "threshold": 2.0,
+    "min_size": 6,
+    "max_disp_km": 400.0,
+    "rule": "ws_and_msl",
+    "ws_min": 17.0
+  },
+  "centroid": {
+    "n": 17,
+    "mean_km": 58.1,
+    "median_km": 38.7,
+    "min_km": 14.0,
+    "max_km": 240.6
+  },
+  "pmin": {
+    "n": 17,
+    "mean_km": 31.5,
+    "median_km": 24.8,
+    "min_km": 5.6,
+    "max_km": 152.0
+  },
+  "onset": {
+    "first_wmo_wind_ge_34kt": "2020-05-16T12:00:00",
+    "first_usa_wind_ge_34kt": "2020-05-16T00:00:00",
+    "first_detection": "2020-05-16T18:00:00"
+  }
+}

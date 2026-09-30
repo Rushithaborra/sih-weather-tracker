@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+# Raw downloads are large and not needed by the app (it reads data/processed/ only).
+data/raw/clim_sample.nc
+data/raw/ibtracs.NI.list.v04r01.csv
+data/clim_download.log
+data/raw/clim_parts/
+data/raw/clim_sample_061218.nc
+screenshots/
+data/build_log.txt
+data/streamlit.log
+data/clim_download_061218.log

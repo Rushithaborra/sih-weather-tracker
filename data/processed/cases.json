@@ -1,0 +1,10 @@
+{
+  "amphan": {
+    "label": "Amphan, May 2020",
+    "role": "in-sample (parameters set while looking at this case)"
+  },
+  "yaas": {
+    "label": "Yaas, May 2021",
+    "role": "held out (parameters frozen, nothing adjusted)"
+  }
+}
