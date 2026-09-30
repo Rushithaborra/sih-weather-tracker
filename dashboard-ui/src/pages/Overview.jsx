@@ -2,6 +2,7 @@ import React from 'react'
 import TopBar from '../components/TopBar'
 import KpiCards from '../components/KpiCards'
 import GefsKpis from '../components/GefsKpis'
+import GnnSphereConcept from '../components/GnnSphereConcept'
 import { useCase } from '../context/CaseContext'
 import { PIPELINE_META, CASES } from '../data/cases'
 import { GEFS_META, GEFS_SUMMARY } from '../data/gefsEnsemble'
@@ -31,12 +32,16 @@ export default function Overview() {
         </div>
         <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-2">Still not implemented</h3>
-          <ol className="text-[12.5px] text-muted list-decimal list-inside space-y-1">
+          <ol className="text-[12.5px] text-muted list-decimal list-inside space-y-1 mb-4">
             <li>GNN tracker on an icosahedral mesh — this still uses the classical connected-component + Hungarian tracker, just run once per member.</li>
             <li>Conditional diffusion downscaler — no 5 km output for the GEFS case yet.</li>
             <li>Ensemble EFI proper (vs a model's own reforecast climate) — the severe-fraction score here is a simpler, defensible stand-in.</li>
             <li>NEPS-G itself — GEFS was used as the open, no-credential-needed substitute.</li>
           </ol>
+          <div className="pt-3 border-t border-line">
+            <h4 className="font-semibold text-ink text-[12.5px] mb-2">Stage 1 · GNN on a sphere</h4>
+            <GnnSphereConcept />
+          </div>
         </div>
       </div>
     )
@@ -76,14 +81,19 @@ export default function Overview() {
         </div>
       </div>
       <div className="bg-card rounded-card px-5 py-4">
-        <h3 className="font-bold text-ink text-[14.5px] mb-2">Roadmap (designed, not implemented)</h3>
-        <ol className="text-[12.5px] text-muted list-decimal list-inside space-y-1">
-          <li>NEPS-G ensemble ingestion in place of single-member reanalysis.</li>
-          <li>Ensemble EFI against NEPS-G's own reforecast climate.</li>
-          <li>GNN tracker on an icosahedral mesh per ensemble member — probabilistic 4D tracked boxes.</li>
-          <li>Conditional diffusion downscaler with a physics-informed loss — probabilistic ~5 km exceedance maps.</li>
+        <h3 className="font-bold text-ink text-[14.5px] mb-2">Roadmap</h3>
+        <ol className="text-[12.5px] text-muted list-decimal list-inside space-y-1 mb-4">
+          <li><span className="line-through opacity-70">Ensemble ingestion in place of single-member reanalysis.</span> Done, with NOAA GEFS
+            standing in for NEPS-G — see <span className="font-semibold text-ink">GEFS forecast</span> mode (top bar).</li>
+          <li>Ensemble EFI against the model's own reforecast climate (still simplified to a severe-wind fraction).</li>
+          <li>GNN tracker on an icosahedral mesh per ensemble member — probabilistic 4D tracked boxes. Designed, not implemented.</li>
+          <li>Conditional diffusion downscaler with a physics-informed loss — probabilistic ~5 km exceedance maps. Designed, not implemented.</li>
           <li>5 km truth data for training the downscaler (scarce for India — the main open risk).</li>
         </ol>
+        <div className="pt-3 border-t border-line">
+          <h4 className="font-semibold text-ink text-[12.5px] mb-2">Stage 1 · GNN on a sphere</h4>
+          <GnnSphereConcept />
+        </div>
       </div>
     </div>
   )
