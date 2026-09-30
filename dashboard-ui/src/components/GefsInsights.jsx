@@ -35,7 +35,7 @@ export default function GefsInsights() {
 
       <div>
         <div className="text-[11.5px] font-semibold text-ink mb-1">Members agreeing (within 100 km of truth)</div>
-        <Sparkline points={GEFS_AGREEMENT} valueKey="membersAgreeing" max={10} color="#9C6B3E" format={(v) => `${v}`} />
+        <Sparkline points={GEFS_AGREEMENT} valueKey="membersAgreeing" max={10} color="#1D72B8" format={(v) => `${v}`} />
       </div>
 
       <div>

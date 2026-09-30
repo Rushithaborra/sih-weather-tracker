@@ -71,9 +71,9 @@ export default function TracksBoxes() {
 function Legend({ concept }) {
   return (
     <div className="flex items-center gap-3.5 text-[10.5px] text-muted flex-wrap">
-      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#3B2A20] inline-block" /> mean</span>
+      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#16293D] inline-block" /> mean</span>
       {concept && <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#8a94a3] inline-block" style={{ opacity: 0.5 }} /> members</span>}
-      {!concept && <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#3B2A20] inline-block" style={{ backgroundImage: 'repeating-linear-gradient(90deg,#3B2A20 0 4px,transparent 4px 7px)' }} /> IBTrACS best track</span>}
+      {!concept && <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#16293D] inline-block" style={{ backgroundImage: 'repeating-linear-gradient(90deg,#16293D 0 4px,transparent 4px 7px)' }} /> IBTrACS best track</span>}
       <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 border border-dashed inline-block" style={{ borderColor: '#C2185B' }} /> 4D box</span>
     </div>
   )
@@ -82,9 +82,9 @@ function Legend({ concept }) {
 function GefsLegend() {
   return (
     <div className="flex items-center gap-3.5 text-[10.5px] text-muted flex-wrap">
-      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#9C6B3E] inline-block" /> control</span>
+      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#1D72B8] inline-block" /> control</span>
       <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#8a94a3] inline-block" style={{ opacity: 0.5 }} /> 29 members</span>
-      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#3B2A20] inline-block" style={{ backgroundImage: 'repeating-linear-gradient(90deg,#3B2A20 0 4px,transparent 4px 7px)' }} /> IBTrACS truth</span>
+      <span className="flex items-center gap-1.5"><span className="w-4 h-[2px] bg-[#16293D] inline-block" style={{ backgroundImage: 'repeating-linear-gradient(90deg,#16293D 0 4px,transparent 4px 7px)' }} /> IBTrACS truth</span>
     </div>
   )
 }

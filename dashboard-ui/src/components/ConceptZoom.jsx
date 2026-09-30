@@ -57,7 +57,7 @@ export default function ConceptZoom() {
     })
     ctx.beginPath()
     ctx.arc(px, py, 4.5, 0, Math.PI * 2)
-    ctx.fillStyle = '#3B2A20'
+    ctx.fillStyle = '#16293D'
     ctx.fill()
     ctx.lineWidth = 2
     ctx.strokeStyle = '#ffffff'

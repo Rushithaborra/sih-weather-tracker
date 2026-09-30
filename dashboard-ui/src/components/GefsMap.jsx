@@ -39,13 +39,13 @@ export default function GefsMap() {
         <Polyline
           key={m.id}
           positions={m.points.map((p) => [p.pminLat, p.pminLon])}
-          pathOptions={{ color: m.id === 'c00' ? '#9C6B3E' : '#8a94a3', weight: m.id === 'c00' ? 2 : 1, opacity: m.id === 'c00' ? 0.85 : 0.45 }}
+          pathOptions={{ color: m.id === 'c00' ? '#1D72B8' : '#8a94a3', weight: m.id === 'c00' ? 2 : 1, opacity: m.id === 'c00' ? 0.85 : 0.45 }}
         />
       ))}
 
-      <Polyline positions={btLine} pathOptions={{ color: '#3B2A20', weight: 2, dashArray: '6 5' }} />
+      <Polyline positions={btLine} pathOptions={{ color: '#16293D', weight: 2, dashArray: '6 5' }} />
       {GEFS_BEST_TRACK.map((p) => (
-        <CircleMarker key={p.time} center={[p.lat, p.lon]} radius={2} pathOptions={{ color: '#3B2A20', fillColor: '#3B2A20', fillOpacity: 1 }} />
+        <CircleMarker key={p.time} center={[p.lat, p.lon]} radius={2} pathOptions={{ color: '#16293D', fillColor: '#16293D', fillOpacity: 1 }} />
       ))}
 
       {nowByMember.map(({ id, p }) => {
@@ -55,7 +55,7 @@ export default function GefsMap() {
             key={id}
             center={[p.pminLat, p.pminLon]}
             radius={id === 'c00' ? 7 : 5}
-            pathOptions={{ color: '#3B2A20', weight: 1, fillColor: cat.color, fillOpacity: 0.9 }}
+            pathOptions={{ color: '#16293D', weight: 1, fillColor: cat.color, fillOpacity: 0.9 }}
           >
             <Tooltip direction="top" opacity={1}>
               <div className="text-[11px]">

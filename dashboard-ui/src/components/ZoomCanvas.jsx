@@ -51,7 +51,7 @@ export default function ZoomCanvas() {
     const px = size / 2, py = size / 2
     ctx.beginPath()
     ctx.arc(px, py, 5, 0, Math.PI * 2)
-    ctx.fillStyle = '#3B2A20'
+    ctx.fillStyle = '#16293D'
     ctx.fill()
     ctx.lineWidth = 2
     ctx.strokeStyle = '#ffffff'

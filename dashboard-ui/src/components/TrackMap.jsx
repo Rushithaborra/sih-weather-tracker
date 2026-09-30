@@ -46,12 +46,12 @@ export default function TrackMap() {
         )
       })}
 
-      <Polyline positions={btLine} pathOptions={{ color: '#3B2A20', weight: 1.5, dashArray: '6 5' }} />
+      <Polyline positions={btLine} pathOptions={{ color: '#16293D', weight: 1.5, dashArray: '6 5' }} />
       {track.map((p) => (
-        <CircleMarker key={`bt-${p.t}`} center={p.bt} radius={2.5} pathOptions={{ color: '#3B2A20', fillColor: '#3B2A20', fillOpacity: 1 }} />
+        <CircleMarker key={`bt-${p.t}`} center={p.bt} radius={2.5} pathOptions={{ color: '#16293D', fillColor: '#16293D', fillOpacity: 1 }} />
       ))}
 
-      <Polyline positions={pminLine} pathOptions={{ color: '#3B2A20', weight: 3 }} />
+      <Polyline positions={pminLine} pathOptions={{ color: '#16293D', weight: 3 }} />
       {track.map((p) => {
         const cat = categoryFor(p.maxWs)
         return (
@@ -59,7 +59,7 @@ export default function TrackMap() {
             key={p.t}
             center={[p.pminLat, p.pminLon]}
             radius={6}
-            pathOptions={{ color: '#3B2A20', weight: 1, fillColor: cat.color, fillOpacity: 0.95 }}
+            pathOptions={{ color: '#16293D', weight: 1, fillColor: cat.color, fillOpacity: 0.95 }}
           >
             <Tooltip direction="top" opacity={1}>
               <div className="text-[11px]">
@@ -76,7 +76,7 @@ export default function TrackMap() {
       <CircleMarker
         center={[now.lat ?? nearest.pminLat, now.lon ?? nearest.pminLon]}
         radius={9}
-        pathOptions={{ color: '#9C6B3E', weight: 3, fillColor: '#9C6B3E', fillOpacity: 0.25 }}
+        pathOptions={{ color: '#1D72B8', weight: 3, fillColor: '#1D72B8', fillOpacity: 0.25 }}
       >
         <Tooltip direction="right" permanent opacity={0.95}>
           <div className="text-[11px] font-semibold">T+{t}h · {nowCat.code}</div>

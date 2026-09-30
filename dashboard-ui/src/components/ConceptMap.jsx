@@ -66,7 +66,7 @@ export default function ConceptMap() {
         )
       })}
 
-      <Polyline positions={meanLine} pathOptions={{ color: '#3B2A20', weight: 3 }} />
+      <Polyline positions={meanLine} pathOptions={{ color: '#16293D', weight: 3 }} />
       {MEAN_TRACK_LONLAT.map(([lon, lat], i) => {
         const cat = CATEGORIES_BY_INDEX[i]
         return (
@@ -74,7 +74,7 @@ export default function ConceptMap() {
             key={i}
             center={[lat, lon]}
             radius={6}
-            pathOptions={{ color: '#3B2A20', weight: 1, fillColor: CATEGORY_COLORS[cat], fillOpacity: 0.95 }}
+            pathOptions={{ color: '#16293D', weight: 1, fillColor: CATEGORY_COLORS[cat], fillOpacity: 0.95 }}
           >
             <Tooltip direction="top" opacity={1}>
               <div className="text-[11px]">
@@ -94,7 +94,7 @@ export default function ConceptMap() {
         </Tooltip>
       </CircleMarker>
 
-      <CircleMarker center={[now.lat, now.lon]} radius={9} pathOptions={{ color: '#9C6B3E', weight: 3, fillColor: '#9C6B3E', fillOpacity: 0.25 }}>
+      <CircleMarker center={[now.lat, now.lon]} radius={9} pathOptions={{ color: '#1D72B8', weight: 3, fillColor: '#1D72B8', fillOpacity: 0.25 }}>
         <Tooltip direction="left" permanent opacity={0.95}>
           <div className="text-[11px] font-semibold">T+{conceptT}h</div>
         </Tooltip>

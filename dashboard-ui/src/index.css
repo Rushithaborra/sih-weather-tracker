@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --bg: #F2E9DB;
+  --bg: #EAF2FA;
   --card: #FFFFFF;
-  --ink900: #3B2A20;
-  --ink800: #4E3A2C;
-  --brand: #9C6B3E;
-  --ink: #2E211A;
-  --muted: #8A7660;
-  --line: #E4D6C3;
+  --ink900: #0F2A44;
+  --ink800: #17405F;
+  --brand: #1D72B8;
+  --ink: #16293D;
+  --muted: #5E7C93;
+  --line: #D6E4EF;
 }
 
 :root[data-theme='dark'] {
-  --bg: #17130F;
-  --card: #2C2419;
-  --ink900: #0E0A08;
-  --ink800: #2C2318;
-  --brand: #D9A066;
-  --ink: #F0E6D8;
-  --muted: #A8967D;
-  --line: #443725;
+  --bg: #0A1522;
+  --card: #132638;
+  --ink900: #060D15;
+  --ink800: #1B3348;
+  --brand: #5AACEA;
+  --ink: #E6EFF8;
+  --muted: #92A9BE;
+  --line: #24394E;
 }
 
 html, body, #root {
@@ -50,7 +50,7 @@ body {
 }
 
 .bg-card {
-  box-shadow: 0 1px 2px rgba(59, 42, 32, 0.06), 0 1px 4px rgba(59, 42, 32, 0.05);
+  box-shadow: 0 1px 2px rgba(15, 42, 68, 0.06), 0 1px 4px rgba(15, 42, 68, 0.05);
 }
 :root[data-theme='dark'] .bg-card {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
