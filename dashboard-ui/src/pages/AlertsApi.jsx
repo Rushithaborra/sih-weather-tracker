@@ -32,6 +32,7 @@ export default function AlertsApi() {
         title="Alerts API"
         subtitle="Shape of the alert records the pipeline actually produces (this is the concept UI's read of a static export, not a live endpoint)"
         conceptSubtitle="Planned REST endpoint, from the pitch deck's technical approach — not yet built"
+        forceMode={mode === 'gefs' ? 'validated' : mode}
       />
       <div className="bg-card rounded-card px-5 py-4">
         <div className="font-mono text-[12px] text-ink bg-bg rounded-lg px-4 py-2.5 mb-3">

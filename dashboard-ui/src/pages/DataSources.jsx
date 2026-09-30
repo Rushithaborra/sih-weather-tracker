@@ -6,11 +6,12 @@ import { useCase } from '../context/CaseContext'
 
 const IN_USE = [
   { name: 'ERA5 reanalysis', detail: '0.25° (~28 km), via WeatherBench 2 on Google Cloud (gs://weatherbench2/datasets/era5/). Hersbach et al. 2020, Copernicus/ECMWF.' },
+  { name: 'NOAA GEFS v12', detail: '0.25°, 30-member ensemble forecast, via AWS Open Data (noaa-gefs-pds) — used as the real, no-credential-needed substitute for NEPS-G. See GEFS forecast mode.' },
   { name: 'IBTrACS v04r01', detail: 'NOAA NCEI, North Indian basin CSV — observed best track used as ground truth for validation. Knapp et al. 2010, BAMS. Public domain.' },
 ]
 
 const PLANNED = [
-  { name: 'NEPS-G', detail: '12 km, 23-member NCMRWF ensemble — would replace single-member ERA5 reanalysis as the forecast input.' },
+  { name: 'NEPS-G', detail: '12 km, 23-member NCMRWF ensemble — the deck\'s named forecast source; needs NCMRWF credentials we don\'t have, so GEFS stands in above.' },
   { name: 'NCUM-G', detail: 'Deterministic NCMRWF global model, mentioned in the roadmap as a possible additional input.' },
   { name: 'IMDAA', detail: 'India Meteorological Department regional reanalysis — a candidate source of higher-resolution truth for downscaler training.' },
   { name: 'IMD observations', detail: 'Station and best-track data beyond IBTrACS, for tighter validation.' },
@@ -42,7 +43,11 @@ export default function DataSources() {
   }
   return (
     <div className="space-y-4">
-      <TopBar title="Data sources" subtitle="What the pipeline reads today vs. what the roadmap calls for" />
+      <TopBar
+        title="Data sources"
+        subtitle="What the pipeline reads today vs. what the roadmap calls for"
+        forceMode={mode === 'gefs' ? 'validated' : mode}
+      />
 
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-3 flex items-center gap-2">

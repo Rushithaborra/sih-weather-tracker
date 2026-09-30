@@ -4,8 +4,12 @@ import { useCase } from '../context/CaseContext'
 import { CASES } from '../data/cases'
 import { GEFS_META } from '../data/gefsEnsemble'
 
-export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle }) {
-  const { mode, setMode, caseId, setCaseId, data, maxT } = useCase()
+export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle, forceMode }) {
+  const { mode: realMode, setMode, caseId, setCaseId, data, maxT } = useCase()
+  // forceMode lets a page that has no dedicated content for the real mode (e.g. GEFS)
+  // render as if a different mode were active, so chips/subtitle/export match what's
+  // actually on screen instead of advertising GEFS while showing ERA5 case data.
+  const mode = forceMode ?? realMode
   const isConcept = mode === 'concept'
   const isGefs = mode === 'gefs'
 
@@ -25,7 +29,7 @@ export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle 
 
   return (
     <div className="space-y-2.5">
-      <ModeToggle mode={mode} setMode={setMode} />
+      <ModeToggle mode={realMode} setMode={setMode} />
       <div className="bg-card rounded-card px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-[19px] font-bold text-ink leading-tight">{title}</h1>
@@ -36,6 +40,11 @@ export default function TopBar({ title, subtitle, conceptSubtitle, gefsSubtitle 
                 ? (gefsSubtitle ?? `${GEFS_META.label} — real NOAA GEFS ensemble`)
                 : subtitle}
           </p>
+          {forceMode && forceMode !== realMode && (
+            <p className="text-[11px] text-brand mt-1">
+              No GEFS-specific view for this page yet — showing validated ERA5 results below.
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {isConcept ? (

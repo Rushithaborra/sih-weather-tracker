@@ -40,7 +40,11 @@ export default function Verification() {
   }
   return (
     <div className="space-y-4">
-      <TopBar title="Verification" subtitle="What's actually been validated, vs. what's planned" />
+      <TopBar
+        title="Verification"
+        subtitle="What's actually been validated, vs. what's planned"
+        forceMode={mode === 'gefs' ? 'validated' : mode}
+      />
 
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-1">Done: track error vs IBTrACS</h3>

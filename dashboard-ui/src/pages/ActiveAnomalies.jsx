@@ -25,7 +25,7 @@ export default function ActiveAnomalies() {
             </thead>
             <tbody>
               {ALERTS.map((a) => (
-                <tr key={a.title} className="border-b border-line">
+                <tr key={a.title} className="border-b border-line hover:bg-bg transition-colors">
                   <td className="py-2 pr-4">
                     <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full text-white uppercase" style={{ background: TIER_COLOR[a.tier] }}>
                       {a.tier}
@@ -47,7 +47,11 @@ export default function ActiveAnomalies() {
   }
   return (
     <div className="space-y-4">
-      <TopBar title="Active anomalies" subtitle={`Every tracked object for ${data.label}, 8-connected cells over the detection threshold`} />
+      <TopBar
+        title="Active anomalies"
+        subtitle={`Every tracked object for ${data.label}, 8-connected cells over the detection threshold`}
+        forceMode={mode === 'gefs' ? 'validated' : mode}
+      />
       <div className="bg-card rounded-card px-5 py-4 overflow-x-auto">
         <table className="w-full text-[12px]">
           <thead>

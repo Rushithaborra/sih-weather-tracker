@@ -47,7 +47,11 @@ export default function ZoomPage() {
   const now = interpolateTrack(data.track, t)
   return (
     <div className="space-y-4">
-      <TopBar title="5 km zoom" subtitle={`${data.label} — interpolation placeholder around the tracked object`} />
+      <TopBar
+        title="5 km zoom"
+        subtitle={`${data.label} — interpolation placeholder around the tracked object`}
+        forceMode={mode === 'gefs' ? 'validated' : mode}
+      />
       <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 items-start">
         <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-2">Field shape at T+{t} h</h3>
