@@ -1,0 +1,534 @@
+{
+ "notes": [
+  "GEFS compared against ERA5 climatology (2010-2019 month/hour stats): model bias enters the z-scores; not an EFI.",
+  "Operational (31 members) and reforecast (5, or 11 on Wednesdays) are never pooled together.",
+  "Amphan excluded: only GEFS v11 (1 deg) exists for May 2020, a different model version.",
+  "Match: object within 300 km of IBTrACS at the first step (or first track to come within 300 km for genesis), then that track; unmatched members are misses."
+ ],
+ "starts": [
+  {
+   "storm": "bulbul",
+   "source": "reforecast",
+   "init": "2019-11-02T00Z",
+   "offsetDays": 7,
+   "landfall": "2019-11-09T21:00Z",
+   "nMembers": 5,
+   "matched": 0,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "bulbul",
+   "source": "reforecast",
+   "init": "2019-11-04T00Z",
+   "offsetDays": 5,
+   "landfall": "2019-11-09T21:00Z",
+   "nMembers": 5,
+   "matched": 0,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "bulbul",
+   "source": "reforecast",
+   "init": "2019-11-06T00Z",
+   "offsetDays": 3,
+   "landfall": "2019-11-09T21:00Z",
+   "nMembers": 11,
+   "matched": 0,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "bulbul",
+   "source": "reforecast",
+   "init": "2019-11-08T00Z",
+   "offsetDays": 1,
+   "landfall": "2019-11-09T21:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2019-11-08T06:00Z",
+    "hoursBeforeLandfall": 39.0
+   }
+  },
+  {
+   "storm": "fani",
+   "source": "reforecast",
+   "init": "2019-04-26T00Z",
+   "offsetDays": 7,
+   "landfall": "2019-05-03T06:00Z",
+   "nMembers": 5,
+   "matched": 4,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "fani",
+   "source": "reforecast",
+   "init": "2019-04-28T00Z",
+   "offsetDays": 5,
+   "landfall": "2019-05-03T06:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2019-04-28T06:00Z",
+    "hoursBeforeLandfall": 120.0
+   }
+  },
+  {
+   "storm": "fani",
+   "source": "reforecast",
+   "init": "2019-04-30T00Z",
+   "offsetDays": 3,
+   "landfall": "2019-05-03T06:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2019-04-30T06:00Z",
+    "hoursBeforeLandfall": 72.0
+   }
+  },
+  {
+   "storm": "fani",
+   "source": "reforecast",
+   "init": "2019-05-02T00Z",
+   "offsetDays": 1,
+   "landfall": "2019-05-03T06:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2019-05-02T06:00Z",
+    "hoursBeforeLandfall": 24.0
+   }
+  },
+  {
+   "storm": "hudhud",
+   "source": "reforecast",
+   "init": "2014-10-05T00Z",
+   "offsetDays": 7,
+   "landfall": "2014-10-12T09:00Z",
+   "nMembers": 5,
+   "matched": 3,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "hudhud",
+   "source": "reforecast",
+   "init": "2014-10-07T00Z",
+   "offsetDays": 5,
+   "landfall": "2014-10-12T09:00Z",
+   "nMembers": 5,
+   "matched": 0,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "hudhud",
+   "source": "reforecast",
+   "init": "2014-10-09T00Z",
+   "offsetDays": 3,
+   "landfall": "2014-10-12T09:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2014-10-09T06:00Z",
+    "hoursBeforeLandfall": 75.0
+   }
+  },
+  {
+   "storm": "hudhud",
+   "source": "reforecast",
+   "init": "2014-10-11T00Z",
+   "offsetDays": 1,
+   "landfall": "2014-10-12T09:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2014-10-11T06:00Z",
+    "hoursBeforeLandfall": 27.0
+   }
+  },
+  {
+   "storm": "nivar",
+   "source": "operational",
+   "init": "2020-11-19T00Z",
+   "offsetDays": 7,
+   "landfall": "2020-11-26T00:00Z",
+   "nMembers": 31,
+   "matched": 16,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "nivar",
+   "source": "operational",
+   "init": "2020-11-21T00Z",
+   "offsetDays": 5,
+   "landfall": "2020-11-26T00:00Z",
+   "nMembers": 31,
+   "matched": 23,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "nivar",
+   "source": "operational",
+   "init": "2020-11-23T00Z",
+   "offsetDays": 3,
+   "landfall": "2020-11-26T00:00Z",
+   "nMembers": 31,
+   "matched": 8,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "nivar",
+   "source": "operational",
+   "init": "2020-11-25T00Z",
+   "offsetDays": 1,
+   "landfall": "2020-11-26T00:00Z",
+   "nMembers": 31,
+   "matched": 31,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2020-11-25T00:00Z",
+    "hoursBeforeLandfall": 24.0
+   }
+  },
+  {
+   "storm": "phailin",
+   "source": "reforecast",
+   "init": "2013-10-05T00Z",
+   "offsetDays": 7,
+   "landfall": "2013-10-12T18:00Z",
+   "nMembers": 5,
+   "matched": 4,
+   "matchMode": "genesis",
+   "firstHalfDetect": {
+    "validTime": "2013-10-08T06:00Z",
+    "hoursBeforeLandfall": 108.0
+   }
+  },
+  {
+   "storm": "phailin",
+   "source": "reforecast",
+   "init": "2013-10-07T00Z",
+   "offsetDays": 5,
+   "landfall": "2013-10-12T18:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "genesis",
+   "firstHalfDetect": {
+    "validTime": "2013-10-08T06:00Z",
+    "hoursBeforeLandfall": 108.0
+   }
+  },
+  {
+   "storm": "phailin",
+   "source": "reforecast",
+   "init": "2013-10-09T00Z",
+   "offsetDays": 3,
+   "landfall": "2013-10-12T18:00Z",
+   "nMembers": 11,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "phailin",
+   "source": "reforecast",
+   "init": "2013-10-11T00Z",
+   "offsetDays": 1,
+   "landfall": "2013-10-12T18:00Z",
+   "nMembers": 5,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2013-10-11T06:00Z",
+    "hoursBeforeLandfall": 36.0
+   }
+  },
+  {
+   "storm": "titli",
+   "source": "reforecast",
+   "init": "2018-10-04T00Z",
+   "offsetDays": 7,
+   "landfall": "2018-10-11T00:00Z",
+   "nMembers": 5,
+   "matched": 2,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "titli",
+   "source": "reforecast",
+   "init": "2018-10-06T00Z",
+   "offsetDays": 5,
+   "landfall": "2018-10-11T00:00Z",
+   "nMembers": 5,
+   "matched": 2,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "titli",
+   "source": "reforecast",
+   "init": "2018-10-08T00Z",
+   "offsetDays": 3,
+   "landfall": "2018-10-11T00:00Z",
+   "nMembers": 5,
+   "matched": 0,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "titli",
+   "source": "reforecast",
+   "init": "2018-10-10T00Z",
+   "offsetDays": 1,
+   "landfall": "2018-10-11T00:00Z",
+   "nMembers": 11,
+   "matched": 5,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "yaas",
+   "source": "operational",
+   "init": "2021-05-19T00Z",
+   "offsetDays": 7,
+   "landfall": "2021-05-26T06:00Z",
+   "nMembers": 31,
+   "matched": 18,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "yaas",
+   "source": "operational",
+   "init": "2021-05-21T00Z",
+   "offsetDays": 5,
+   "landfall": "2021-05-26T06:00Z",
+   "nMembers": 31,
+   "matched": 27,
+   "matchMode": "genesis",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "yaas",
+   "source": "operational",
+   "init": "2021-05-23T00Z",
+   "offsetDays": 3,
+   "landfall": "2021-05-26T06:00Z",
+   "nMembers": 31,
+   "matched": 4,
+   "matchMode": "at start",
+   "firstHalfDetect": null
+  },
+  {
+   "storm": "yaas",
+   "source": "operational",
+   "init": "2021-05-25T00Z",
+   "offsetDays": 1,
+   "landfall": "2021-05-26T06:00Z",
+   "nMembers": 31,
+   "matched": 31,
+   "matchMode": "at start",
+   "firstHalfDetect": {
+    "validTime": "2021-05-25T00:00Z",
+    "hoursBeforeLandfall": 30.0
+   }
+  }
+ ],
+ "pooled": {
+  "operational": {
+   "storms": [
+    "nivar",
+    "yaas"
+   ],
+   "starts": 8,
+   "matched": 158,
+   "members": 248,
+   "errorByLeadDay": [
+    {
+     "leadDays": "0-1",
+     "n": 267,
+     "medianKm": 59.1,
+     "meanKm": 65.2
+    },
+    {
+     "leadDays": "1-2",
+     "n": 123,
+     "medianKm": 93.8,
+     "meanKm": 113.1
+    },
+    {
+     "leadDays": "2-3",
+     "n": 114,
+     "medianKm": 230.3,
+     "meanKm": 228.3
+    },
+    {
+     "leadDays": "3-4",
+     "n": 119,
+     "medianKm": 216.6,
+     "meanKm": 223.4
+    },
+    {
+     "leadDays": "4-5",
+     "n": 134,
+     "medianKm": 217.2,
+     "meanKm": 232.0
+    },
+    {
+     "leadDays": "5-6",
+     "n": 133,
+     "medianKm": 253.8,
+     "meanKm": 274.2
+    },
+    {
+     "leadDays": "6-7",
+     "n": 90,
+     "medianKm": 310.1,
+     "meanKm": 331.5
+    },
+    {
+     "leadDays": "7-8",
+     "n": 54,
+     "medianKm": 398.9,
+     "meanKm": 410.2
+    },
+    {
+     "leadDays": "8-9",
+     "n": 8,
+     "medianKm": 347.2,
+     "meanKm": 434.2
+    }
+   ],
+   "halfDetectByOffset": {
+    "7": [
+     "nivar: none",
+     "yaas: none"
+    ],
+    "5": [
+     "nivar: none",
+     "yaas: none"
+    ],
+    "3": [
+     "nivar: none",
+     "yaas: none"
+    ],
+    "1": [
+     "nivar: 24 h before landfall",
+     "yaas: 30 h before landfall"
+    ]
+   }
+  },
+  "reforecast": {
+   "storms": [
+    "bulbul",
+    "fani",
+    "hudhud",
+    "phailin",
+    "titli"
+   ],
+   "starts": 20,
+   "matched": 65,
+   "members": 118,
+   "errorByLeadDay": [
+    {
+     "leadDays": "0-1",
+     "n": 136,
+     "medianKm": 50.3,
+     "meanKm": 54.0
+    },
+    {
+     "leadDays": "1-2",
+     "n": 177,
+     "medianKm": 84.5,
+     "meanKm": 96.5
+    },
+    {
+     "leadDays": "2-3",
+     "n": 91,
+     "medianKm": 129.2,
+     "meanKm": 142.2
+    },
+    {
+     "leadDays": "3-4",
+     "n": 88,
+     "medianKm": 193.1,
+     "meanKm": 202.4
+    },
+    {
+     "leadDays": "4-5",
+     "n": 51,
+     "medianKm": 315.2,
+     "meanKm": 324.5
+    },
+    {
+     "leadDays": "5-6",
+     "n": 46,
+     "medianKm": 370.0,
+     "meanKm": 412.9
+    },
+    {
+     "leadDays": "6-7",
+     "n": 31,
+     "medianKm": 491.6,
+     "meanKm": 515.4
+    },
+    {
+     "leadDays": "7-8",
+     "n": 18,
+     "medianKm": 583.7,
+     "meanKm": 579.0
+    },
+    {
+     "leadDays": "8-9",
+     "n": 4,
+     "medianKm": 564.5,
+     "meanKm": 587.8
+    }
+   ],
+   "halfDetectByOffset": {
+    "7": [
+     "bulbul: none",
+     "fani: none",
+     "hudhud: none",
+     "phailin: 108 h before landfall",
+     "titli: none"
+    ],
+    "5": [
+     "bulbul: none",
+     "fani: 120 h before landfall",
+     "hudhud: none",
+     "phailin: 108 h before landfall",
+     "titli: none"
+    ],
+    "3": [
+     "bulbul: none",
+     "fani: 72 h before landfall",
+     "hudhud: 75 h before landfall",
+     "phailin: none",
+     "titli: none"
+    ],
+    "1": [
+     "bulbul: 39 h before landfall",
+     "fani: 24 h before landfall",
+     "hudhud: 27 h before landfall",
+     "phailin: 36 h before landfall",
+     "titli: none"
+    ]
+   }
+  }
+ }
+}
