@@ -122,11 +122,37 @@ the storm** is one more than 300 km (or 200 km) from the best track, or outside 
   Bulbul). A storm inside its own baseline raises the climatological mean and spread, which is expected to make
   detection harder, not easier.
 - **No objects outside the storm within the case windows (300 km); 2 at 200 km** (the two
-  single-step Yaas objects). Quiet periods without cyclones were not tested. The extra "tracks" in the first
+  single-step Yaas objects). Cyclone-free periods are tested separately below. The extra "tracks" in the first
   table are the same storm split into fragments (distances above), not other systems.
 - **Why 81 hits but 80 error steps:** a hit is any detected object, fragments included, within
   300 km of a ≥ 34 kt best-track step, while the error uses only the main track's steps inside the best-track
   period at any wind speed (Hudhud and Bulbul gain 3 hits from fragments; Yaas has 2 error steps below 34 kt).
+
+### Quiet-period test: detections with no cyclone present
+
+`scripts/quiet_period_test.py`, results in `data/processed/quiet_periods.json`. Six 10-day windows in 2020–2022
+were declared in `DEV_LOG.md` before running; a window is quiet if IBTrACS has no system in 5–30°N, 75–100°E
+within the window ± 2 days. ERA5, anomalies against `data/clim/era5_monthly_stats.nc`, frozen detector.
+
+| Window | Month | Objects (tracks) | Strongest wind in region (m/s) | Without the 17 m/s gate (diagnostic) |
+|---|---|---|---|---|
+| 2021-01-10 – 2021-01-19 | Jan | 0 (0) | 13.6 | 34 (15), 5 over land |
+| 2020-07-01 – 2020-07-10 | Jul | 0 (0) | 15.9 | 0 (0), 0 over land |
+| 2021-08-01 – 2021-08-10 | Aug | 0 (0) | 14.8 | 12 (4), 9 over land |
+| 2022-10-01 – 2022-10-10 | Oct | 0 (0) | 14.1 | 34 (13), 5 over land |
+| 2021-12-09 – 2021-12-18 | Dec | 0 (0) | 11.5 | 0 (0), 0 over land |
+| **All, 50 days** | | **0 (0)** | | 80 (32), 19 over land |
+
+- **0 false objects in 50 cyclone-free days.** The regional wind never reached the 17 m/s gate in
+  any window, so the gate alone explains the result: without it, the same z-score rule would flag
+  32 tracks (6.4 per 10 days). The gate, not the z-score threshold, suppresses
+  false alarms in quiet weather. (The no-gate run is a diagnostic added after seeing the result; the
+  frozen detector is unchanged.)
+- July/August: 0 objects with the gate; without it 12, mostly over land — possibly
+  monsoon lows, which IBTrACS does not list, so they are neither confirmed nor counted as storms.
+- March: no quiet window under the declared swap rule — March 2022 had two IBTrACS depressions
+  (3–6 and 20–23 March). December was swapped from 2020-12-15 to 2021-12-09 (16 swaps, all recorded).
+
 
 ## Run locally
 

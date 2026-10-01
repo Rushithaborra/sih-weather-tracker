@@ -3,6 +3,7 @@ import TopBar from '../components/TopBar'
 import { CASES } from '../data/cases'
 import { ENSO } from '../data/enso'
 import { DETECTION_SKILL } from '../data/detectionSkill'
+import { QUIET_PERIODS } from '../data/quietPeriods'
 import { useCase } from '../context/CaseContext'
 
 export default function Verification() {
@@ -65,6 +66,8 @@ export default function Verification() {
       </div>
 
       <DetectionSkill />
+
+      <QuietPeriods />
 
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-2">Planned, not yet implemented</h3>
@@ -161,7 +164,7 @@ function DetectionSkill() {
         </li>
         <li>
           No objects outside the storm within the case windows (300 km); {P.falseAlarms200km} at 200 km (the two
-          single-step Yaas objects). Quiet periods without cyclones were not tested.
+          single-step Yaas objects). Cyclone-free periods: see the quiet-period test below.
         </li>
         <li>
           POD counts {P.podWmo.hits} hit steps and the error uses {P.matchedSteps}: a hit is any detected object, fragments
@@ -169,6 +172,68 @@ function DetectionSkill() {
           the best-track period at any wind speed (Hudhud and Bulbul gain 3 hits from fragments; Yaas has 2 error steps
           below 34 kt).
         </li>
+      </ul>
+    </div>
+  )
+}
+
+function QuietPeriods() {
+  const { windows, summary: S } = QUIET_PERIODS
+  const run = windows.filter((w) => w.start)
+  const skipped = windows.filter((w) => !w.start)
+  return (
+    <div className="bg-card rounded-card px-5 py-4">
+      <h3 className="font-bold text-ink text-[14.5px] mb-1">Done: quiet-period test — detections with no cyclone present</h3>
+      <p className="text-[12px] text-muted mb-3">
+        {run.length} windows of 10 days in 2020–2022, declared before running (DEV_LOG). Quiet = no IBTrACS system in
+        5–30°N, 75–100°E within the window ± 2 days. ERA5, anomalies against the 2010–2019 month/hour climatology,
+        frozen detector.
+      </p>
+      <table className="w-full text-[12px]">
+        <thead>
+          <tr className="text-left text-muted border-b border-line">
+            {['Window', 'Month', 'Objects (tracks)', 'Strongest wind in region (m/s)', 'Without the 17 m/s gate: objects (tracks), over land'].map((h) => (
+              <th key={h} className="py-2 pr-4 font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {run.map((w) => (
+            <tr key={w.id} className="border-b border-line">
+              <td className="py-2 pr-4 text-ink">{w.start} → {w.end}{w.swaps.length ? ` (swapped ×${w.swaps.length})` : ''}</td>
+              <td className="py-2 pr-4 text-ink">{w.month}</td>
+              <td className="py-2 pr-4 text-ink">{w.objects} ({w.tracks})</td>
+              <td className="py-2 pr-4 text-ink">{w.domainMaxWs}</td>
+              <td className="py-2 pr-4 text-ink">{w.noWindGate.objects} ({w.noWindGate.tracks}), {w.noWindGate.landObjects} over land</td>
+            </tr>
+          ))}
+          <tr className="font-semibold">
+            <td className="py-2 pr-4 text-ink">All, {S.daysRun} days</td>
+            <td className="py-2 pr-4 text-ink" />
+            <td className="py-2 pr-4 text-ink">{S.objects} ({S.tracks})</td>
+            <td className="py-2 pr-4 text-ink" />
+            <td className="py-2 pr-4 text-ink">{S.noWindGateDiagnostic.objects} ({S.noWindGateDiagnostic.tracks}), {S.noWindGateDiagnostic.landObjects} over land</td>
+          </tr>
+        </tbody>
+      </table>
+      <ul className="text-[11.5px] text-muted mt-3 space-y-1.5 list-disc pl-4">
+        <li>
+          {S.objects} false objects in {S.daysRun} cyclone-free days. The regional wind never reached the 17 m/s gate in
+          any window, so the gate alone rules everything out: without it, the same z-score rule would flag{' '}
+          {S.noWindGateDiagnostic.tracks} tracks ({(S.noWindGateDiagnostic.tracks / run.length).toFixed(1)} per 10 days). The
+          gate, not the z-score threshold, is what suppresses false alarms in quiet weather.
+        </li>
+        <li>
+          July/August: {run.filter((w) => w.monsoonSeason).reduce((a, w) => a + w.objects, 0)} objects with the gate;
+          without it, {run.filter((w) => w.monsoonSeason).reduce((a, w) => a + w.noWindGate.objects, 0)} objects, mostly over
+          land. These may be monsoon lows, which IBTrACS does not list, so they are not verified either way.
+        </li>
+        {skipped.map((w) => (
+          <li key={w.id}>
+            {w.id} ({w.declared.slice(0, 7)}): no quiet window under the declared swap rule — March 2022 had two IBTrACS
+            depressions (3–6 and 20–23 March).
+          </li>
+        ))}
       </ul>
     </div>
   )
