@@ -143,3 +143,19 @@ decision (option: treat a start with the storm below 34 kt like a genesis start)
   17 m/s wind gate (ws_min = 0) gives 80 objects / 32 tracks, so the gate explains the zero. The
   frozen DEFAULTS are unchanged; the diagnostic is reported alongside.
 - Raw ERA5 for the windows: data/raw/quiet_*.nc (gitignored).
+
+## 2026-10-01: track merging as an option — rule written before implementing (post-results change)
+
+**Change made after seeing results** (5 of 7 held-out storms have fragmented tracks). Written down
+before any code; implemented only as `tracker.run(..., merge_tracks=False)`, default off, so
+the frozen DEFAULTS and every published number are unchanged.
+
+Rule: track B is appended to track A if
+1. A's last object and B's first object are 6–12 h apart (B starts after A ends; no overlap),
+2. the distance between those two objects' centroids is <= 300 km,
+3. their minimum MSLP differs by <= 10 hPa.
+Candidates are joined greedily, closest first, until no pair qualifies; each track joins at most
+one predecessor and one successor. Concurrent fragments (two objects at the same time) are not
+merged by this rule.
+Evaluation: all 8 storms and the quiet windows, with and without merging — tracks per storm,
+error, POD, and "false links" (a join where either joined object is > 300 km from the best track).

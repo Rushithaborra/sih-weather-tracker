@@ -70,3 +70,22 @@ as regenerating the maps needs another 30-min run.
 - At test time (1 Oct): 9 complete IMD days returned for Kolkata, all 0% of members at gale.
 - Sushanth's file `LiveForecast.jsx` edited (import + one line to place the panel) — necessary.
 - Committed before Feature 2 because Feature 2 is waiting on the IMD server (~4 KB/s).
+
+## Feature 4: Track merging as an option — done (~35 min)
+
+- Rule written in DEV_LOG before coding (post-results change). `tracker.run(..., merge_tracks=False)`
+  + `tracker.merge_track_fragments`; default off; DEFAULTS unchanged; 2 new tests.
+- `scripts/evaluate_track_merging.py` → `data/processed/track_merging.json`. No-merge run reproduces
+  the published tracks for all 8 storms.
+
+| Storm | Tracks no-merge → merge | Pmin median (km) | Links | False links |
+|---|---|---|---|---|
+| Amphan, Yaas, Phailin, Hudhud, Titli, Fani, Nivar | unchanged (1/3/2/2/2/1/1) | unchanged | 0 | 0 |
+| Bulbul | 3 → 2 | 23.7 → 23.7 | 1 (12 h, 241 km; ends 75/115 km from best track) | 0 |
+
+- POD unchanged by construction (merging relabels tracks; no objects added or removed).
+- Quiet windows: frozen detector 0 tracks → 0 links. No-gate diagnostic: 32 → 27 tracks via 5 links,
+  all false (no storm present).
+- Why it barely helps: the fragmentation counted earlier is mostly concurrent objects (two at the
+  same time), which a sequential-gap rule cannot join; it fixes 1 of 5 fragmented storms and does
+  not change any main-track error. Recommendation: keep the default off.

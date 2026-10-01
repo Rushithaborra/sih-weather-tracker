@@ -46,3 +46,19 @@ def test_below_gale_wind_not_detected():
     # strong z-scores but wind peaks at 4 * 4 = 16 m/s < 17 m/s
     z, lat, lon, times = _blobs(centres_fn=lambda t: [(10.0, 80.0)])
     assert _run(z, lat, lon, times, ws_scale=4.0).empty
+
+
+def test_merge_tracks_joins_a_gap_but_not_a_distant_track():
+    from pipeline.tracker import merge_track_fragments as merge_tracks
+    t = pd.to_datetime(["2020-05-14 00:00", "2020-05-14 06:00", "2020-05-14 18:00", "2020-05-15 00:00", "2020-05-14 18:00"])
+    tr = pd.DataFrame({"time": t, "lat": [10.0, 10.5, 11.5, 12.0, 25.0], "lon": [85.0, 85.0, 85.0, 85.0, 95.0],
+                       "min_msl": [990.0, 988.0, 985.0, 984.0, 1000.0], "track_id": [0, 0, 1, 1, 2]})
+    merged, links = merge_tracks(tr)
+    assert links == [{"from": 0, "to": 1, "gapH": 12.0, "km": round(float(links[0]["km"]), 1)}]
+    assert merged.track_id.nunique() == 2  # the distant track 2 stays separate
+
+
+def test_merge_off_by_default():
+    import inspect
+    from pipeline import tracker
+    assert inspect.signature(tracker.run).parameters["merge_tracks"].default is False
