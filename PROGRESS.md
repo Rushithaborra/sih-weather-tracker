@@ -57,3 +57,16 @@ as regenerating the maps needs another 30-min run.
   (possible monsoon lows, not in IBTrACS, so unverified).
 - Didn't work: IMD monsoon-depression list is not available offline; Jul/Aug objects are reported
   separately instead of being checked against it.
+
+## Feature 3: City panel on the Live page — done (~40 min)
+
+- New `dashboard-ui/src/components/CityWeatherPanel.jsx` + `src/lib/openMeteo.js`; client-side,
+  no key. 12 cities: current conditions (forecast API) and, per selected city, the ECMWF IFS
+  ensemble (0.25°, 51 members) for each complete IMD rainfall day (03–03 UTC): share of members
+  with max wind ≥ 17 and ≥ 25 m/s, median member 24 h rain and its IMD category.
+- Shows model, run time (from Open-Meteo's model metadata; 30 Sep 18Z at test time) and the
+  Open-Meteo attribution; label "Live, unvalidated point forecast; not the tracking pipeline.
+  Official warnings: IMD". Error state verified with the API blocked (test only).
+- At test time (1 Oct): 9 complete IMD days returned for Kolkata, all 0% of members at gale.
+- Sushanth's file `LiveForecast.jsx` edited (import + one line to place the panel) — necessary.
+- Committed before Feature 2 because Feature 2 is waiting on the IMD server (~4 KB/s).

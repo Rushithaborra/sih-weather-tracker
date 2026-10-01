@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Polyline, CircleMarker, Rectangle, Tooltip } f
 import { Users, AlertTriangle, Wind, CalendarClock, RefreshCw, Loader2 } from 'lucide-react'
 import TimelineSlider from '../components/TimelineSlider'
 import LiveWeatherField from '../components/LiveWeatherField'
+import CityWeatherPanel from '../components/CityWeatherPanel'
 import { useLiveGefs, fmtAgo, fmtInit, hoursAgo, positionsAt } from '../lib/liveGefs'
 import { categoryFor } from '../lib/category'
 
@@ -182,6 +183,8 @@ function LiveView({ data }) {
           </p>
         )}
       </div>
+
+      <CityWeatherPanel />
     </div>
   )
 }
