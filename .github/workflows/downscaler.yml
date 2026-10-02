@@ -42,10 +42,15 @@ jobs:
         run: python scripts/downscale_data.py
 
       - name: Train and evaluate
+        timeout-minutes: 300
+        env:
+          DS_TIME_BUDGET_MIN: "280"
         run: python scripts/downscale_train.py
 
-      - name: Commit results
+      - name: Commit results (also after a time-out: the deterministic results are written first)
+        if: always()
         run: |
+          if [ ! -f data/processed/downscaler.json ]; then echo "no results written"; exit 1; fi
           git config user.name "Rushitha Borra"
           git config user.email "rushithaborra@gmail.com"
           git add models/ data/processed/downscaler.json data/processed/downscaler_maps dashboard-ui/src/data/downscaler.js
