@@ -240,7 +240,11 @@ def storm_maps(storms, preds, members, truth, tt, lat, lon):
         la0, la1, lo0, lo1 = foot[r["storm"]]
         land = ~np.isnan(truth[i])
         panels = [("IMD gauges (truth)", truth[i]), ("Bilinear (no learning)", preds["bilinear"][i]), ("U-Net (MSE)", preds["unet"][i]),
-                  ("U-Net + conservation", preds["unet_conserve"][i]), ("Diffusion, 1 member", members[0][i]), ("Diffusion, 8-member mean", preds["diffusion_mean"][i])]
+                  ("U-Net + conservation", preds["unet_conserve"][i])]
+        if "diffusion_member" in preds:
+            panels += [("Diffusion, 1 member", preds["diffusion_member"][i]), (f"Diffusion, {MEMBERS}-member mean", preds["diffusion_mean"][i])]
+        else:
+            panels += [("Bicubic (no learning)", preds["bicubic"][i]), ("ERA5 coarse input (1.5°)", preds["bilinear"][i])]
         fig, axes = plt.subplots(2, 3, figsize=(12, 8.2), subplot_kw=proj)
         for ax, (title, f) in zip(axes.ravel(), panels):
             f = np.where(land, f, np.nan)
@@ -287,40 +291,58 @@ def main():
         with torch.no_grad():
             return torch.cat([unet(inp[i:i + 32].to(DEV)).cpu() for i in range(0, inp.shape[0], 32)])
 
-    # Diffusion on the residual log1p(y) - unet
-    fit_res = fit[1] - unet_pred(fit[0]); val_res = val[1] - unet_pred(val[0])
-    cond = lambda inp: torch.cat([inp, unet_pred(inp)], 1)  # noqa: E731
-    diff = UNet(5, temb=64).to(DEV)
-    diff = train(diff, (cond(fit[0]), fit_res, fit[2]), (cond(val[0]), val_res, val[2]), EPOCHS, 1e-3,
-                 lambda m, c, r, k: diff_loss(m, c, r, k), "diffusion")
-
-    # Predictions on the test set (mm, unpadded)
+    # Deterministic models first -- saved before the slow diffusion step, so they survive a time-out
     x_mm = test.x_coarse_mm.values
     truth = test.y_imd_mm.values
     base = unet_pred(tst[0])
     preds = {"bilinear": x_mm, "bicubic": bicubic(x_mm),
              "unet": np.expm1(base[:, 0, :H, :W].numpy()).clip(0)}
     preds["unet_conserve"] = conserve(preds["unet"], x_mm)
-    c = cond(tst[0]).to(DEV)
-    members = []
-    diff.eval()
-    for s in range(MEMBERS):
-        res = torch.cat([diff_sample(diff, c[i:i + 16], seed=s).cpu() for i in range(0, c.shape[0], 16)])
-        members.append(np.expm1((base + res)[:, 0, :H, :W].numpy()).clip(0))
-    members = np.stack(members)
-    preds["diffusion_mean"] = members.mean(0)
-    preds["diffusion_member"] = members[0]
-
-    results = {k: metrics(v, truth) for k, v in preds.items()}
-    results["diffusion_members_avg_peak_note"] = "single members keep peaks; the ensemble mean smooths them"
-
-    # Storm days: peak retention per model on IMD land cells inside the rainfall-vs-IMD footprint
-    rv = json.loads((ROOT / "data" / "processed" / "rainfall_vs_imd.json").read_text())
-    foot = {r["storm"]: r["footprint"] for r in rv["rows"] if "footprint" in r}
-    era5_native = {(r["storm"], r["imdDay"]): r.get("era5MaxMm") for r in rv["rows"]}
     tt = pd.DatetimeIndex(test.time.values)
     lat, lon = test.lat.values, test.lon.values
-    storms = []
+    MODELS.mkdir(exist_ok=True)
+    torch.save(unet.state_dict(), MODELS / "downscaler_unet.pt")
+    meta = {"design": "DEV_LOG 2026-10-02: ERA5 1.5 deg daily rain -> IMD 0.25 deg gauge rain; train 2010-2017, val 2018-2019, "
+                      "test 2020-2021 + Phailin/Hudhud windows", "device": str(DEV), "trainDays": int(tr.sizes["time"]),
+            "valDays": int(va.sizes["time"]), "testDays": int(test.sizes["time"]),
+            "trainYears": sorted(set(int(y) for y in pd.DatetimeIndex(tr.time.values).year)),
+            "settings": {"epochs": EPOCHS, "ddimSteps": SAMPLE_STEPS, "members": MEMBERS}}
+    storm_idx = storm_indices(tt, truth, lat, lon)
+    write_results(meta, preds, None, None, truth, tt, lat, lon, storm_idx, t0, "diffusion pending")
+
+    budget = float(os.environ.get("DS_TIME_BUDGET_MIN", 300))
+    if (time.time() - t0) / 60 > budget * 0.5:
+        write_results(meta, preds, None, None, truth, tt, lat, lon, storm_idx, t0, "diffusion skipped: time budget")
+        return
+
+    # Diffusion on the residual log1p(y) - unet, sampled on the storm days + a fixed random sample of test days
+    fit_res = fit[1] - unet_pred(fit[0]); val_res = val[1] - unet_pred(val[0])
+    cond = lambda inp: torch.cat([inp, unet_pred(inp)], 1)  # noqa: E731
+    diff = UNet(5, temb=64).to(DEV)
+    diff = train(diff, (cond(fit[0]), fit_res, fit[2]), (cond(val[0]), val_res, val[2]), EPOCHS, 1e-3,
+                 lambda m, c, r, k: diff_loss(m, c, r, k), "diffusion")
+    torch.save(diff.state_dict(), MODELS / "downscaler_diffusion.pt")
+    rng = np.random.default_rng(SEED)
+    others = [i for i in range(len(tt)) if i not in set(storm_idx.values())]
+    sub = sorted(set(storm_idx.values()) | set(rng.choice(others, size=min(SUBSET_DAYS, len(others)), replace=False).tolist()))
+    c = cond(tst[0][sub]).to(DEV)
+    members = []
+    diff.eval()
+    for s_ in range(MEMBERS):
+        res = torch.cat([diff_sample(diff, c[i:i + 16], seed=s_).cpu() for i in range(0, c.shape[0], 16)])
+        members.append(np.expm1((base[sub] + res)[:, 0, :H, :W].numpy()).clip(0))
+        print(f"  [diffusion] member {s_ + 1}/{MEMBERS} sampled ({(time.time() - t0) / 60:.0f} min)", flush=True)
+    write_results(meta, preds, np.stack(members), sub, truth, tt, lat, lon, storm_idx, t0, "complete")
+
+
+SUBSET_DAYS = int(os.environ.get("DS_SUBSET_DAYS", 100))
+
+
+def storm_indices(tt, truth, lat, lon):
+    """Test-set index of each held-out storm day with IMD heavy rain (>= 64.5 mm) in its footprint."""
+    rv = json.loads((ROOT / "data" / "processed" / "rainfall_vs_imd.json").read_text())
+    foot = {r["storm"]: r["footprint"] for r in rv["rows"] if "footprint" in r}
+    out = {}
     for s, days in STORM_DAYS.items():
         for d in days:
             if pd.Timestamp(d) not in tt:
@@ -328,36 +350,56 @@ def main():
             i = int(np.where(tt == pd.Timestamp(d))[0][0])
             la0, la1, lo0, lo1 = foot[s]
             box = (lat[:, None] >= la0) & (lat[:, None] <= la1) & (lon[None] >= lo0) & (lon[None] <= lo1) & ~np.isnan(truth[i])
-            imd_max = float(truth[i][box].max()) if box.any() else None
-            if not imd_max or imd_max < 64.5:
-                continue
-            row = {"storm": s, "imdDay": d, "imdMaxMm": round(imd_max, 1),
-                   "era5NativeMaxMm": era5_native.get((s, d))}
-            for k, v in preds.items():
-                row[k] = round(float(v[i][box].max()), 1)
-            row["diffusionMemberMaxMm"] = [round(float(m[i][box].max()), 1) for m in members]
-            storms.append(row)
-    for k in preds:
-        ratios = [r[k] / r["imdMaxMm"] for r in storms]
-        results[k]["stormPeakKeptMedian"] = round(float(np.median(ratios)), 3) if ratios else None
+            if box.any() and float(truth[i][box].max()) >= 64.5:
+                out[(s, d)] = i
+    return out
 
-    MODELS.mkdir(exist_ok=True)
-    torch.save(unet.state_dict(), MODELS / "downscaler_unet.pt")
-    torch.save(diff.state_dict(), MODELS / "downscaler_diffusion.pt")
-    out = {"design": "DEV_LOG 2026-10-02: ERA5 1.5 deg daily rain -> IMD 0.25 deg gauge rain; train 2010-2017, val 2018-2019, "
-                     "test 2020-2021 + Phailin/Hudhud windows", "device": str(DEV), "trainDays": int(tr.sizes["time"]),
-           "valDays": int(va.sizes["time"]), "testDays": int(test.sizes["time"]),
-           "trainYears": sorted(set(int(y) for y in pd.DatetimeIndex(tr.time.values).year)),
-           "minutes": round((time.time() - t0) / 60, 1), "test": results, "storms": storms}
-    out["settings"] = {"epochs": EPOCHS, "ddimSteps": SAMPLE_STEPS, "members": MEMBERS}
-    out["maps"] = storm_maps(storms, preds, members, truth, tt, lat, lon)
+
+def write_results(meta, preds, members, sub, truth, tt, lat, lon, storm_idx, t0, status):
+    """Full-test-set metrics for the deterministic models; when diffusion members exist (sampled on the
+    subset `sub`), every model is also scored on that same subset so the comparison is like for like."""
+    rv = json.loads((ROOT / "data" / "processed" / "rainfall_vs_imd.json").read_text())
+    foot = {r["storm"]: r["footprint"] for r in rv["rows"] if "footprint" in r}
+    era5_native = {(r["storm"], r["imdDay"]): r.get("era5MaxMm") for r in rv["rows"]}
+    allp = dict(preds)
+    results = {k: metrics(v, truth) for k, v in preds.items()}
+    subset = None
+    if members is not None:
+        pos = {i: j for j, i in enumerate(sub)}
+        dm, d1 = members.mean(0), members[0]
+        subset = {"days": len(sub), "note": "all models scored on the same days: the storm days plus a fixed random sample of test days"}
+        subset.update({k: metrics(v[sub], truth[sub]) for k, v in preds.items()})
+        subset["diffusion_mean"] = metrics(dm, truth[sub])
+        subset["diffusion_member"] = metrics(d1, truth[sub])
+    storms = []
+    for (s, d), i in storm_idx.items():
+        la0, la1, lo0, lo1 = foot[s]
+        box = (lat[:, None] >= la0) & (lat[:, None] <= la1) & (lon[None] >= lo0) & (lon[None] <= lo1) & ~np.isnan(truth[i])
+        row = {"storm": s, "imdDay": d, "imdMaxMm": round(float(truth[i][box].max()), 1), "era5NativeMaxMm": era5_native.get((s, d))}
+        for k, v in preds.items():
+            row[k] = round(float(v[i][box].max()), 1)
+        if members is not None:
+            j = pos[i]
+            row["diffusion_mean"] = round(float(members.mean(0)[j][box].max()), 1)
+            row["diffusion_member"] = round(float(members[0][j][box].max()), 1)
+            row["diffusionMemberMaxMm"] = [round(float(m[j][box].max()), 1) for m in members]
+        storms.append(row)
+    for k in list(preds) + (["diffusion_mean", "diffusion_member"] if members is not None else []):
+        ratios = [r[k] / r["imdMaxMm"] for r in storms if k in r]
+        target = results if k in results else subset
+        target[k]["stormPeakKeptMedian"] = round(float(np.median(ratios)), 3) if ratios else None
+    if members is not None:
+        full_like = {k: np.full_like(preds["unet"], np.nan) for k in ("diffusion_mean", "diffusion_member")}
+        for j, i in enumerate(sub):
+            full_like["diffusion_mean"][i], full_like["diffusion_member"][i] = members.mean(0)[j], members[0][j]
+        allp.update(full_like)
+    out = {**meta, "status": status, "minutes": round((time.time() - t0) / 60, 1), "test": results, "testSubset": subset,
+           "storms": storms}
+    out["maps"] = storm_maps(storms, allp, None, truth, tt, lat, lon)
     OUT_JSON.write_text(json.dumps(out, indent=1))
     OUT_JS.write_text("// Stage 2 downscaler experiment, generated by scripts/downscale_train.py.\n"
                       f"export const DOWNSCALER = {json.dumps(out, indent=1)}\n")
-    np.savez_compressed(DATA / "test_predictions.npz", truth=truth, members=members,
-                        **{k: v for k, v in preds.items()}, times=tt.astype(str).values, lat=lat, lon=lon)
-    print(json.dumps({k: {m: results[k][m] for m in ("rmseMm", "r", "biasMm", "stormPeakKeptMedian")} | {"csi204": results[k]["extremelyHeavy"]["csi"]}
-                      for k in preds}, indent=1))
+    print(f"results written ({status})", flush=True)
 
 
 if __name__ == "__main__":
