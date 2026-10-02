@@ -187,3 +187,36 @@ The user asked to complete the stopped items, which lifts the 5 GB rule for the 
   day. T2m |z| >= 2 flagged up to 6,993 cells (31 %): the tropical ocean reads about +1.4 K
   against 2015-2019 where the ERA5 spread sits at the 0.5 K floor. Threshold unchanged (as
   specified); a caveat was added after seeing this result.
+
+## 2026-10-02: Stage 2 downscaler experiment — design declared before training
+
+Goal: test whether a learned downscaler recovers the rainfall peaks that coarse reanalysis smooths
+away, against real gauge observations.
+- Input: ERA5 hourly total precipitation on the WeatherBench2 1.5° grid, summed over each IMD day
+  (24 h ending 03 UTC), bilinearly interpolated to the IMD 0.25° grid; plus static 0.25° terrain
+  (ERA5 surface geopotential) and land-sea mask. 1.5° -> 0.25° is a 6x refinement.
+- Target / truth: IMD 0.25° daily gridded gauge rainfall (land cells over India only).
+- Split, fixed now: train = all available IMD years 2010-2017; validation (model selection only)
+  = 2018-2019; test = 2020-2021. The windows (landfall +/- 7 days) of Phailin 2013 and Hudhud 2014
+  are removed from training and reported as test cases too. No test data is used for any choice.
+- Models: (1) bilinear (no learning), (2) bicubic, (3) U-Net trained with MSE on log1p(rain),
+  (4) the same U-Net with a mass-conservation constraint (each 1.5° block's mean rescaled to the
+  input — the "physics-informed" part), (5) a small conditional diffusion model (DDPM) predicting
+  the high-resolution field from the same inputs, sampled as an 8-member ensemble.
+- Metrics on the test set, IMD land cells: RMSE, correlation, bias, CSI / POD / FAR at 64.5,
+  115.6 and 204.5 mm, cells >= 204.5 mm, and peak retention on the held-out storms' landfall days,
+  side by side with ERA5 at its native 0.25° (from the rainfall-vs-IMD study).
+- Limits stated in advance: the truth is 0.25°, not 5 km; IMD covers land only; a few thousand
+  training days. This is a proxy for the designed 12 km -> 5 km downscaler, not that model.
+
+### Stage 2 downscaler: run record
+
+- Run 1 (GitHub Actions, CPU) cancelled after 4 h: the full-test-set diffusion sampling would not finish within the job
+  limit and logs are hidden until a job ends. Changed (after this, before any results were seen): deterministic results
+  are written before the diffusion step, and diffusion is sampled on the held-out storm days plus a fixed random sample of
+  100 test days (seed 0), with every model also scored on that same subset.
+- Run 2 (GitHub Actions): U-Net trained (20 epochs, ~2.4 h); diffusion skipped by the time budget; deterministic results
+  committed.
+- Diffusion trained on an Apple M3 GPU reusing the committed U-Net weights (20 epochs, 43 min with sampling), same data
+  and split; the deterministic metrics reproduced exactly. Results reported as they came out, including diffusion's worse
+  CSI/RMSE and overshooting members.

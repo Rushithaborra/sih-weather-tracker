@@ -11,6 +11,7 @@ import AlertsApi from './pages/AlertsApi'
 import Verification from './pages/Verification'
 import DataSources from './pages/DataSources'
 import LiveForecast from './pages/LiveForecast'
+import Downscaler from './pages/Downscaler'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
               <Route path="/active-anomalies" element={<ActiveAnomalies />} />
               <Route path="/tracks" element={<TracksBoxes />} />
               <Route path="/zoom" element={<ZoomPage />} />
+              <Route path="/downscaler" element={<Downscaler />} />
               <Route path="/alerts-api" element={<AlertsApi />} />
               <Route path="/verification" element={<Verification />} />
               <Route path="/data-sources" element={<DataSources />} />

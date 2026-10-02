@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import {
-  Wind, Radio, LayoutGrid, Activity, Waypoints, ZoomIn, Bell, ShieldCheck, Database, Sun, Moon,
+  Wind, Radio, Sparkles, LayoutGrid, Activity, Waypoints, ZoomIn, Bell, ShieldCheck, Database, Sun, Moon,
 } from 'lucide-react'
 import { useCase } from '../context/CaseContext'
 import { useTheme } from '../context/ThemeContext'
@@ -12,6 +12,7 @@ const NAV = [
   { to: '/active-anomalies', label: 'Active anomalies', icon: Activity },
   { to: '/tracks', label: 'Tracks & 4D boxes', icon: Waypoints },
   { to: '/zoom', label: '5 km zoom', icon: ZoomIn },
+  { to: '/downscaler', label: 'Downscaler (AI)', icon: Sparkles },
   { to: '/alerts-api', label: 'Alerts API', icon: Bell },
   { to: '/verification', label: 'Verification', icon: ShieldCheck },
   { to: '/data-sources', label: 'Data sources', icon: Database },

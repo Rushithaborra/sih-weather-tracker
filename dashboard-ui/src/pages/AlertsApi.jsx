@@ -1,51 +1,32 @@
 import React, { useState } from 'react'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, Play, Loader2 } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { useCase } from '../context/CaseContext'
 
 export default function AlertsApi() {
   const { mode, data } = useCase()
   const ex = data.alertSnapshot.examples.severe ?? data.alertSnapshot.examples.moderate
-  const tier = data.alertSnapshot.examples.severe ? 'SEVERE' : 'MODERATE'
-  const sample = {
-    case: data.id, time: data.alertSnapshot.time, variable: 'ws', tier, lat: ex.lat, lon: ex.lon,
-    cell_deg: 0.25, z: ex.z, wind_ms: ex.windMs,
-    tiers_note: 'z-score AND IMD wind gate, inside tracked-object boxes + 1 deg',
-    geojson: `/${data.id}_alerts_sample.geojson`,
-  }
-  const jsonStr = JSON.stringify(sample, null, 2)
-  const [copied, setCopied] = useState(false)
-  const copy = () => {
-    navigator.clipboard.writeText(jsonStr)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  const endpoints = [
+    { path: `/api/alerts?case=${data.id}&lat=${ex.lat}&lon=${ex.lon}`, desc: 'Alert tier of the 0.25° cell at a point for this case, plus the nearest severe / moderate / low cell.' },
+    { path: `/api/alerts?case=${data.id}`, desc: 'Counts per tier and the 10 strongest cells. Add &format=geojson for the full alert GeoJSON.' },
+    { path: `/api/cap?case=${data.id}`, desc: 'The same alert as CAP 1.2 XML (the format of India\'s SACHET system), status Exercise.' },
+    { path: '/api/live', desc: 'Latest live runs: ECMWF IFS (systems, wind alerts, rain by IMD day) and the GEFS ensemble summary.' },
+    { path: '/api/cap?live=ifs', desc: 'CAP 1.2 for the systems in the latest IFS run (an alert with no info block when there are none).' },
+  ]
 
   return (
     <div className="space-y-4">
       <TopBar
         title="Alerts API"
-        subtitle="Shape of the alert records the pipeline actually produces (this is the concept UI's read of a static export, not a live endpoint)"
+        subtitle="Live REST endpoints serving the pipeline's alerts as JSON and CAP 1.2 — research prototype, not an official warning"
         forceMode={mode === 'gefs' ? 'validated' : mode}
       />
-      <div className="bg-card rounded-card px-5 py-4">
-        <div className="font-mono text-[12px] text-ink bg-bg rounded-lg px-4 py-2.5 mb-3">
-          GET /v1/alerts?{`case=${data.id}&lat=${ex.lat}&lon=${ex.lon}`}
-        </div>
-        <p className="text-[12px] text-muted mb-3">
-          There is no live endpoint yet — the real pipeline exports GeoJSON per timestep from the Streamlit
-          app's download buttons. This is one record from that export, reshaped as JSON.
+      <div className="bg-card rounded-card px-5 py-4 space-y-3">
+        <p className="text-[12px] text-muted">
+          Serverless functions deployed with this site (<code className="bg-bg px-1 rounded">dashboard-ui/api/</code>), open to any client
+          (CORS enabled, no key). Every response carries the disclaimer; CAP alerts are always <code className="bg-bg px-1 rounded">status=Exercise</code>.
         </p>
-        <div className="relative">
-          <pre className="text-[12px] bg-ink900 text-stone-100 rounded-lg px-4 py-3.5 overflow-x-auto"><code>{jsonStr}</code></pre>
-          <button
-            onClick={copy}
-            className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white text-[11px] px-2.5 py-1 rounded-md transition-colors"
-          >
-            {copied ? <Check size={12} /> : <Copy size={12} />}
-            {copied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
+        {endpoints.map((e) => <Endpoint key={e.path} {...e} />)}
       </div>
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[13.5px] mb-2">
@@ -70,5 +51,43 @@ function FieldRow({ field, desc }) {
       <td className="py-2 pr-4 font-mono text-brand whitespace-nowrap align-top">{field}</td>
       <td className="py-2 text-muted">{desc}</td>
     </tr>
+  )
+}
+
+function Endpoint({ path, desc }) {
+  const [state, setState] = useState({ status: 'idle' })
+  const [copied, setCopied] = useState(false)
+  const url = `${window.location.origin}${path}`
+  const run = async () => {
+    setState({ status: 'loading' })
+    try {
+      const r = await fetch(path, { signal: AbortSignal.timeout(30000) })
+      const ct = r.headers.get('content-type') || ''
+      if (!ct.includes('json') && !ct.includes('xml')) throw new Error('the API runs on the deployed site, not the local dev server')
+      setState({ status: 'ok', code: r.status, body: ct.includes('json') ? JSON.stringify(await r.json(), null, 2) : await r.text() })
+    } catch (e) {
+      setState({ status: 'error', body: e.message })
+    }
+  }
+  const copy = () => { navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1500) }
+  return (
+    <div className="border border-line rounded-lg px-3.5 py-3">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <code className="font-mono text-[12px] text-ink break-all"><span className="text-brand font-semibold">GET</span> {path}</code>
+        <div className="flex gap-1.5">
+          <button onClick={copy} className="flex items-center gap-1 bg-bg hover:bg-line text-ink text-[11px] px-2.5 py-1 rounded-md transition-colors">
+            {copied ? <Check size={12} /> : <Copy size={12} />} {copied ? 'Copied' : 'Copy URL'}
+          </button>
+          <button onClick={run} className="flex items-center gap-1 bg-brand hover:bg-brand/90 text-white text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors">
+            {state.status === 'loading' ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />} Try it
+          </button>
+        </div>
+      </div>
+      <p className="text-[11.5px] text-muted mt-1">{desc}</p>
+      {state.status === 'ok' && (
+        <pre className="text-[11px] bg-ink900 text-stone-100 rounded-lg px-3 py-2.5 mt-2 overflow-auto max-h-72"><code>HTTP {state.code}{'\n'}{state.body}</code></pre>
+      )}
+      {state.status === 'error' && <p className="text-[11.5px] text-red-600 mt-2">Request failed: {state.body}</p>}
+    </div>
   )
 }

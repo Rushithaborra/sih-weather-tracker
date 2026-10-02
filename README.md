@@ -195,6 +195,24 @@ Cells at IMD thresholds (IMD vs ERA5): heavy ≥ 64.5 mm 658 vs 613, very heavy 
   every storm-day and it was corrected (DEV_LOG 2026-10-02). GEFS rainfall is not compared: the forecast-skill
   run fetched wind and pressure only.
 
+### Ensemble verification (GEFS) and heavy-rain categorical scores
+
+`scripts/ensemble_verification.py` → `data/processed/ensemble_verification.json`: the 28 GEFS starts against IBTrACS
+at every time with ≥ 3 matched members, operational and reforecast kept apart.
+
+| Source | Times | CRPS pressure | CRPS wind | Spread / error (position) |
+|---|---|---|---|---|
+| Operational (Nivar, Yaas) | 96 | 5.23 hPa | 5.1 m/s | 175.1 / 147.4 km (ratio 1.19) |
+| Reforecast (5 storms) | 107 | 15.15 hPa | 11.43 m/s | 80.8 / 144.4 km (ratio 0.56) |
+
+Rank histograms of observed pressure pile up in the lowest bin for both sources ([50, 23, 10, 5, 1] and
+[74, 16, 1, 8, 8]): the real storms were deeper than nearly every member, i.e. GEFS at 0.25° under-predicts
+intensity. The 5-member reforecast is under-dispersive in position. Wind compares IMD 3-minute sustained wind with grid-cell
+maxima, so it is less reliable than pressure.
+
+Heavy-rain categorical scores, ERA5 0.25° vs IMD on the 16 storm-days (land cells): heavy ≥ 64.5 mm POD 0.754, FAR
+0.191, **CSI 0.64**; very heavy ≥ 115.6 mm CSI 0.423; extremely heavy ≥ 204.5 mm POD 0.096, **CSI 0.077**.
+
 ## Run locally
 
 ```bash
@@ -263,6 +281,55 @@ and force-pushes `ifs_latest.json` to the orphan branch `live-data` (latest only
 untouched; the page reads it from GitHub. Status is `ok`, `no_system`, `stale` or `error`, and a failed run is published
 as `error`. Caveats: forecast, not validated live; IFS compared against an ERA5 climatology (model bias enters, not an
 EFI); T2m flags are sensitive over the tropical ocean; skill drops with lead time.
+
+## Alerts REST API
+
+Serverless functions deployed with the dashboard (`dashboard-ui/api/`), open to any client (CORS, no key):
+
+| Endpoint | Returns |
+|---|---|
+| `GET /api/alerts?case=<storm>&lat=..&lon=..` | Alert tier of the 0.25° cell at a point for a case study, plus the nearest severe / moderate / low cell |
+| `GET /api/alerts?case=<storm>[&format=geojson]` | Counts per tier and the strongest cells, or the full alert GeoJSON |
+| `GET /api/live[?source=ifs\|gefs]` | Latest live runs: IFS systems, wind-alert cells and rain by IMD day; GEFS ensemble summary |
+| `GET /api/cap?case=<storm>` | CAP 1.2 XML for a case study's severe / moderate cells (the format of India's SACHET system) |
+| `GET /api/cap?live=ifs` | CAP 1.2 for the systems in the latest IFS run (no `<info>` block when there are none) |
+
+Every response carries the disclaimer; CAP alerts are always `status=Exercise`. The Alerts API page has a "Try it" button for each.
+
+## Stage 2 downscaler experiment (AI)
+
+`scripts/downscale_data.py`, `scripts/downscale_train.py`, results in `data/processed/downscaler.json`, model weights in
+`models/`, page **Downscaler (AI)**. Design and split were declared in `DEV_LOG.md` before training.
+
+- **Task:** ERA5 daily rain at 1.5° (6× coarser than the target) → IMD 0.25° gauge rainfall over India. Train 2010–2017
+  (2892 days), model selection 2018–2019 (730), test 2020–2021 plus the Phailin and Hudhud windows (761 days).
+- **Models:** bilinear and bicubic (no learning); a U-Net trained with MSE; the U-Net with a mass-conservation constraint
+  (each 1.5° block keeps the input's rain); a conditional diffusion model (DDPM on the U-Net residual, 8 members).
+
+| Full test set (761 days) | RMSE (mm) | r | CSI ≥ 64.5 | CSI ≥ 115.6 | CSI ≥ 204.5 | Storm peak kept |
+|---|---|---|---|---|---|---|
+| Bilinear | 8.83 | 0.632 | 0.118 | 0.029 | 0.002 | 34% |
+| Bicubic | 8.86 | 0.627 | 0.09 | 0.012 | 0.0 | 32% |
+| U-Net (MSE) | 9.17 | 0.664 | 0.08 | 0.021 | 0.002 | 32% |
+| U-Net + conservation | 8.72 | 0.645 | 0.153 | 0.058 | 0.01 | 48% |
+
+| Same 109 days (storm days + 100 random test days) | RMSE | CSI ≥ 204.5 | Cells ≥ 204.5 (IMD 173) | Storm peak kept |
+|---|---|---|---|---|
+| Bilinear | 9.3 | 0.006 | 1 | 34% |
+| U-Net (MSE) | 9.74 | 0.0 | 0 | 32% |
+| U-Net + conservation | 9.21 | 0.028 | 10 | 48% |
+| Diffusion, 1 member | 10.66 | 0.016 | 80 | 89% |
+| Diffusion, member mean | 9.61 | 0.0 | 5 | 40% |
+
+- The plain MSE U-Net has the best correlation but the weakest peaks — the smoothing MSE-trained models are known for.
+- The mass-conservation constraint gives the best placement of heavy rain (highest CSI at every threshold) and lifts the
+  storm peaks kept from 34 % (bilinear) to 49 %.
+- A single diffusion member keeps realistic storm peaks (89 % median; e.g. Nivar 269 mm vs 253 observed, Hudhud 328 vs 359)
+  but places them less precisely, so CSI and RMSE are worse, and some members overshoot. The member mean smooths the peaks
+  away again; the ensemble's value is its spread (exceedance probabilities), which still needs calibration.
+- Limits: the truth is IMD's 0.25° gauge grid (land only), not 5 km, so this is a proxy for the designed 12 km → 5 km model.
+  The U-Net trained on GitHub Actions CPUs; the diffusion model on an Apple M3 GPU reusing that U-Net. The deterministic
+  results reproduce exactly on both machines.
 
 ## Changes from the original plan
 

@@ -39,6 +39,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 713,
      "era5": 0
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 35,
+     "misses": 30,
+     "falseAlarms": 6
+    },
+    "veryHeavy": {
+     "hits": 2,
+     "misses": 16,
+     "falseAlarms": 7
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 1,
+     "falseAlarms": 0
+    }
    }
   },
   {
@@ -76,6 +93,23 @@ export const RAINFALL_VS_IMD = {
     "extremelyHeavy": {
      "imd": 0,
      "era5": 0
+    }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 0,
+     "misses": 2,
+     "falseAlarms": 0
+    },
+    "veryHeavy": {
+     "hits": 0,
+     "misses": 1,
+     "falseAlarms": 0
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
     }
    }
   },
@@ -115,6 +149,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 7166,
      "era5": 0
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 46,
+     "misses": 5,
+     "falseAlarms": 30
+    },
+    "veryHeavy": {
+     "hits": 9,
+     "misses": 16,
+     "falseAlarms": 6
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 10,
+     "falseAlarms": 0
+    }
    }
   },
   {
@@ -152,6 +203,23 @@ export const RAINFALL_VS_IMD = {
     "extremelyHeavy": {
      "imd": 0,
      "era5": 0
+    }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 0,
+     "misses": 10,
+     "falseAlarms": 0
+    },
+    "veryHeavy": {
+     "hits": 0,
+     "misses": 1,
+     "falseAlarms": 0
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
     }
    }
   },
@@ -191,6 +259,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 1451,
      "era5": 729
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 85,
+     "misses": 18,
+     "falseAlarms": 31
+    },
+    "veryHeavy": {
+     "hits": 39,
+     "misses": 22,
+     "falseAlarms": 20
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 2,
+     "falseAlarms": 1
+    }
    }
   },
   {
@@ -228,6 +313,23 @@ export const RAINFALL_VS_IMD = {
     "extremelyHeavy": {
      "imd": 0,
      "era5": 0
+    }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
+    },
+    "veryHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
     }
    }
   },
@@ -267,6 +369,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 15410,
      "era5": 7352
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 70,
+     "misses": 14,
+     "falseAlarms": 15
+    },
+    "veryHeavy": {
+     "hits": 34,
+     "misses": 13,
+     "falseAlarms": 11
+    },
+    "extremelyHeavy": {
+     "hits": 5,
+     "misses": 16,
+     "falseAlarms": 5
+    }
    }
   },
   {
@@ -304,6 +423,23 @@ export const RAINFALL_VS_IMD = {
     "extremelyHeavy": {
      "imd": 0,
      "era5": 0
+    }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 0,
+     "misses": 6,
+     "falseAlarms": 0
+    },
+    "veryHeavy": {
+     "hits": 0,
+     "misses": 4,
+     "falseAlarms": 0
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
     }
    }
   },
@@ -343,6 +479,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 728,
      "era5": 0
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 33,
+     "misses": 17,
+     "falseAlarms": 1
+    },
+    "veryHeavy": {
+     "hits": 10,
+     "misses": 9,
+     "falseAlarms": 4
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 1,
+     "falseAlarms": 0
+    }
    }
   },
   {
@@ -380,6 +533,23 @@ export const RAINFALL_VS_IMD = {
     "extremelyHeavy": {
      "imd": 6535,
      "era5": 2178
+    }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 57,
+     "misses": 12,
+     "falseAlarms": 6
+    },
+    "veryHeavy": {
+     "hits": 33,
+     "misses": 5,
+     "falseAlarms": 6
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 9,
+     "falseAlarms": 3
     }
    }
   },
@@ -419,6 +589,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 722,
      "era5": 0
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 69,
+     "misses": 33,
+     "falseAlarms": 20
+    },
+    "veryHeavy": {
+     "hits": 8,
+     "misses": 7,
+     "falseAlarms": 23
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 1,
+     "falseAlarms": 0
+    }
    }
   },
   {
@@ -456,6 +643,23 @@ export const RAINFALL_VS_IMD = {
     "extremelyHeavy": {
      "imd": 0,
      "era5": 0
+    }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 0,
+     "misses": 1,
+     "falseAlarms": 0
+    },
+    "veryHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
     }
    }
   },
@@ -495,6 +699,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 0,
      "era5": 2867
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 28,
+     "misses": 2,
+     "falseAlarms": 5
+    },
+    "veryHeavy": {
+     "hits": 15,
+     "misses": 4,
+     "falseAlarms": 6
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 4
+    }
    }
   },
   {
@@ -532,6 +753,23 @@ export const RAINFALL_VS_IMD = {
     "extremelyHeavy": {
      "imd": 0,
      "era5": 0
+    }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
+    },
+    "veryHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 0,
+     "falseAlarms": 0
     }
    }
   },
@@ -571,6 +809,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 3024,
      "era5": 0
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 57,
+     "misses": 9,
+     "falseAlarms": 0
+    },
+    "veryHeavy": {
+     "hits": 14,
+     "misses": 29,
+     "falseAlarms": 2
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 4,
+     "falseAlarms": 0
+    }
    }
   },
   {
@@ -609,6 +864,23 @@ export const RAINFALL_VS_IMD = {
      "imd": 2240,
      "era5": 0
     }
+   },
+   "contingency": {
+    "heavy": {
+     "hits": 16,
+     "misses": 3,
+     "falseAlarms": 3
+    },
+    "veryHeavy": {
+     "hits": 2,
+     "misses": 14,
+     "falseAlarms": 0
+    },
+    "extremelyHeavy": {
+     "hits": 0,
+     "misses": 3,
+     "falseAlarms": 0
+    }
    }
   }
  ],
@@ -636,6 +908,35 @@ export const RAINFALL_VS_IMD = {
    "extremelyHeavy": {
     "imd": 52,
     "era5": 18
+   }
+  },
+  "categorical": {
+   "heavy": {
+    "thresholdMm": 64.5,
+    "hits": 496,
+    "misses": 162,
+    "falseAlarms": 117,
+    "pod": 0.754,
+    "far": 0.191,
+    "csi": 0.64
+   },
+   "veryHeavy": {
+    "thresholdMm": 115.6,
+    "hits": 166,
+    "misses": 141,
+    "falseAlarms": 85,
+    "pod": 0.541,
+    "far": 0.339,
+    "csi": 0.423
+   },
+   "extremelyHeavy": {
+    "thresholdMm": 204.5,
+    "hits": 5,
+    "misses": 47,
+    "falseAlarms": 13,
+    "pod": 0.096,
+    "far": 0.722,
+    "csi": 0.077
    }
   }
  }
