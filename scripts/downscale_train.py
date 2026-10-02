@@ -14,6 +14,7 @@ dashboard-ui/src/data/downscaler.js
 """
 import json
 import math
+import os
 import sys
 import time
 from pathlib import Path
@@ -41,6 +42,10 @@ THRESH = {"heavy": 64.5, "veryHeavy": 115.6, "extremelyHeavy": 204.5}
 PAD = (136, 136)  # IMD grid 129 x 135 padded to a multiple of 8
 SEED = 0
 DEV = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+torch.set_num_threads(os.cpu_count() or 4)
+EPOCHS = int(os.environ.get("DS_EPOCHS", 20))
+SAMPLE_STEPS = int(os.environ.get("DS_SAMPLE_STEPS", 20))
+MEMBERS = 8
 
 
 # ------------------------------------------------------------------ data
@@ -159,7 +164,7 @@ def diff_loss(model, cond, res, m):
 
 
 @torch.no_grad()
-def diff_sample(model, cond, steps=50, seed=0):
+def diff_sample(model, cond, steps=SAMPLE_STEPS, seed=0):
     g = torch.Generator(device="cpu").manual_seed(seed)
     x = torch.randn((cond.shape[0], 1) + cond.shape[2:], generator=g).to(cond.device)
     ts = torch.linspace(T_STEPS - 1, 0, steps).long()
@@ -207,6 +212,57 @@ def bicubic(x):
                          align_corners=False)[:, 0].clamp(min=0).numpy()
 
 
+def storm_maps(storms, preds, members, truth, tt, lat, lon):
+    """One PNG per storm landfall day: IMD | bilinear | U-Net | U-Net + conservation | diffusion member | ensemble mean."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import BoundaryNorm, ListedColormap
+    MAPS.mkdir(parents=True, exist_ok=True)
+    levels = [0.1, 2.5, 15.6, 64.5, 115.6, 204.5, 400]
+    cmap = ListedColormap(["#d6eaf8", "#85c1e9", "#2e86c1", "#e67e22", "#c0392b", "#7b1fa2"])
+    norm = BoundaryNorm(levels, cmap.N)
+    try:
+        import cartopy.crs as ccrs
+        import cartopy.feature as cfeature
+        proj = dict(projection=ccrs.PlateCarree())
+    except ImportError:
+        ccrs = None
+        proj = {}
+    files, seen = [], set()
+    rv = json.loads((ROOT / "data" / "processed" / "rainfall_vs_imd.json").read_text())
+    foot = {r["storm"]: r["footprint"] for r in rv["rows"] if "footprint" in r}
+    for r in storms:
+        if r["storm"] in seen:
+            continue
+        seen.add(r["storm"])
+        i = int(np.where(tt == pd.Timestamp(r["imdDay"]))[0][0])
+        la0, la1, lo0, lo1 = foot[r["storm"]]
+        land = ~np.isnan(truth[i])
+        panels = [("IMD gauges (truth)", truth[i]), ("Bilinear (no learning)", preds["bilinear"][i]), ("U-Net (MSE)", preds["unet"][i]),
+                  ("U-Net + conservation", preds["unet_conserve"][i]), ("Diffusion, 1 member", members[0][i]), ("Diffusion, 8-member mean", preds["diffusion_mean"][i])]
+        fig, axes = plt.subplots(2, 3, figsize=(12, 8.2), subplot_kw=proj)
+        for ax, (title, f) in zip(axes.ravel(), panels):
+            f = np.where(land, f, np.nan)
+            kw = dict(transform=ccrs.PlateCarree()) if ccrs else {}
+            im = ax.pcolormesh(lon, lat, np.ma.masked_less(f, 0.1), cmap=cmap, norm=norm, shading="auto", **kw)
+            if ccrs:
+                ax.set_extent([lo0 - 1, lo1 + 1, la0 - 1, la1 + 1])
+                ax.add_feature(cfeature.COASTLINE, linewidth=0.6)
+                ax.add_feature(cfeature.BORDERS, linewidth=0.4, linestyle=":")
+            else:
+                ax.set_xlim(lo0 - 1, lo1 + 1); ax.set_ylim(la0 - 1, la1 + 1)
+            box = (lat[:, None] >= la0) & (lat[:, None] <= la1) & (lon[None] >= lo0) & (lon[None] <= lo1) & land
+            ax.set_title(f"{title}\nmax {np.nanmax(np.where(box, f, np.nan)):.0f} mm", fontsize=9)
+        fig.colorbar(im, ax=axes, shrink=0.7, label="24 h rain (mm), IMD categories", ticks=levels[:-1])
+        fig.suptitle(f"{r['storm'].title()} — IMD day ending {r['imdDay']} 03 UTC (test data; IMD land cells only)", fontsize=11)
+        name = f"{r['storm']}_{r['imdDay']}.png"
+        fig.savefig(MAPS / name, dpi=100, bbox_inches="tight")
+        plt.close(fig)
+        files.append(name)
+    return files
+
+
 def main():
     t0 = time.time()
     static = xr.open_dataset(DATA / "static.nc").load()
@@ -224,7 +280,7 @@ def main():
 
     # U-Net (MSE on log1p)
     unet = UNet(3).to(DEV)
-    unet = train(unet, fit, val, 30, 2e-3, lambda m, x, y, k: masked_mse(m(x), y, k), "unet")
+    unet = train(unet, fit, val, EPOCHS, 2e-3, lambda m, x, y, k: masked_mse(m(x), y, k), "unet")
 
     def unet_pred(inp):
         unet.eval()
@@ -235,7 +291,7 @@ def main():
     fit_res = fit[1] - unet_pred(fit[0]); val_res = val[1] - unet_pred(val[0])
     cond = lambda inp: torch.cat([inp, unet_pred(inp)], 1)  # noqa: E731
     diff = UNet(5, temb=64).to(DEV)
-    diff = train(diff, (cond(fit[0]), fit_res, fit[2]), (cond(val[0]), val_res, val[2]), 30, 1e-3,
+    diff = train(diff, (cond(fit[0]), fit_res, fit[2]), (cond(val[0]), val_res, val[2]), EPOCHS, 1e-3,
                  lambda m, c, r, k: diff_loss(m, c, r, k), "diffusion")
 
     # Predictions on the test set (mm, unpadded)
@@ -248,7 +304,7 @@ def main():
     c = cond(tst[0]).to(DEV)
     members = []
     diff.eval()
-    for s in range(8):
+    for s in range(MEMBERS):
         res = torch.cat([diff_sample(diff, c[i:i + 16], seed=s).cpu() for i in range(0, c.shape[0], 16)])
         members.append(np.expm1((base + res)[:, 0, :H, :W].numpy()).clip(0))
     members = np.stack(members)
@@ -293,6 +349,8 @@ def main():
            "valDays": int(va.sizes["time"]), "testDays": int(test.sizes["time"]),
            "trainYears": sorted(set(int(y) for y in pd.DatetimeIndex(tr.time.values).year)),
            "minutes": round((time.time() - t0) / 60, 1), "test": results, "storms": storms}
+    out["settings"] = {"epochs": EPOCHS, "ddimSteps": SAMPLE_STEPS, "members": MEMBERS}
+    out["maps"] = storm_maps(storms, preds, members, truth, tt, lat, lon)
     OUT_JSON.write_text(json.dumps(out, indent=1))
     OUT_JS.write_text("// Stage 2 downscaler experiment, generated by scripts/downscale_train.py.\n"
                       f"export const DOWNSCALER = {json.dumps(out, indent=1)}\n")
