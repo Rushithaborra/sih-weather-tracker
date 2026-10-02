@@ -252,6 +252,18 @@ python scripts/run_gefs_live.py              # latest complete 00/12 UTC run
 python scripts/run_gefs_live.py --init 2026-09-30T00:00 --members 2 --fxx-end 24   # quick test
 ```
 
+## Live ECMWF IFS forecast (twice daily)
+
+Alongside GEFS, the Live page can switch to the latest **ECMWF IFS HRES** run (ECMWF open data, 0.25°, CC-BY-4.0):
+deterministic, 0–240 h, over 0–35°N, 60–100°E (Arabian Sea and Bay of Bengal). `scripts/live_update_ifs.py` runs the
+frozen detector and tracker, the case-study wind alert tiers, 24 h rainfall per IMD day (03–03 UTC) in IMD categories,
+and flags 2 m temperature only where |z| ≥ 2. Anomalies use `data/clim/era5_monthly_stats_wide.nc` (ERA5 2015–2019,
+every 3rd day, per month and UTC hour, with T2m). `.github/workflows/ifs-live.yml` runs after the 00 and 12 UTC runs
+and force-pushes `ifs_latest.json` to the orphan branch `live-data` (latest only, no history), so `main` and Vercel are
+untouched; the page reads it from GitHub. Status is `ok`, `no_system`, `stale` or `error`, and a failed run is published
+as `error`. Caveats: forecast, not validated live; IFS compared against an ERA5 climatology (model bias enters, not an
+EFI); T2m flags are sensitive over the tropical ocean; skill drops with lead time.
+
 ## Changes from the original plan
 
 - **Climatology years**: the first download was 00 UTC only, 2010–2019 (230 samples). Comparing 06–18 UTC

@@ -175,3 +175,15 @@ With all 8 storms, Bulbul's day after landfall has an IMD maximum of 0.2 mm insi
 storm was over Bangladesh, outside the IMD grid), giving a meaningless "peak kept" of 9,663 %. Set after
 seeing that result: peak retention is computed only when the IMD maximum reaches IMD "heavy" (64.5 mm);
 otherwise it is reported as n/a. Correlation, bias and area counts still use every storm-day.
+
+## 2026-10-02: Feature 5 (IFS) completed after the stop
+
+The user asked to complete the stopped items, which lifts the 5 GB rule for the climatology.
+- The wide climatology covers all 12 months, not only Sep-Dec: the IFS job runs year-round and
+  would fail from 1 January otherwise. Built on GitHub Actions (about 2 min; locally the first
+  month timed out after 10 min on this connection). 0-35N, 60-100E, wind + MSLP + T2m, ERA5
+  2015-2019, every 3rd day, >= 50 samples per (month, hour), 5.9 MB.
+- First run (IFS 2026-10-01 12Z): status no_system, 0 wind-alert cells, max 100.2 mm per IMD
+  day. T2m |z| >= 2 flagged up to 6,993 cells (31 %): the tropical ocean reads about +1.4 K
+  against 2015-2019 where the ERA5 spread sits at the 0.5 K floor. Threshold unchanged (as
+  specified); a caveat was added after seeing this result.

@@ -40,7 +40,7 @@ export default function App() {
 }
 
 const FOOTER_TEXT = {
-  live: 'Research prototype — live NOAA GEFS ensemble run through the pipeline daily. Forecast only, unvalidated. Not an operational warning system.',
+  live: 'Research prototype — live NOAA GEFS ensemble (daily) and ECMWF IFS (twice daily) runs through the pipeline. Forecast only, unvalidated. Not an official warning; official warnings: IMD.',
   validated: 'Research prototype: tracking validated on 8 storms (1 in-sample, 7 held out) on ERA5 reanalysis; live output unvalidated.',
   gefs: 'Research prototype: tracking validated on 8 storms (1 in-sample, 7 held out) on ERA5 reanalysis; live output unvalidated.',
 }

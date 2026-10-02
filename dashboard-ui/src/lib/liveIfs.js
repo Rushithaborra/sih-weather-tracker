@@ -8,7 +8,7 @@ export function useLiveIfs() {
   const [state, setState] = useState({ status: 'loading', data: null })
   useEffect(() => {
     let alive = true
-    fetch(`${URL}?t=${Math.floor(Date.now() / 6e5)}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) })
+    fetch(`${URL}?t=${Math.floor(Date.now() / 6e5)}`, { cache: 'no-store', signal: AbortSignal.timeout(90000) })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? 'no IFS run published yet' : `HTTP ${r.status}`))))
       .then((data) => alive && setState({ status: 'ready', data }))
       .catch((e) => alive && setState({ status: 'unavailable', error: e.message }))

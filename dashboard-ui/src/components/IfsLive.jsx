@@ -76,7 +76,7 @@ function IfsView({ data }) {
       sub: heavyDay ? `${heavyCells(heavyDay)} cells ≥ 64.5 mm · day ending ${heavyDay.imdDayEnding.slice(0, 10)}` : 'no IMD day in range' },
     { label: 'Unusual temperature (|z| ≥ 2)', icon: Thermometer,
       value: t2mPeak ? `${t2mPeak.unusualWarmCells + t2mPeak.unusualColdCells} cells` : '—',
-      sub: t2mPeak ? `${t2mPeak.unusualWarmCells} warm / ${t2mPeak.unusualColdCells} cold · peak at T+${t2mPeak.leadH} h` : '' },
+      sub: t2mPeak ? `${t2mPeak.unusualWarmCells} warm / ${t2mPeak.unusualColdCells} cold · peak at T+${t2mPeak.leadH} h · vs the 2015–2019 baseline, sensitive over the ocean` : '' },
     { label: 'Forecast run', icon: CalendarClock, value: fmtInit(data.init), sub: `processed ${fmtAgo(data.fetchedAt)} in ${Math.round(data.runSeconds / 60)} min` },
   ]
 
@@ -196,21 +196,29 @@ function IfsMap({ data, layer, leadH }) {
 
   useEffect(() => {
     if (!grid) return
+    // Image rows are spaced in Web Mercator so the overlay lines up with the basemap
+    // (a plain lat-lon image would sit up to ~1 deg off across 0-35N).
     const c = canvasRef.current
-    c.width = nLon; c.height = nLat
+    const H = nLat * 3
+    c.width = nLon; c.height = H
     const ctx = c.getContext('2d')
-    const img = ctx.createImageData(nLon, nLat)
-    for (let i = 0; i < nLat; i++) {
+    const img = ctx.createImageData(nLon, H)
+    const merc = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360))
+    const inv = (y) => (Math.atan(Math.sinh(y)) * 180) / Math.PI
+    const yTop = merc(f.lat[nLat - 1]), yBot = merc(f.lat[0]), dLat = f.lat[1] - f.lat[0]
+    for (let py = 0; py < H; py++) {
+      const lat = inv(yTop + ((yBot - yTop) * (py + 0.5)) / H)
+      const i = Math.min(nLat - 1, Math.max(0, Math.round((lat - f.lat[0]) / dLat)))
       for (let j = 0; j < nLon; j++) {
         const v = grid.values[i * nLon + j]
         const [r, g, b, a] = grid.rain ? RAIN_CATS[v].color : rampColor(LAYERS[layer].stops, v)
-        const k = ((nLat - 1 - i) * nLon + j) * 4
+        const k = (py * nLon + j) * 4
         img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = a * 255
       }
     }
     ctx.putImageData(img, 0, 0)
     setUrl(c.toDataURL())
-  }, [grid, nLat, nLon, layer])
+  }, [grid, nLat, nLon, layer, f.lat])
 
   const now = data.systems.map((s) => ({ s, p: s.points.reduce((a, b) => (Math.abs(b.leadH - leadH) < Math.abs(a.leadH - leadH) ? b : a), s.points[0]) }))
     .filter(({ p }) => Math.abs(p.leadH - leadH) <= 3)

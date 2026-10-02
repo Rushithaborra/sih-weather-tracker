@@ -189,6 +189,9 @@ def run(a):
             "model bias enters the anomalies, so this is not an EFI.",
             "Skill decreases with lead time.",
             "Rain categories only for IMD days whose 03 UTC ends fall on the 3-hourly steps (to 144 h).",
+            "T2m flags (|z| >= 2) are sensitive over the tropical ocean, where the ERA5 2015-2019 spread is tiny "
+            "(0.5 K floor): a 1-1.5 K offset from a warmer year or from IFS-vs-ERA5 differences flags large areas. "
+            "Read them as 'warmer/cooler than the 2015-2019 baseline', not as heat or cold extremes.",
             "Not an official warning; official warnings: IMD (mausam.imd.gov.in).",
         ],
     }

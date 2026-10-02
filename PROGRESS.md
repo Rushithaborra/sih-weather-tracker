@@ -1,6 +1,6 @@
 # Progress log (next-features)
 
-## Final report — queue stopped at Feature 5 (download stop rule)
+## Final report — queue complete (Features 2 and 5 finished after the user lifted the stops)
 
 Branch `next-features`, pushed; merges cleanly into `main`. Nothing merged; published numbers on
 `main` unchanged. Commits are authored as Rushitha Borra.
@@ -9,30 +9,32 @@ Branch `next-features`, pushed; merges cleanly into `main`. Nothing merged; publ
 |---|---|---|---|
 | Forecast skill (GEFS) | done | 28 starts, 7 storms; median track error day 0–1: 59 km (operational) / 50 km (reforecast), day 3–4: 217 / 193 km; ≥ 50% of members detect the storm 24–39 h before landfall from −1 d starts | 304e901, 6a0925f |
 | 1 Quiet-period test | done | 0 objects in 50 cyclone-free days (5 windows); without the 17 m/s gate: 32 tracks (6.4 / 10 days) | cbcc0e6 |
-| 2 Rainfall vs IMD | partial — 5 of 8 storms; > 1.5× time limit (IMD server ~4 KB/s) | pooled r 0.862, bias −5 mm, ERA5 keeps median 62% of the observed peak; ≥ 204.5 mm cells IMD 29 vs ERA5 3 | eeae196 |
+| 2 Rainfall vs IMD | done — all 8 storms (16 storm-days) | pooled r 0.845, bias −4.0 mm, ERA5 keeps a median 66% of the observed peak (14 heavy-rain days); ≥ 204.5 mm cells IMD 52 vs ERA5 18 | eeae196, 83e7014 |
 | 3 City panel (Live page) | done | 12 cities, Open-Meteo current + ECMWF IFS ensemble (51 members) per IMD day; error state verified | b51d309 |
 | 4 Track merging option | done (default off) | joins 1 of 5 fragmented storms (Bulbul 3 → 2 tracks), no error change; 5 false links in the no-gate quiet diagnostic | 788a3a5 |
-| 5 IFS alongside GEFS | stopped — climatology download 6.50 GB > 5 GB | nothing built | — |
+| 5 IFS alongside GEFS | done — 5 GB limit lifted by the user | wide climatology 12 months (5.9 MB); first run 1 Oct 12Z: no_system, max 100.2 mm per IMD day; twice-daily job publishes to `live-data`; GEFS / IFS switch on the Live page | 77c1e83 + following |
 
 Changes made after seeing results (all in DEV_LOG.md):
 1. Quiet test: no-wind-gate diagnostic added after the 0-object result (frozen detector unchanged).
 2. Track-merging rule (written before coding, prompted by the fragmentation result).
-3. Rainfall vs IMD: IMD date convention corrected after the alignment check (r 0.36–0.94 vs −0.04–0.32).
+3. Rainfall vs IMD: IMD date convention corrected after the alignment check (r 0.36–0.94 vs −0.04–0.32);
+   peak retention only where IMD's maximum reaches heavy (Bulbul day 2 had 0.2 mm, outside the IMD grid).
+5. IFS: wide climatology built for 12 months (job runs year-round); T2m caveat added after the first run.
 4. GEFS skill: matching-rule effect documented (no change made).
 
 Open decisions for you:
 1. GEFS matching rule: when the storm is below gale at the first step (≤ 30 kt), treat the start like a
    genesis start? Today those starts count every member as a miss (Yaas −3 d 4/31 vs −5 d 27/31).
 2. Track merging default: recommend keep off (helps 1 of 5 storms, adds false links when the gate is relaxed).
-3. Feature 5 climatology: every 4th day (≈ 4.95 GB), 3 years (≈ 3.9 GB), or raise the 5 GB limit.
-4. GEFS job migration to an orphan `live-data` branch: still open, needs Sushanth.
-5. Merging `next-features` into `main` (this updates the public site).
+3. GEFS job migration to the `live-data` branch: still open, needs Sushanth (IFS already publishes there).
+4. Merging `next-features` into `main` (this updates the public site; IFS twice-daily schedule only starts once the workflow is on `main`).
 
 Deviations from the instructions, and why:
 - Forecast skill ran on GitHub Actions, not locally (decision was "locally"): measured 5–15 h on this
   connection and it stops when the Mac sleeps; Actions took 32 min. Only processed results committed.
 - Feature commits landed in the order 1, 3, 4, 2: Feature 2 was blocked on the IMD server, so 3 and 4
   were done while it downloaded.
+- Climatology builds and the IFS run use GitHub Actions: this connection was too slow (10+ min for one month).
 - Quiet test ran 5 windows, not 6: March had no quiet window under the declared swap rule.
 - Sushanth's `LiveForecast.jsx` was edited (two lines) to place the city panel.
 - The hashes written inside per-feature entries below may differ from the final ones (commits were
