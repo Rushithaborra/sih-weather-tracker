@@ -32,3 +32,4 @@ data/raw/quiet_*.nc
 data/raw/imd_rain/
 data/raw/era5tp1h_*.nc
 live_out/
+data/raw/downscale/
