@@ -122,11 +122,78 @@ the storm** is one more than 300 km (or 200 km) from the best track, or outside 
   Bulbul). A storm inside its own baseline raises the climatological mean and spread, which is expected to make
   detection harder, not easier.
 - **No objects outside the storm within the case windows (300 km); 2 at 200 km** (the two
-  single-step Yaas objects). Quiet periods without cyclones were not tested. The extra "tracks" in the first
+  single-step Yaas objects). Cyclone-free periods are tested separately below. The extra "tracks" in the first
   table are the same storm split into fragments (distances above), not other systems.
 - **Why 81 hits but 80 error steps:** a hit is any detected object, fragments included, within
   300 km of a ≥ 34 kt best-track step, while the error uses only the main track's steps inside the best-track
   period at any wind speed (Hudhud and Bulbul gain 3 hits from fragments; Yaas has 2 error steps below 34 kt).
+
+### Quiet-period test: detections with no cyclone present
+
+`scripts/quiet_period_test.py`, results in `data/processed/quiet_periods.json`. Six 10-day windows in 2020–2022
+were declared in `DEV_LOG.md` before running; a window is quiet if IBTrACS has no system in 5–30°N, 75–100°E
+within the window ± 2 days. ERA5, anomalies against `data/clim/era5_monthly_stats.nc`, frozen detector.
+
+| Window | Month | Objects (tracks) | Strongest wind in region (m/s) | Without the 17 m/s gate (diagnostic) |
+|---|---|---|---|---|
+| 2021-01-10 – 2021-01-19 | Jan | 0 (0) | 13.6 | 34 (15), 5 over land |
+| 2020-07-01 – 2020-07-10 | Jul | 0 (0) | 15.9 | 0 (0), 0 over land |
+| 2021-08-01 – 2021-08-10 | Aug | 0 (0) | 14.8 | 12 (4), 9 over land |
+| 2022-10-01 – 2022-10-10 | Oct | 0 (0) | 14.1 | 34 (13), 5 over land |
+| 2021-12-09 – 2021-12-18 | Dec | 0 (0) | 11.5 | 0 (0), 0 over land |
+| **All, 50 days** | | **0 (0)** | | 80 (32), 19 over land |
+
+- **0 false objects in 50 cyclone-free days.** The regional wind never reached the 17 m/s gate in
+  any window, so the gate alone explains the result: without it, the same z-score rule would flag
+  32 tracks (6.4 per 10 days). The gate, not the z-score threshold, suppresses
+  false alarms in quiet weather. (The no-gate run is a diagnostic added after seeing the result; the
+  frozen detector is unchanged.)
+- July/August: 0 objects with the gate; without it 12, mostly over land — possibly
+  monsoon lows, which IBTrACS does not list, so they are neither confirmed nor counted as storms.
+- March: no quiet window under the declared swap rule — March 2022 had two IBTrACS depressions
+  (3–6 and 20–23 March). December was swapped from 2020-12-15 to 2021-12-09 (16 swaps, all recorded).
+
+
+
+### Rainfall vs IMD observations: how much of the peak ERA5 keeps
+
+`scripts/rainfall_vs_imd.py`, results in `data/processed/rainfall_vs_imd.json`. IMD 0.25° daily gridded rainfall
+(gauge-based, Pai et al. 2014) against ERA5 hourly precipitation summed over the same IMD day — the 24 h ending
+03 UTC (08:30 IST) — on IMD land cells inside each storm's main-track box + 1°, for the landfall day and the day after.
+Peak retention is computed only where IMD's maximum reaches "heavy" (64.5 mm).
+
+| Storm | IMD day (ending 03 UTC) | IMD max (mm) | ERA5 max (mm) | Peak kept | r | Bias (mm) |
+|---|---|---|---|---|---|---|
+| Amphan | 2020-05-21 | 229.6 | 151.5 | 66% | 0.835 | -9.2 |
+| Amphan | 2020-05-22 | 119.2 | 16.5 | 14% | 0.939 | -0.9 |
+| Yaas | 2021-05-27 | 246.5 | 144.9 | 59% | 0.678 | -1.0 |
+| Yaas | 2021-05-28 | 116.2 | 21.1 | 18% | 0.513 | -7.6 |
+| Phailin | 2013-10-13 | 217.9 | 219.1 | 100% | 0.513 | 1.5 |
+| Phailin | 2013-10-14 | 51.9 | 43.9 | n/a (IMD max < 64.5 mm) | 0.526 | 0.9 |
+| Hudhud | 2014-10-13 | 359.0 | 292.0 | 81% | 0.537 | -10.4 |
+| Hudhud | 2014-10-14 | 158.1 | 30.6 | 19% | 0.286 | -5.3 |
+| Titli | 2018-10-11 | 207.5 | 155.9 | 75% | 0.734 | -16.5 |
+| Titli | 2018-10-12 | 287.2 | 224.1 | 78% | 0.7 | -13.1 |
+| Fani | 2019-05-04 | 223.5 | 179.3 | 80% | 0.885 | 0.5 |
+| Fani | 2019-05-05 | 81.8 | 7.2 | 9% | 0.363 | -1.2 |
+| Bulbul | 2019-11-10 | 188.8 | 233.0 | 123% | 0.911 | 3.3 |
+| Bulbul | 2019-11-11 | 0.2 | 19.3 | n/a (IMD max < 64.5 mm) | -0.008 | 0.9 |
+| Nivar | 2020-11-26 | 252.9 | 164.1 | 65% | 0.782 | -32.6 |
+| Nivar | 2020-11-27 | 235.4 | 136.3 | 58% | 0.874 | -14.2 |
+| **Pooled, 8 storms, 16 storm-days, 3094 cells** | | | | **median 66%** (14 days) | **0.845** | -4.0 |
+
+Cells at IMD thresholds (IMD vs ERA5): heavy ≥ 64.5 mm 658 vs 613, very heavy ≥ 115.6 mm
+307 vs 251, **extremely heavy ≥ 204.5 mm 52 vs 18**.
+
+- ERA5 places the rain well (pooled r = 0.845) and the average is close (bias -4.0 mm), but it keeps a median
+  66% of the observed peak and only 35% of the extremely heavy area (18 of 52 cells) — the
+  smoothing problem the downscaler is meant to fix, measured against Indian gauges.
+- Lowest retention: Amphan 2020-05-22 (14%), Yaas 2021-05-28 (18%), Hudhud 2014-10-14 (19%), Fani 2019-05-05 (9%) — all the day after landfall, as the storm
+  decays inland; ERA5 dries out faster than the gauges. Phailin 2013-10-13, Bulbul 2019-11-10 have ERA5 above the IMD maximum.
+- Bulbul's second day: the storm was over Bangladesh, outside the IMD grid (IMD max 0.2 mm in the footprint).
+- The IMD date convention was first assumed the other way round; the built-in one-day-shift check showed it on
+  every storm-day and it was corrected (DEV_LOG 2026-10-02). GEFS rainfall is not compared: the forecast-skill
+  run fetched wind and pressure only.
 
 ## Run locally
 
@@ -184,6 +251,18 @@ python scripts/build_live_climatology.py     # once; ~20 GB read from WeatherBen
 python scripts/run_gefs_live.py              # latest complete 00/12 UTC run
 python scripts/run_gefs_live.py --init 2026-09-30T00:00 --members 2 --fxx-end 24   # quick test
 ```
+
+## Live ECMWF IFS forecast (twice daily)
+
+Alongside GEFS, the Live page can switch to the latest **ECMWF IFS HRES** run (ECMWF open data, 0.25°, CC-BY-4.0):
+deterministic, 0–240 h, over 0–35°N, 60–100°E (Arabian Sea and Bay of Bengal). `scripts/live_update_ifs.py` runs the
+frozen detector and tracker, the case-study wind alert tiers, 24 h rainfall per IMD day (03–03 UTC) in IMD categories,
+and flags 2 m temperature only where |z| ≥ 2. Anomalies use `data/clim/era5_monthly_stats_wide.nc` (ERA5 2015–2019,
+every 3rd day, per month and UTC hour, with T2m). `.github/workflows/ifs-live.yml` runs after the 00 and 12 UTC runs
+and force-pushes `ifs_latest.json` to the orphan branch `live-data` (latest only, no history), so `main` and Vercel are
+untouched; the page reads it from GitHub. Status is `ok`, `no_system`, `stale` or `error`, and a failed run is published
+as `error`. Caveats: forecast, not validated live; IFS compared against an ERA5 climatology (model bias enters, not an
+EFI); T2m flags are sensitive over the tropical ocean; skill drops with lead time.
 
 ## Changes from the original plan
 

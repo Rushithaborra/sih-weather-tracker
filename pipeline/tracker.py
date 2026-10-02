@@ -134,7 +134,48 @@ def tracks_4d(tracks: pd.DataFrame) -> pd.DataFrame:
     }).reset_index()
 
 
-def run(ds, threshold=2.0, min_size=6, max_disp_km=400.0, rule="ws_and_msl", ws_min=GALE_MS):
+# Track merging (option, off by default; rule recorded in DEV_LOG.md 2026-10-01 before coding).
+MERGE_MAX_GAP_H = 12.0
+MERGE_MAX_KM = 300.0
+MERGE_MAX_DMSL_HPA = 10.0
+
+
+def merge_track_fragments(tracks: pd.DataFrame, max_gap_h=MERGE_MAX_GAP_H, max_km=MERGE_MAX_KM,
+                 max_dmsl=MERGE_MAX_DMSL_HPA):
+    """Append track B to track A when B starts 6-12 h after A ends, within max_km of A's last
+    object (centroids) and within max_dmsl of its minimum MSLP. Greedy, closest pair first;
+    each track gets at most one predecessor and one successor. Returns (tracks, links) where
+    links lists the joins as (from_track_id, to_track_id, gap_h, km)."""
+    if tracks.empty:
+        return tracks, []
+    out = tracks.copy()
+    links = []
+    while True:
+        g = out.sort_values("time").groupby("track_id")
+        ends, starts = g.tail(1).set_index("track_id"), g.head(1).set_index("track_id")
+        cands = []
+        for a, ea in ends.iterrows():
+            for b, sb in starts.iterrows():
+                if a == b:
+                    continue
+                gap = (pd.Timestamp(sb.time) - pd.Timestamp(ea.time)).total_seconds() / 3600
+                if not (0 < gap <= max_gap_h):
+                    continue
+                km = float(haversine_km(ea.lat, ea.lon, sb.lat, sb.lon))
+                if km <= max_km and abs(ea.min_msl - sb.min_msl) <= max_dmsl:
+                    cands.append((km, a, b, gap))
+        if not cands:
+            return out, links
+        km, a, b, gap = min(cands)
+        out.loc[out.track_id == b, "track_id"] = a
+        links.append({"from": int(a), "to": int(b), "gapH": gap, "km": round(km, 1)})
+
+
+def run(ds, threshold=2.0, min_size=6, max_disp_km=400.0, rule="ws_and_msl", ws_min=GALE_MS,
+        merge_tracks=False):
+    """merge_tracks=True applies merge_track_fragments after tracking (option; off in DEFAULTS and every
+    published result)."""
     objs = detect(ds.z_ws.values, ds.z_msl.values, ds.ws.values, ds.msl.values,
                   ds.lat.values, ds.lon.values, ds.time.values, threshold, min_size, rule, ws_min)
-    return track(objs, max_disp_km)
+    tracks = track(objs, max_disp_km)
+    return merge_track_fragments(tracks)[0] if merge_tracks else tracks

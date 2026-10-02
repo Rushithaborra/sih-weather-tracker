@@ -1,0 +1,48 @@
+name: GEFS forecast skill
+
+# Runs scripts/gefs_forecast_skill.py on GitHub's network (~19 GB of GEFS fields, ~30-40 min)
+# and commits only the processed results in data/processed/gefs_skill/ -- never raw data.
+# Triggered by pushing changes to the script on next-features, or by hand.
+on:
+  push:
+    branches: [next-features]
+    paths: [scripts/gefs_forecast_skill.py, .github/workflows/gefs-skill.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gefs-skill-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-live.txt
+
+      - run: pip install -r requirements-live.txt matplotlib cartopy
+
+      - name: IBTrACS North Indian best tracks
+        run: curl -sSfLo data/raw/ibtracs.NI.list.v04r01.csv https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.NI.list.v04r01.csv
+
+      - name: Fetch GEFS forecasts, track, score against IBTrACS
+        run: python scripts/gefs_forecast_skill.py --workers 24
+
+      - name: Commit results
+        run: |
+          git config user.name "Rushitha Borra"
+          git config user.email "rushithaborra@gmail.com"
+          git add data/processed/gefs_skill/
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "GEFS forecast skill: results for $(ls data/processed/gefs_skill/*_20*.json | wc -l) forecast starts"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}

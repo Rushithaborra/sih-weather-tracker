@@ -103,3 +103,87 @@ Alert cells are kept only inside a tracked object's bounding box extended by 1 d
 Low-MSLP basis: Yaas 349 / 167 / 0 (5.1%), Amphan 482 / 315 / 71 (8.5%).
 Tracking validation rerun: unchanged (medians 24.8 / 58.2 km pressure minimum, 38.7 / 121.9 km centroid).
 Alert tiers are not validated against observed impacts.
+
+## 2026-10-01: quiet-period test, windows declared before running
+
+Declared before looking at IBTrACS or ERA5 for these dates. Six 10-day windows, 2020-2022
+(outside the 2015-2019 case-study climatology), one per requested month:
+
+| # | Month | Window (UTC, inclusive) |
+|---|---|---|
+| Q1 | Jan | 2021-01-10 00:00 to 2021-01-19 18:00 |
+| Q2 | Mar | 2022-03-15 00:00 to 2022-03-24 18:00 |
+| Q3 | Jul | 2020-07-01 00:00 to 2020-07-10 18:00 |
+| Q4 | Aug | 2021-08-01 00:00 to 2021-08-10 18:00 |
+| Q5 | Oct | 2022-10-01 00:00 to 2022-10-10 18:00 |
+| Q6 | Dec | 2020-12-15 00:00 to 2020-12-24 18:00 |
+
+Quiet = no IBTrACS point (any intensity, any agency) inside 5-30N, 75-100E within the window
++/- 2 days. Swap rule, fixed in advance: if a window is not quiet, move its start forward one
+day at a time within the same month and year until a quiet 10-day window is found; if none,
+try the same month in the next year of 2020-2022. Every swap is recorded below.
+Data: ERA5 (WeatherBench2), same region and variables as the case studies; anomalies against
+data/clim/era5_monthly_stats.nc; tracker with the frozen pipeline.tracker.DEFAULTS.
+
+## 2026-10-01: GEFS forecast skill — matching rule observed in results (no change made)
+
+With the agreed rule (storm present at the start -> object within 300 km at the first step), starts
+where the storm was still below gale strength (<= 30 kt at the first step: Bulbul -7/-5/-3 d,
+Hudhud -5 d, Titli -3 d, Nivar -3 d, Yaas -3 d, Phailin -3 d) match few or no members, because the
+frozen detector requires >= 17 m/s. Recorded after seeing results; the rule is unchanged pending a
+decision (option: treat a start with the storm below 34 kt like a genesis start).
+
+### Quiet-period test: run record
+
+- Q1 Jan 2021-01-10, Q3 Jul 2020-07-01, Q4 Aug 2021-08-01, Q5 Oct 2022-10-01: quiet as declared.
+- Q2 Mar: no quiet window under the declared rule (March 2022 had IBTrACS systems on 3-6 and
+  20-23 March; 2022 is the last allowed year). Not replaced, to keep the declared rule.
+- Q6 Dec: 2020-12-15 not quiet; swapped 16 times by the declared rule to 2021-12-09.
+- Result: 0 objects in 50 days. **Added after seeing the result:** a diagnostic rerun without the
+  17 m/s wind gate (ws_min = 0) gives 80 objects / 32 tracks, so the gate explains the zero. The
+  frozen DEFAULTS are unchanged; the diagnostic is reported alongside.
+- Raw ERA5 for the windows: data/raw/quiet_*.nc (gitignored).
+
+## 2026-10-01: track merging as an option — rule written before implementing (post-results change)
+
+**Change made after seeing results** (5 of 7 held-out storms have fragmented tracks). Written down
+before any code; implemented only as `tracker.run(..., merge_tracks=False)`, default off, so
+the frozen DEFAULTS and every published number are unchanged.
+
+Rule: track B is appended to track A if
+1. A's last object and B's first object are 6–12 h apart (B starts after A ends; no overlap),
+2. the distance between those two objects' centroids is <= 300 km,
+3. their minimum MSLP differs by <= 10 hPa.
+Candidates are joined greedily, closest first, until no pair qualifies; each track joins at most
+one predecessor and one successor. Concurrent fragments (two objects at the same time) are not
+merged by this rule.
+Evaluation: all 8 storms and the quiet windows, with and without merging — tracks per storm,
+error, POD, and "false links" (a join where either joined object is > 300 km from the best track).
+
+## 2026-10-02: rainfall vs IMD — date convention corrected after the alignment check
+
+First assumption: IMD gridded value dated D = 24 h from 03 UTC on D. The built-in alignment check
+showed the opposite on all 10 storm-days available: the ERA5 window 03 UTC D -> 03 UTC D+1
+correlates with IMD date D+1 at r = 0.36-0.94 (Amphan 0.84/0.94, Yaas 0.68/0.51, Titli 0.73/0.70,
+Fani 0.89/0.36, Nivar 0.78/0.87) against r = -0.04 to 0.32 for date D. So the IMD date labels the
+24 h ending at 03 UTC (the 08:30 IST gauge reading). Corrected in scripts/rainfall_vs_imd.py
+(changed after seeing results; it fixes a data-convention error, not a model parameter).
+
+## 2026-10-02: rainfall vs IMD — peak retention only where IMD observed heavy rain (post-hoc)
+
+With all 8 storms, Bulbul's day after landfall has an IMD maximum of 0.2 mm inside the footprint (the
+storm was over Bangladesh, outside the IMD grid), giving a meaningless "peak kept" of 9,663 %. Set after
+seeing that result: peak retention is computed only when the IMD maximum reaches IMD "heavy" (64.5 mm);
+otherwise it is reported as n/a. Correlation, bias and area counts still use every storm-day.
+
+## 2026-10-02: Feature 5 (IFS) completed after the stop
+
+The user asked to complete the stopped items, which lifts the 5 GB rule for the climatology.
+- The wide climatology covers all 12 months, not only Sep-Dec: the IFS job runs year-round and
+  would fail from 1 January otherwise. Built on GitHub Actions (about 2 min; locally the first
+  month timed out after 10 min on this connection). 0-35N, 60-100E, wind + MSLP + T2m, ERA5
+  2015-2019, every 3rd day, >= 50 samples per (month, hour), 5.9 MB.
+- First run (IFS 2026-10-01 12Z): status no_system, 0 wind-alert cells, max 100.2 mm per IMD
+  day. T2m |z| >= 2 flagged up to 6,993 cells (31 %): the tropical ocean reads about +1.4 K
+  against 2015-2019 where the ERA5 spread sits at the 0.5 K floor. Threshold unchanged (as
+  specified); a caveat was added after seeing this result.

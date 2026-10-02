@@ -1,0 +1,249 @@
+{
+ "rule": "merge if 6-12 h gap, <= 300 km between centroids, |dMSLP| <= 10 hPa (DEV_LOG 2026-10-01); option, off by default",
+ "podNote": "POD is identical with and without merging: merging relabels tracks, it adds or removes no objects",
+ "cases": [
+  {
+   "case": "amphan",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 1,
+    "mainTrackSteps": 17,
+    "matchedSteps": 17,
+    "pminMedianKm": 24.8,
+    "pminMeanKm": 31.5
+   },
+   "merge": {
+    "tracks": 1,
+    "mainTrackSteps": 17,
+    "matchedSteps": 17,
+    "pminMedianKm": 24.8,
+    "pminMeanKm": 31.5
+   },
+   "links": [],
+   "falseLinks": 0
+  },
+  {
+   "case": "yaas",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 3,
+    "mainTrackSteps": 13,
+    "matchedSteps": 13,
+    "pminMedianKm": 58.2,
+    "pminMeanKm": 73.0
+   },
+   "merge": {
+    "tracks": 3,
+    "mainTrackSteps": 13,
+    "matchedSteps": 13,
+    "pminMedianKm": 58.2,
+    "pminMeanKm": 73.0
+   },
+   "links": [],
+   "falseLinks": 0
+  },
+  {
+   "case": "phailin",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 2,
+    "mainTrackSteps": 12,
+    "matchedSteps": 12,
+    "pminMedianKm": 30.2,
+    "pminMeanKm": 34.0
+   },
+   "merge": {
+    "tracks": 2,
+    "mainTrackSteps": 12,
+    "matchedSteps": 12,
+    "pminMedianKm": 30.2,
+    "pminMeanKm": 34.0
+   },
+   "links": [],
+   "falseLinks": 0
+  },
+  {
+   "case": "hudhud",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 2,
+    "mainTrackSteps": 17,
+    "matchedSteps": 17,
+    "pminMedianKm": 27.3,
+    "pminMeanKm": 35.3
+   },
+   "merge": {
+    "tracks": 2,
+    "mainTrackSteps": 17,
+    "matchedSteps": 17,
+    "pminMedianKm": 27.3,
+    "pminMeanKm": 35.3
+   },
+   "links": [],
+   "falseLinks": 0
+  },
+  {
+   "case": "titli",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 2,
+    "mainTrackSteps": 4,
+    "matchedSteps": 4,
+    "pminMedianKm": 19.6,
+    "pminMeanKm": 24.4
+   },
+   "merge": {
+    "tracks": 2,
+    "mainTrackSteps": 4,
+    "matchedSteps": 4,
+    "pminMedianKm": 19.6,
+    "pminMeanKm": 24.4
+   },
+   "links": [],
+   "falseLinks": 0
+  },
+  {
+   "case": "fani",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 1,
+    "mainTrackSteps": 18,
+    "matchedSteps": 18,
+    "pminMedianKm": 24.8,
+    "pminMeanKm": 34.1
+   },
+   "merge": {
+    "tracks": 1,
+    "mainTrackSteps": 18,
+    "matchedSteps": 18,
+    "pminMedianKm": 24.8,
+    "pminMeanKm": 34.1
+   },
+   "links": [],
+   "falseLinks": 0
+  },
+  {
+   "case": "bulbul",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 3,
+    "mainTrackSteps": 8,
+    "matchedSteps": 8,
+    "pminMedianKm": 23.7,
+    "pminMeanKm": 25.0
+   },
+   "merge": {
+    "tracks": 2,
+    "mainTrackSteps": 8,
+    "matchedSteps": 8,
+    "pminMedianKm": 23.7,
+    "pminMeanKm": 25.0
+   },
+   "links": [
+    {
+     "from": 0,
+     "to": 1,
+     "gapH": 12.0,
+     "km": 241.0,
+     "kmToBestTrack": [
+      75,
+      115
+     ]
+    }
+   ],
+   "falseLinks": 0
+  },
+  {
+   "case": "nivar",
+   "reproducesPublished": true,
+   "noMerge": {
+    "tracks": 1,
+    "mainTrackSteps": 8,
+    "matchedSteps": 8,
+    "pminMedianKm": 28.7,
+    "pminMeanKm": 43.4
+   },
+   "merge": {
+    "tracks": 1,
+    "mainTrackSteps": 8,
+    "matchedSteps": 8,
+    "pminMedianKm": 28.7,
+    "pminMeanKm": 43.4
+   },
+   "links": [],
+   "falseLinks": 0
+  }
+ ],
+ "quietWindows": [
+  {
+   "window": "20200701",
+   "detector": "frozen",
+   "tracksNoMerge": 0,
+   "tracksMerge": 0,
+   "links (all false: no storm present)": 0
+  },
+  {
+   "window": "20200701",
+   "detector": "noWindGateDiagnostic",
+   "tracksNoMerge": 0,
+   "tracksMerge": 0,
+   "links (all false: no storm present)": 0
+  },
+  {
+   "window": "20210110",
+   "detector": "frozen",
+   "tracksNoMerge": 0,
+   "tracksMerge": 0,
+   "links (all false: no storm present)": 0
+  },
+  {
+   "window": "20210110",
+   "detector": "noWindGateDiagnostic",
+   "tracksNoMerge": 15,
+   "tracksMerge": 12,
+   "links (all false: no storm present)": 3
+  },
+  {
+   "window": "20210801",
+   "detector": "frozen",
+   "tracksNoMerge": 0,
+   "tracksMerge": 0,
+   "links (all false: no storm present)": 0
+  },
+  {
+   "window": "20210801",
+   "detector": "noWindGateDiagnostic",
+   "tracksNoMerge": 4,
+   "tracksMerge": 3,
+   "links (all false: no storm present)": 1
+  },
+  {
+   "window": "20211209",
+   "detector": "frozen",
+   "tracksNoMerge": 0,
+   "tracksMerge": 0,
+   "links (all false: no storm present)": 0
+  },
+  {
+   "window": "20211209",
+   "detector": "noWindGateDiagnostic",
+   "tracksNoMerge": 0,
+   "tracksMerge": 0,
+   "links (all false: no storm present)": 0
+  },
+  {
+   "window": "20221001",
+   "detector": "frozen",
+   "tracksNoMerge": 0,
+   "tracksMerge": 0,
+   "links (all false: no storm present)": 0
+  },
+  {
+   "window": "20221001",
+   "detector": "noWindGateDiagnostic",
+   "tracksNoMerge": 13,
+   "tracksMerge": 12,
+   "links (all false: no storm present)": 1
+  }
+ ]
+}
