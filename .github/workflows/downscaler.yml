@@ -47,7 +47,7 @@ jobs:
           DS_TIME_BUDGET_MIN: "280"
         run: python scripts/downscale_train.py
 
-      - name: Commit results (also after a time-out: the deterministic results are written first)
+      - name: Commit results (also after a time-out, deterministic results are written first)
         if: always()
         run: |
           if [ ! -f data/processed/downscaler.json ]; then echo "no results written"; exit 1; fi
