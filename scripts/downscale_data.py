@@ -39,7 +39,8 @@ def coarse_year_child(year):
     # hour h belongs to the IMD day ending at the next 03 UTC: shift by -4 h then floor to the day, +1 day
     day = (pd.DatetimeIndex(hourly.time.values) - pd.Timedelta(hours=4)).floor("D") + pd.Timedelta(days=1)
     daily = hourly.assign_coords(imd_date=("time", day)).groupby("imd_date").sum("time")
-    daily = daily.rename({"imd_date": "time"}).sortby("latitude")
+    # the 1.5 deg store is (time, longitude, latitude); keep (time, latitude, longitude) everywhere downstream
+    daily = daily.rename({"imd_date": "time"}).sortby("latitude").transpose("time", "latitude", "longitude")
     OUT.mkdir(parents=True, exist_ok=True)
     daily.to_netcdf(OUT / f"coarse_{year}.nc")
 
@@ -79,7 +80,8 @@ def build_year(year):
         return
     coarse = coarse_year(year)
     days = sorted(set(pd.DatetimeIndex(imd.time.values)) & set(pd.DatetimeIndex(coarse.time.values)))
-    x = coarse.sel(time=days).interp(latitude=IMD_LAT, longitude=IMD_LON, method="linear")
+    coarse = coarse.transpose("time", "latitude", "longitude")
+    x = coarse.sel(time=days).interp(latitude=IMD_LAT, longitude=IMD_LON, method="linear").transpose("time", "latitude", "longitude")
     y = imd.sel(time=days)
     ds = xr.Dataset({"x_coarse_mm": (("time", "lat", "lon"), np.clip(x.values, 0, None).astype("float32")),
                      "y_imd_mm": (("time", "lat", "lon"), y.values.astype("float32"))},
