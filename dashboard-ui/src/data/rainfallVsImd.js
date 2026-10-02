@@ -157,27 +157,155 @@ export const RAINFALL_VS_IMD = {
   },
   {
    "storm": "phailin",
-   "imdDay": "2013-10-12",
+   "imdDay": "2013-10-13",
+   "window": "2013-10-12 03 UTC to 2013-10-13 03 UTC",
    "landfall": "2013-10-12T18:00Z",
-   "note": "IMD day not available (download incomplete)"
+   "footprint": [
+    13.88,
+    21.38,
+    82.88,
+    92.62
+   ],
+   "alignmentCheckR": {
+    "imdDayMinus1": 0.048,
+    "imdDayPlus1": -0.247
+   },
+   "cells": 149,
+   "imdMaxMm": 217.9,
+   "era5MaxMm": 219.1,
+   "peakRetention": 1.005,
+   "imdMeanMm": 100.8,
+   "era5MeanMm": 102.3,
+   "biasMm": 1.5,
+   "r": 0.513,
+   "areaKm2": {
+    "heavy": {
+     "imd": 74663,
+     "era5": 84162
+    },
+    "veryHeavy": {
+     "imd": 44249,
+     "era5": 42917
+    },
+    "extremelyHeavy": {
+     "imd": 1451,
+     "era5": 729
+    }
+   }
   },
   {
    "storm": "phailin",
-   "imdDay": "2013-10-13",
+   "imdDay": "2013-10-14",
+   "window": "2013-10-13 03 UTC to 2013-10-14 03 UTC",
    "landfall": "2013-10-12T18:00Z",
-   "note": "IMD day not available (download incomplete)"
-  },
-  {
-   "storm": "hudhud",
-   "imdDay": "2014-10-12",
-   "landfall": "2014-10-12T09:00Z",
-   "note": "IMD day not available (download incomplete)"
+   "footprint": [
+    13.88,
+    21.38,
+    82.88,
+    92.62
+   ],
+   "alignmentCheckR": {
+    "imdDayMinus1": 0.04,
+    "imdDayPlus1": 0.07
+   },
+   "cells": 149,
+   "imdMaxMm": 51.9,
+   "era5MaxMm": 43.9,
+   "peakRetention": null,
+   "imdMeanMm": 9.9,
+   "era5MeanMm": 10.8,
+   "biasMm": 0.9,
+   "r": 0.526,
+   "areaKm2": {
+    "heavy": {
+     "imd": 0,
+     "era5": 0
+    },
+    "veryHeavy": {
+     "imd": 0,
+     "era5": 0
+    },
+    "extremelyHeavy": {
+     "imd": 0,
+     "era5": 0
+    }
+   }
   },
   {
    "storm": "hudhud",
    "imdDay": "2014-10-13",
+   "window": "2014-10-12 03 UTC to 2014-10-13 03 UTC",
    "landfall": "2014-10-12T09:00Z",
-   "note": "IMD day not available (download incomplete)"
+   "footprint": [
+    11.62,
+    19.62,
+    81.38,
+    92.38
+   ],
+   "alignmentCheckR": {
+    "imdDayMinus1": -0.144,
+    "imdDayPlus1": -0.174
+   },
+   "cells": 114,
+   "imdMaxMm": 359.0,
+   "era5MaxMm": 292.0,
+   "peakRetention": 0.813,
+   "imdMeanMm": 120.6,
+   "era5MeanMm": 110.2,
+   "biasMm": -10.4,
+   "r": 0.537,
+   "areaKm2": {
+    "heavy": {
+     "imd": 61587,
+     "era5": 62308
+    },
+    "veryHeavy": {
+     "imd": 34477,
+     "era5": 33028
+    },
+    "extremelyHeavy": {
+     "imd": 15410,
+     "era5": 7352
+    }
+   }
+  },
+  {
+   "storm": "hudhud",
+   "imdDay": "2014-10-14",
+   "window": "2014-10-13 03 UTC to 2014-10-14 03 UTC",
+   "landfall": "2014-10-12T09:00Z",
+   "footprint": [
+    11.62,
+    19.62,
+    81.38,
+    92.38
+   ],
+   "alignmentCheckR": {
+    "imdDayMinus1": -0.208,
+    "imdDayPlus1": -0.114
+   },
+   "cells": 114,
+   "imdMaxMm": 158.1,
+   "era5MaxMm": 30.6,
+   "peakRetention": 0.194,
+   "imdMeanMm": 11.2,
+   "era5MeanMm": 5.9,
+   "biasMm": -5.3,
+   "r": 0.286,
+   "areaKm2": {
+    "heavy": {
+     "imd": 4386,
+     "era5": 0
+    },
+    "veryHeavy": {
+     "imd": 2920,
+     "era5": 0
+    },
+    "extremelyHeavy": {
+     "imd": 0,
+     "era5": 0
+    }
+   }
   },
   {
    "storm": "titli",
@@ -333,15 +461,79 @@ export const RAINFALL_VS_IMD = {
   },
   {
    "storm": "bulbul",
-   "imdDay": "2019-11-09",
+   "imdDay": "2019-11-10",
+   "window": "2019-11-09 03 UTC to 2019-11-10 03 UTC",
    "landfall": "2019-11-09T21:00Z",
-   "note": "IMD day not available (download incomplete)"
+   "footprint": [
+    16.38,
+    22.88,
+    85.12,
+    91.38
+   ],
+   "alignmentCheckR": {
+    "imdDayMinus1": 0.224,
+    "imdDayPlus1": 0.039
+   },
+   "cells": 130,
+   "imdMaxMm": 188.8,
+   "era5MaxMm": 233.0,
+   "peakRetention": 1.234,
+   "imdMeanMm": 40.0,
+   "era5MeanMm": 43.3,
+   "biasMm": 3.3,
+   "r": 0.911,
+   "areaKm2": {
+    "heavy": {
+     "imd": 21464,
+     "era5": 23614
+    },
+    "veryHeavy": {
+     "imd": 13595,
+     "era5": 15041
+    },
+    "extremelyHeavy": {
+     "imd": 0,
+     "era5": 2867
+    }
+   }
   },
   {
    "storm": "bulbul",
-   "imdDay": "2019-11-10",
+   "imdDay": "2019-11-11",
+   "window": "2019-11-10 03 UTC to 2019-11-11 03 UTC",
    "landfall": "2019-11-09T21:00Z",
-   "note": "IMD day not available (download incomplete)"
+   "footprint": [
+    16.38,
+    22.88,
+    85.12,
+    91.38
+   ],
+   "alignmentCheckR": {
+    "imdDayMinus1": 0.551,
+    "imdDayPlus1": NaN
+   },
+   "cells": 130,
+   "imdMaxMm": 0.2,
+   "era5MaxMm": 19.3,
+   "peakRetention": null,
+   "imdMeanMm": 0.0,
+   "era5MeanMm": 0.9,
+   "biasMm": 0.9,
+   "r": -0.008,
+   "areaKm2": {
+    "heavy": {
+     "imd": 0,
+     "era5": 0
+    },
+    "veryHeavy": {
+     "imd": 0,
+     "era5": 0
+    },
+    "extremelyHeavy": {
+     "imd": 0,
+     "era5": 0
+    }
+   }
   },
   {
    "storm": "nivar",
@@ -421,28 +613,29 @@ export const RAINFALL_VS_IMD = {
   }
  ],
  "pooled": {
-  "storms": 5,
-  "stormDays": 10,
-  "cells": 2308,
-  "peakRetentionMedian": 0.619,
+  "storms": 8,
+  "stormDays": 16,
+  "cells": 3094,
+  "peakRetentionDays": 14,
+  "peakRetentionMedian": 0.655,
   "peakRetentionRange": [
    0.088,
-   0.802
+   1.234
   ],
-  "r": 0.862,
-  "biasMm": -5.0,
+  "r": 0.845,
+  "biasMm": -4.0,
   "cellsAtOrAbove": {
    "heavy": {
-    "imd": 435,
-    "era5": 379
+    "imd": 658,
+    "era5": 613
    },
    "veryHeavy": {
-    "imd": 176,
-    "era5": 126
+    "imd": 307,
+    "era5": 251
    },
    "extremelyHeavy": {
-    "imd": 29,
-    "era5": 3
+    "imd": 52,
+    "era5": 18
    }
   }
  }

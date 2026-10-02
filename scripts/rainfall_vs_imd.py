@@ -7,7 +7,7 @@ compared with ERA5 hourly precipitation summed over exactly the same 24 h (03-03
     corrected after the alignment check -- see DEV_LOG 2026-10-02.)
   * ERA5 hourly total_precipitation (WeatherBench2, 0.25 deg), hours ending D 04 UTC ... D+1 03 UTC.
 Compared on IMD land cells inside the storm footprint (main-track box + 1 deg):
-peak retention (ERA5 max / IMD max), area at IMD heavy / very heavy / extremely heavy
+peak retention (ERA5 max / IMD max; only where IMD's max reaches heavy, 64.5 mm), area at IMD heavy / very heavy / extremely heavy
 (64.5 / 115.6 / 204.5 mm), mean bias (ERA5 - IMD) and Pearson correlation.
 A one-day-shift correlation is kept as an alignment check.
 IMD files are read directly (same layout as imdlib), including partial downloads (whole days only).
@@ -124,7 +124,8 @@ def compare(imd2d, era2d):
         return None
     return {
         "cells": int(i.size), "imdMaxMm": round(float(i.max()), 1), "era5MaxMm": round(float(e.max()), 1),
-        "peakRetention": round(float(e.max() / i.max()), 3) if i.max() > 0 else None,
+        # only where IMD observed heavy rain: a ratio against a near-dry maximum is meaningless
+        "peakRetention": round(float(e.max() / i.max()), 3) if i.max() >= IMD_CATS["heavy"] else None,
         "imdMeanMm": round(float(i.mean()), 1), "era5MeanMm": round(float(e.mean()), 1),
         "biasMm": round(float((e - i).mean()), 1), "r": round(float(np.corrcoef(i, e)[0, 1]), 3),
         "areaKm2": {k: {"imd": int(area[i >= v].sum()), "era5": int(area[e >= v].sum())} for k, v in IMD_CATS.items()},
@@ -177,8 +178,10 @@ def main():
                   f"retention {row['peakRetention']}, r {row['r']}, bias {row['biasMm']} mm"), flush=True)
 
     i, e = np.concatenate(pool_i), np.concatenate(pool_e)
-    ok = [r for r in rows if "peakRetention" in r and r["peakRetention"] is not None]
-    pooled = {"storms": len({r["storm"] for r in ok}), "stormDays": len(ok), "cells": int(i.size),
+    ok = [r for r in rows if r.get("peakRetention") is not None]
+    compared = [r for r in rows if "r" in r]
+    pooled = {"storms": len({r["storm"] for r in compared}), "stormDays": len(compared), "cells": int(i.size),
+              "peakRetentionDays": len(ok),
               "peakRetentionMedian": round(float(np.median([r["peakRetention"] for r in ok])), 3),
               "peakRetentionRange": [min(r["peakRetention"] for r in ok), max(r["peakRetention"] for r in ok)],
               "r": round(float(np.corrcoef(i, e)[0, 1]), 3), "biasMm": round(float((e - i).mean()), 1),

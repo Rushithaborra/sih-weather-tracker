@@ -168,3 +168,10 @@ correlates with IMD date D+1 at r = 0.36-0.94 (Amphan 0.84/0.94, Yaas 0.68/0.51,
 Fani 0.89/0.36, Nivar 0.78/0.87) against r = -0.04 to 0.32 for date D. So the IMD date labels the
 24 h ending at 03 UTC (the 08:30 IST gauge reading). Corrected in scripts/rainfall_vs_imd.py
 (changed after seeing results; it fixes a data-convention error, not a model parameter).
+
+## 2026-10-02: rainfall vs IMD — peak retention only where IMD observed heavy rain (post-hoc)
+
+With all 8 storms, Bulbul's day after landfall has an IMD maximum of 0.2 mm inside the footprint (the
+storm was over Bangladesh, outside the IMD grid), giving a meaningless "peak kept" of 9,663 %. Set after
+seeing that result: peak retention is computed only when the IMD maximum reaches IMD "heavy" (64.5 mm);
+otherwise it is reported as n/a. Correlation, bias and area counts still use every storm-day.

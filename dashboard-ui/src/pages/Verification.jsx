@@ -245,8 +245,9 @@ function QuietPeriods() {
 function RainfallVsImd() {
   const { rows, pooled: P } = RAINFALL_VS_IMD
   const label = (id) => (CASES[id]?.label ?? id).split(',')[0]
-  const done = rows.filter((r) => r.peakRetention != null)
-  const missing = [...new Set(rows.filter((r) => r.peakRetention == null).map((r) => label(r.storm)))]
+  const done = rows.filter((r) => r.r != null)
+  const missing = [...new Set(rows.filter((r) => r.r == null).map((r) => label(r.storm)))]
+  const ext = P.cellsAtOrAbove.extremelyHeavy
   const cats = [['heavy', '≥ 64.5'], ['veryHeavy', '≥ 115.6'], ['extremelyHeavy', '≥ 204.5']]
   return (
     <div className="bg-card rounded-card px-5 py-4">
@@ -270,7 +271,7 @@ function RainfallVsImd() {
               <td className="py-2 pr-4 text-ink">{r.imdDay}</td>
               <td className="py-2 pr-4 text-ink">{r.imdMaxMm}</td>
               <td className="py-2 pr-4 text-ink">{r.era5MaxMm}</td>
-              <td className="py-2 pr-4 text-ink">{Math.round(r.peakRetention * 100)}%</td>
+              <td className="py-2 pr-4 text-ink">{r.peakRetention == null ? 'n/a (IMD max < 64.5 mm)' : `${Math.round(r.peakRetention * 100)}%`}</td>
               <td className="py-2 pr-4 text-ink">{r.r}</td>
               <td className="py-2 pr-4 text-ink">{r.biasMm}</td>
             </tr>
@@ -279,7 +280,7 @@ function RainfallVsImd() {
             <td className="py-2 pr-4 text-ink">Pooled, {P.storms} storms</td>
             <td className="py-2 pr-4 text-ink">{P.stormDays} storm-days</td>
             <td className="py-2 pr-4 text-ink" colSpan={2}>{P.cells} land cells</td>
-            <td className="py-2 pr-4 text-ink">median {Math.round(P.peakRetentionMedian * 100)}%</td>
+            <td className="py-2 pr-4 text-ink">median {Math.round(P.peakRetentionMedian * 100)}% ({P.peakRetentionDays} days)</td>
             <td className="py-2 pr-4 text-ink">{P.r}</td>
             <td className="py-2 pr-4 text-ink">{P.biasMm}</td>
           </tr>
@@ -296,13 +297,13 @@ function RainfallVsImd() {
       <ul className="text-[11.5px] text-muted mt-3 space-y-1.5 list-disc pl-4">
         <li>
           ERA5 places the rain well (pooled r = {P.r}) and the average is close (bias {P.biasMm} mm), but it keeps a median
-          of {Math.round(P.peakRetentionMedian * 100)}% of the observed peak and almost none of the extremely heavy area
-          ({P.cellsAtOrAbove.extremelyHeavy.era5} vs {P.cellsAtOrAbove.extremelyHeavy.imd} cells ≥ 204.5 mm) — the smoothing
-          problem a downscaler has to fix.
+          of {Math.round(P.peakRetentionMedian * 100)}% of the observed peak and only {Math.round((100 * ext.era5) / ext.imd)}% of
+          the extremely heavy area ({ext.era5} of {ext.imd} cells ≥ 204.5 mm) — the smoothing problem a downscaler has to fix.
+          Peak kept is computed only where IMD's maximum reaches heavy (64.5 mm).
         </li>
-        {done.some((r) => r.peakRetention < 0.25) && (
+        {done.some((r) => r.peakRetention != null && r.peakRetention < 0.25) && (
           <li>
-            Lowest: {done.filter((r) => r.peakRetention < 0.25).map((r) => `${label(r.storm)} ${r.imdDay} (${Math.round(r.peakRetention * 100)}%)`).join(', ')} —
+            Lowest: {done.filter((r) => r.peakRetention != null && r.peakRetention < 0.25).map((r) => `${label(r.storm)} ${r.imdDay} (${Math.round(r.peakRetention * 100)}%)`).join(', ')} —
             all the day after landfall, when the storm is decaying inland; ERA5 dries out faster than the gauges there.
           </li>
         )}

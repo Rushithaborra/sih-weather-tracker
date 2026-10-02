@@ -160,6 +160,7 @@ within the window ± 2 days. ERA5, anomalies against `data/clim/era5_monthly_sta
 `scripts/rainfall_vs_imd.py`, results in `data/processed/rainfall_vs_imd.json`. IMD 0.25° daily gridded rainfall
 (gauge-based, Pai et al. 2014) against ERA5 hourly precipitation summed over the same IMD day — the 24 h ending
 03 UTC (08:30 IST) — on IMD land cells inside each storm's main-track box + 1°, for the landfall day and the day after.
+Peak retention is computed only where IMD's maximum reaches "heavy" (64.5 mm).
 
 | Storm | IMD day (ending 03 UTC) | IMD max (mm) | ERA5 max (mm) | Peak kept | r | Bias (mm) |
 |---|---|---|---|---|---|---|
@@ -167,24 +168,32 @@ within the window ± 2 days. ERA5, anomalies against `data/clim/era5_monthly_sta
 | Amphan | 2020-05-22 | 119.2 | 16.5 | 14% | 0.939 | -0.9 |
 | Yaas | 2021-05-27 | 246.5 | 144.9 | 59% | 0.678 | -1.0 |
 | Yaas | 2021-05-28 | 116.2 | 21.1 | 18% | 0.513 | -7.6 |
+| Phailin | 2013-10-13 | 217.9 | 219.1 | 100% | 0.513 | 1.5 |
+| Phailin | 2013-10-14 | 51.9 | 43.9 | n/a (IMD max < 64.5 mm) | 0.526 | 0.9 |
+| Hudhud | 2014-10-13 | 359.0 | 292.0 | 81% | 0.537 | -10.4 |
+| Hudhud | 2014-10-14 | 158.1 | 30.6 | 19% | 0.286 | -5.3 |
 | Titli | 2018-10-11 | 207.5 | 155.9 | 75% | 0.734 | -16.5 |
 | Titli | 2018-10-12 | 287.2 | 224.1 | 78% | 0.7 | -13.1 |
 | Fani | 2019-05-04 | 223.5 | 179.3 | 80% | 0.885 | 0.5 |
 | Fani | 2019-05-05 | 81.8 | 7.2 | 9% | 0.363 | -1.2 |
+| Bulbul | 2019-11-10 | 188.8 | 233.0 | 123% | 0.911 | 3.3 |
+| Bulbul | 2019-11-11 | 0.2 | 19.3 | n/a (IMD max < 64.5 mm) | -0.008 | 0.9 |
 | Nivar | 2020-11-26 | 252.9 | 164.1 | 65% | 0.782 | -32.6 |
 | Nivar | 2020-11-27 | 235.4 | 136.3 | 58% | 0.874 | -14.2 |
-| **Pooled, 5 storms, 10 storm-days** | | | | **median 62%** | **0.862** | -5.0 |
+| **Pooled, 8 storms, 16 storm-days, 3094 cells** | | | | **median 66%** (14 days) | **0.845** | -4.0 |
 
-Cells at IMD thresholds (IMD vs ERA5): heavy ≥ 64.5 mm 435 vs 379, very heavy ≥ 115.6 mm
-176 vs 126, **extremely heavy ≥ 204.5 mm 29 vs 3**.
+Cells at IMD thresholds (IMD vs ERA5): heavy ≥ 64.5 mm 658 vs 613, very heavy ≥ 115.6 mm
+307 vs 251, **extremely heavy ≥ 204.5 mm 52 vs 18**.
 
-- ERA5 places the rain well (pooled r = 0.862) and the average is close (bias -5.0 mm), but it keeps a median
-  62% of the observed peak (range 9–80%) and almost none of the extremely
-  heavy area — the smoothing problem the downscaler is meant to fix, now measured against Indian gauges.
+- ERA5 places the rain well (pooled r = 0.845) and the average is close (bias -4.0 mm), but it keeps a median
+  66% of the observed peak and only 35% of the extremely heavy area (18 of 52 cells) — the
+  smoothing problem the downscaler is meant to fix, measured against Indian gauges.
+- Lowest retention: Amphan 2020-05-22 (14%), Yaas 2021-05-28 (18%), Hudhud 2014-10-14 (19%), Fani 2019-05-05 (9%) — all the day after landfall, as the storm
+  decays inland; ERA5 dries out faster than the gauges. Phailin 2013-10-13, Bulbul 2019-11-10 have ERA5 above the IMD maximum.
+- Bulbul's second day: the storm was over Bangladesh, outside the IMD grid (IMD max 0.2 mm in the footprint).
 - The IMD date convention was first assumed the other way round; the built-in one-day-shift check showed it on
-  every storm-day and it was corrected (DEV_LOG 2026-10-02).
-- Not yet compared: Bulbul, Hudhud, Phailin — the IMD server (≈ 4 KB/s) dropped those year files before the needed days
-  arrived. GEFS rainfall is not compared: the forecast-skill run fetched wind and pressure only.
+  every storm-day and it was corrected (DEV_LOG 2026-10-02). GEFS rainfall is not compared: the forecast-skill
+  run fetched wind and pressure only.
 
 ## Run locally
 
