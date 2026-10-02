@@ -282,6 +282,20 @@ untouched; the page reads it from GitHub. Status is `ok`, `no_system`, `stale` o
 as `error`. Caveats: forecast, not validated live; IFS compared against an ERA5 climatology (model bias enters, not an
 EFI); T2m flags are sensitive over the tropical ocean; skill drops with lead time.
 
+## Alerts REST API
+
+Serverless functions deployed with the dashboard (`dashboard-ui/api/`), open to any client (CORS, no key):
+
+| Endpoint | Returns |
+|---|---|
+| `GET /api/alerts?case=<storm>&lat=..&lon=..` | Alert tier of the 0.25° cell at a point for a case study, plus the nearest severe / moderate / low cell |
+| `GET /api/alerts?case=<storm>[&format=geojson]` | Counts per tier and the strongest cells, or the full alert GeoJSON |
+| `GET /api/live[?source=ifs\|gefs]` | Latest live runs: IFS systems, wind-alert cells and rain by IMD day; GEFS ensemble summary |
+| `GET /api/cap?case=<storm>` | CAP 1.2 XML for a case study's severe / moderate cells (the format of India's SACHET system) |
+| `GET /api/cap?live=ifs` | CAP 1.2 for the systems in the latest IFS run (no `<info>` block when there are none) |
+
+Every response carries the disclaimer; CAP alerts are always `status=Exercise`. The Alerts API page has a "Try it" button for each.
+
 ## Changes from the original plan
 
 - **Climatology years**: the first download was 00 UTC only, 2010–2019 (230 samples). Comparing 06–18 UTC

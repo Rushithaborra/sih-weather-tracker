@@ -154,3 +154,20 @@ as regenerating the maps needs another 30-min run.
   year files are read directly (whole days; reader verified identical to imdlib on 20 May 2020).
   Phailin (2013), Hudhud (2014) and Bulbul (Nov 2019) still lack their days; downloads keep running
   and a rerun of the script adds them. GEFS rainfall not compared (the skill run has no precipitation).
+
+
+## Future-scope round (2026-10-02)
+
+Chosen with the user: verification upgrades, alerts REST API, Stage 2 ML downscaler (EFI against the GEFS
+reforecast and the GNN tracker deferred: heavy data for little visible gain / unlikely to beat the current tracker).
+
+- **Verification upgrades — done (4258985).** CRPS, rank histograms and spread-skill for the 28 GEFS starts
+  (operational CRPS 5.2 hPa / 5.1 m/s, spread/error 1.19; reforecast 15.2 hPa / 11.4 m/s, 0.56). Observed pressure
+  sits in the lowest rank bin for both: GEFS under-predicts intensity. Heavy-rain POD/FAR/CSI for ERA5 vs IMD on
+  storm days: CSI 0.64 (≥ 64.5 mm), 0.42 (≥ 115.6), 0.08 (≥ 204.5). Verification page cards + README.
+- **Alerts REST API — done (22e3cb5).** `/api/alerts`, `/api/live`, `/api/cap` (CAP 1.2, status Exercise) as Vercel
+  functions; tested against real data; Alerts API page rewritten with Try-it buttons.
+- **Stage 2 downscaler — running.** Design and split declared in DEV_LOG before training. Runs end to end on GitHub
+  Actions (IMD 2010–2021 downloaded there in ~1 min; locally the IMD server gave ~4 KB/s). First run cancelled after
+  4 h with no output visible (logs hidden until the end); rerun saves baseline and U-Net results before the
+  diffusion step and samples diffusion on the storm days plus a fixed random sample of 100 test days.
