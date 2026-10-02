@@ -1,0 +1,63 @@
+name: Live IFS forecast
+
+# Latest ECMWF IFS HRES run (open data, CC-BY-4.0) through the frozen detector, twice a day after the
+# 00 and 12 UTC runs are fully published (~07:45 / ~19:45 UTC). The output goes to the orphan branch
+# `live-data` (force-pushed: latest files only, no history), so main's history does not grow and
+# Vercel does not rebuild. The first run on a branch also builds the wide climatology if missing.
+# Scheduled runs only happen from the default branch (main).
+on:
+  schedule:
+    - cron: "30 8 * * *"
+    - cron: "30 20 * * *"
+  push:
+    branches: [next-features]
+    paths: [.github/workflows/ifs-live.yml, scripts/live_update_ifs.py]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ifs-live-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-live.txt
+
+      - run: pip install -r requirements-live.txt
+
+      - name: Build wide climatology (first run only)
+        run: |
+          if [ -f data/clim/era5_monthly_stats_wide.nc ]; then echo "climatology present"; exit 0; fi
+          python scripts/build_live_climatology.py --years 2015-2019 --day-step 3 --lat 0 35 --lon 60 100 --t2m \
+            --out data/clim/era5_monthly_stats_wide.nc
+          git config user.name "Rushitha Borra"
+          git config user.email "rushithaborra@gmail.com"
+          git add data/clim/era5_monthly_stats_wide.nc
+          git commit -m "Wide ERA5 climatology for the live IFS run (0-35N, 60-100E, wind, MSLP, T2m, 2015-2019)"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Fetch IFS and run detection
+        run: python scripts/live_update_ifs.py --out live_out || echo "run reported status=error (published as such)"
+
+      - name: Publish to live-data (orphan, latest only)
+        run: |
+          cd live_out
+          git init -q
+          git checkout -q --orphan live-data
+          git config user.name "Rushitha Borra"
+          git config user.email "rushithaborra@gmail.com"
+          git add ifs_latest.json
+          git commit -q -m "IFS live: $(python -c "import json;d=json.load(open('ifs_latest.json'));print(d.get('init','?'), d['status'])")"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" live-data

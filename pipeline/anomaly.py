@@ -87,7 +87,8 @@ def compute_anomalies_from_stats(case: xr.Dataset, stats: xr.Dataset) -> xr.Data
 
     For live forecasts at any time of year, where carrying the raw climatology
     sample for every month is impractical. `stats` has mean_ws, std_ws, mean_msl,
-    std_msl on (month, hour, lat, lon) -- see scripts/build_live_climatology.py.
+    std_msl (and optionally mean_t2m, std_t2m) on (month, hour, lat, lon) -- see
+    scripts/build_live_climatology.py.
     Each step uses the stats for its own valid month and hour. Percentiles need
     the raw sample, so they are not produced; the tracker only uses z-scores.
     """
@@ -96,7 +97,9 @@ def compute_anomalies_from_stats(case: xr.Dataset, stats: xr.Dataset) -> xr.Data
     if not (np.allclose(st.lat, case.lat) and np.allclose(st.lon, case.lon)):
         raise ValueError("climatology stats grid does not match the case grid")
     months, hours = case.time.dt.month.values, case.time.dt.hour.values
-    for var in ("ws", "msl"):
+    # t2m only when both the case and the stats carry it (the live IFS run); otherwise unchanged
+    variables = ("ws", "msl") + (("t2m",) if "t2m" in case and "mean_t2m" in st else ())
+    for var in variables:
         z = np.empty(case[var].shape, "float32")
         for t, (m, h) in enumerate(zip(months, hours)):
             s = st.sel(month=m, hour=h)
