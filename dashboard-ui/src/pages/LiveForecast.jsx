@@ -4,12 +4,31 @@ import { Users, AlertTriangle, Wind, CalendarClock, RefreshCw, Loader2 } from 'l
 import TimelineSlider from '../components/TimelineSlider'
 import LiveWeatherField from '../components/LiveWeatherField'
 import CityWeatherPanel from '../components/CityWeatherPanel'
+import IfsLive from '../components/IfsLive'
 import { useLiveGefs, fmtAgo, fmtInit, hoursAgo, positionsAt } from '../lib/liveGefs'
 import { categoryFor } from '../lib/category'
 
 const ACTIONS_URL = 'https://github.com/Rushithaborra/sih-weather-tracker/actions/workflows/gefs-live.yml'
 
+// Model switch: each view shows one model only and names it (GEFS ensemble / IFS deterministic).
 export default function LiveForecast() {
+  const [model, setModel] = useState('gefs')
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-1 bg-card rounded-full p-1 w-fit flex-wrap">
+        {[{ id: 'gefs', label: 'GEFS ensemble · 144 h · probabilities' }, { id: 'ifs', label: 'ECMWF IFS · 240 h · rain + temperature' }].map((m) => (
+          <button key={m.id} onClick={() => setModel(m.id)}
+            className={`text-[11.5px] font-semibold px-3.5 py-1.5 rounded-full transition-colors ${model === m.id ? 'bg-ink900 text-white' : 'text-muted hover:text-ink'}`}>
+            {m.label}
+          </button>
+        ))}
+      </div>
+      {model === 'gefs' ? <GefsLive /> : <IfsLive />}
+    </div>
+  )
+}
+
+function GefsLive() {
   const { status, data } = useLiveGefs()
 
   if (status !== 'ready') {
