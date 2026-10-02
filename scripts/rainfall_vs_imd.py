@@ -129,6 +129,8 @@ def compare(imd2d, era2d):
         "imdMeanMm": round(float(i.mean()), 1), "era5MeanMm": round(float(e.mean()), 1),
         "biasMm": round(float((e - i).mean()), 1), "r": round(float(np.corrcoef(i, e)[0, 1]), 3),
         "areaKm2": {k: {"imd": int(area[i >= v].sum()), "era5": int(area[e >= v].sum())} for k, v in IMD_CATS.items()},
+        "contingency": {k: {"hits": int(((e >= v) & (i >= v)).sum()), "misses": int(((e < v) & (i >= v)).sum()),
+                            "falseAlarms": int(((e >= v) & (i < v)).sum())} for k, v in IMD_CATS.items()},
         "_i": i, "_e": e,
     }
 
@@ -185,7 +187,14 @@ def main():
               "peakRetentionMedian": round(float(np.median([r["peakRetention"] for r in ok])), 3),
               "peakRetentionRange": [min(r["peakRetention"] for r in ok), max(r["peakRetention"] for r in ok)],
               "r": round(float(np.corrcoef(i, e)[0, 1]), 3), "biasMm": round(float((e - i).mean()), 1),
-              "cellsAtOrAbove": {k: {"imd": int((i >= v).sum()), "era5": int((e >= v).sum())} for k, v in IMD_CATS.items()}}
+              "cellsAtOrAbove": {k: {"imd": int((i >= v).sum()), "era5": int((e >= v).sum())} for k, v in IMD_CATS.items()},
+              "categorical": {}}
+    for k, v in IMD_CATS.items():  # POD / FAR / CSI over all storm-day land cells, IMD as truth
+        hit, miss, fa = int(((e >= v) & (i >= v)).sum()), int(((e < v) & (i >= v)).sum()), int(((e >= v) & (i < v)).sum())
+        pooled["categorical"][k] = {"thresholdMm": v, "hits": hit, "misses": miss, "falseAlarms": fa,
+                                    "pod": round(hit / (hit + miss), 3) if hit + miss else None,
+                                    "far": round(fa / (hit + fa), 3) if hit + fa else None,
+                                    "csi": round(hit / (hit + miss + fa), 3) if hit + miss + fa else None}
     out = {"definition": "IMD 0.25 deg gridded daily rainfall (date E = 03 UTC E-1 to 03 UTC E) vs ERA5 hourly precipitation "
                          "summed over the same window; IMD land cells inside the main-track box + 1 deg",
            "gefs": "not compared: the GEFS forecast-skill run fetched wind and pressure only, no precipitation",

@@ -195,6 +195,24 @@ Cells at IMD thresholds (IMD vs ERA5): heavy ≥ 64.5 mm 658 vs 613, very heavy 
   every storm-day and it was corrected (DEV_LOG 2026-10-02). GEFS rainfall is not compared: the forecast-skill
   run fetched wind and pressure only.
 
+### Ensemble verification (GEFS) and heavy-rain categorical scores
+
+`scripts/ensemble_verification.py` → `data/processed/ensemble_verification.json`: the 28 GEFS starts against IBTrACS
+at every time with ≥ 3 matched members, operational and reforecast kept apart.
+
+| Source | Times | CRPS pressure | CRPS wind | Spread / error (position) |
+|---|---|---|---|---|
+| Operational (Nivar, Yaas) | 96 | 5.23 hPa | 5.1 m/s | 175.1 / 147.4 km (ratio 1.19) |
+| Reforecast (5 storms) | 107 | 15.15 hPa | 11.43 m/s | 80.8 / 144.4 km (ratio 0.56) |
+
+Rank histograms of observed pressure pile up in the lowest bin for both sources ([50, 23, 10, 5, 1] and
+[74, 16, 1, 8, 8]): the real storms were deeper than nearly every member, i.e. GEFS at 0.25° under-predicts
+intensity. The 5-member reforecast is under-dispersive in position. Wind compares IMD 3-minute sustained wind with grid-cell
+maxima, so it is less reliable than pressure.
+
+Heavy-rain categorical scores, ERA5 0.25° vs IMD on the 16 storm-days (land cells): heavy ≥ 64.5 mm POD 0.754, FAR
+0.191, **CSI 0.64**; very heavy ≥ 115.6 mm CSI 0.423; extremely heavy ≥ 204.5 mm POD 0.096, **CSI 0.077**.
+
 ## Run locally
 
 ```bash

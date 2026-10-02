@@ -5,6 +5,7 @@ import { ENSO } from '../data/enso'
 import { DETECTION_SKILL } from '../data/detectionSkill'
 import { QUIET_PERIODS } from '../data/quietPeriods'
 import { RAINFALL_VS_IMD } from '../data/rainfallVsImd'
+import { ENSEMBLE_VERIFICATION } from '../data/ensembleVerification'
 import { useCase } from '../context/CaseContext'
 
 export default function Verification() {
@@ -71,6 +72,8 @@ export default function Verification() {
       <QuietPeriods />
 
       <RainfallVsImd />
+
+      <EnsembleVerification />
 
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-2">Planned, not yet implemented</h3>
@@ -291,6 +294,11 @@ function RainfallVsImd() {
           <div key={k} className="bg-bg rounded-lg px-3 py-2">
             <div className="text-[10.5px] text-muted">Cells {t} mm (IMD vs ERA5)</div>
             <div className="font-bold text-brand tabular-nums">{P.cellsAtOrAbove[k].imd} vs {P.cellsAtOrAbove[k].era5}</div>
+            {P.categorical && (
+              <div className="text-[10.5px] text-muted tabular-nums mt-0.5">
+                POD {P.categorical[k].pod} · FAR {P.categorical[k].far} · <span className="font-semibold text-ink">CSI {P.categorical[k].csi}</span>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -310,6 +318,74 @@ function RainfallVsImd() {
         {missing.length > 0 && (
           <li>Not yet compared: {missing.join(', ')} — the IMD server dropped those year files before the needed days arrived.</li>
         )}
+      </ul>
+    </div>
+  )
+}
+
+function RankBars({ counts, color }) {
+  const max = Math.max(...counts, 1)
+  return (
+    <div className="flex items-end gap-1 h-14">
+      {counts.map((c, i) => (
+        <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
+          <div className="w-full rounded-t" style={{ height: `${(c / max) * 100}%`, background: color, minHeight: c ? 2 : 0 }} />
+          <div className="text-[9.5px] text-muted tabular-nums">{c}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function EnsembleVerification() {
+  const { sources } = ENSEMBLE_VERIFICATION
+  const label = { operational: 'GEFS v12 operational (Nivar, Yaas; 31 members)', reforecast: 'GEFSv12 reforecast (5 storms; 5 or 11 members)' }
+  return (
+    <div className="bg-card rounded-card px-5 py-4">
+      <h3 className="font-bold text-ink text-[14.5px] mb-1">Done: ensemble verification — CRPS, rank histograms, spread–skill</h3>
+      <p className="text-[12px] text-muted mb-3">
+        The 28 GEFS starts (forecast-skill run) against IBTrACS, at every time with ≥ 3 matched members. Intensity: members'
+        minimum MSLP vs WMO pressure, maximum 10 m wind vs WMO (IMD 3-min) wind. Position: member spread around the ensemble
+        mean vs the ensemble-mean error. Operational and reforecast are never pooled.
+      </p>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+        {Object.entries(sources).map(([src, s]) => (
+          <div key={src} className="bg-bg rounded-lg px-4 py-3">
+            <div className="text-[12px] font-semibold text-ink mb-2">{label[src] ?? src}</div>
+            <div className="grid grid-cols-3 gap-2 text-[11px] mb-3">
+              <div><div className="text-muted">CRPS pressure</div><div className="font-bold text-brand text-[14px]">{s.crpsMslHpa} hPa</div></div>
+              <div><div className="text-muted">CRPS wind</div><div className="font-bold text-brand text-[14px]">{s.crpsWsMs} m/s</div></div>
+              <div><div className="text-muted">Spread / error</div><div className="font-bold text-brand text-[14px]">{s.spreadKm} / {s.meanErrKm} km</div></div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-[10.5px] text-muted mb-1">Rank of observed pressure (low → high)</div>
+                <RankBars counts={s.rankHistogram.rankMsl.counts} color="#1D72B8" />
+              </div>
+              <div>
+                <div className="text-[10.5px] text-muted mb-1">Rank of observed wind (low → high)</div>
+                <RankBars counts={s.rankHistogram.rankWs.counts} color="#E67E22" />
+              </div>
+            </div>
+            <div className="text-[10.5px] text-muted mt-2">{s.times} verification times, median {s.membersPerTimeMedian} matched members each.</div>
+          </div>
+        ))}
+      </div>
+      <ul className="text-[11.5px] text-muted mt-3 space-y-1.5 list-disc pl-4">
+        <li>
+          A calibrated ensemble gives a flat rank histogram. The observed pressure falls mostly in the lowest bin for both sources:
+          the real storms were deeper than nearly every member — GEFS at 0.25° under-predicts cyclone intensity.
+        </li>
+        <li>
+          Position: the operational ensemble's spread roughly matches its error (ratio {sources.operational?.spreadSkillRatio}); the 5-member
+          reforecast is under-dispersive (ratio {sources.reforecast?.spreadSkillRatio}) — its members agree more with each other than with the
+          storm.
+        </li>
+        <li>
+          Wind is less reliable than pressure here: it compares IMD's 3-minute maximum sustained wind with the strongest 0.25° grid-cell
+          wind of each member, two different definitions, which is why the two sources' wind histograms lean opposite ways.
+        </li>
+        <li>Only members matched to the storm are scored, so these describe forecasts that found the storm; misses are counted in the forecast-skill table.</li>
       </ul>
     </div>
   )
