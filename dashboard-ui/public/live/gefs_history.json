@@ -12,5 +12,12 @@
   "membersWithSystem": 0,
   "peakSevereFraction": 0.0,
   "maxWs": null
+ },
+ {
+  "init": "2026-10-02T00:00:00Z",
+  "nMembers": 31,
+  "membersWithSystem": 0,
+  "peakSevereFraction": 0.0,
+  "maxWs": null
  }
 ]
