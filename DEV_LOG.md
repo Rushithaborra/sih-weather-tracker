@@ -159,3 +159,12 @@ one predecessor and one successor. Concurrent fragments (two objects at the same
 merged by this rule.
 Evaluation: all 8 storms and the quiet windows, with and without merging — tracks per storm,
 error, POD, and "false links" (a join where either joined object is > 300 km from the best track).
+
+## 2026-10-02: rainfall vs IMD — date convention corrected after the alignment check
+
+First assumption: IMD gridded value dated D = 24 h from 03 UTC on D. The built-in alignment check
+showed the opposite on all 10 storm-days available: the ERA5 window 03 UTC D -> 03 UTC D+1
+correlates with IMD date D+1 at r = 0.36-0.94 (Amphan 0.84/0.94, Yaas 0.68/0.51, Titli 0.73/0.70,
+Fani 0.89/0.36, Nivar 0.78/0.87) against r = -0.04 to 0.32 for date D. So the IMD date labels the
+24 h ending at 03 UTC (the 08:30 IST gauge reading). Corrected in scripts/rainfall_vs_imd.py
+(changed after seeing results; it fixes a data-convention error, not a model parameter).

@@ -89,3 +89,28 @@ as regenerating the maps needs another 30-min run.
 - Why it barely helps: the fragmentation counted earlier is mostly concurrent objects (two at the
   same time), which a sequential-gap rule cannot join; it fixes 1 of 5 fragmented storms and does
   not change any main-track error. Recommendation: keep the default off.
+
+## Feature 5: ECMWF IFS alongside GEFS — stopped (download stop rule)
+
+- First step, the wider climatology (Sep–Dec, 0–35°N / 60–100°E, wind + MSLP + T2m, 2015–2019,
+  every 3rd day): measured 840 time steps × 7.74 MB (wind 3.22, MSLP 2.18, T2m 2.34 MB per
+  full-globe step) = **6.50 GB > 5 GB**. Stopped before downloading; nothing for Feature 5 was built.
+- Options for you: every 4th day (≈ 4.95 GB, all 5 years), 3 years every 3rd day (≈ 3.9 GB), or
+  raise the limit. The IFS fetch itself was already verified in Prompt 0 (30 Sep 00Z run, 6.5 MB
+  for two steps, opens with cfgrib).
+
+## Feature 2: Rainfall vs IMD — partial (5 of 8 storms; over 1.5× the time limit)
+
+- `scripts/rainfall_vs_imd.py` → `data/processed/rainfall_vs_imd.json`; README section + Verification card.
+- IMD 0.25° gridded rainfall vs ERA5 hourly rain summed over the same IMD day (24 h ending 03 UTC),
+  IMD land cells inside the main-track box + 1°, landfall day and the day after.
+- Pooled (Amphan, Yaas, Titli, Fani, Nivar; 10 storm-days, 2,308 cells): r = 0.862, bias −5.0 mm,
+  **peak kept: median 62% (range 9–80%)**; cells ≥ 64.5 mm IMD 435 vs ERA5 379, ≥ 115.6 mm 176 vs 126,
+  **≥ 204.5 mm 29 vs 3**. Lowest retention all on the day after landfall (Amphan 14%, Yaas 18%, Fani 9%).
+- Correction after seeing results (DEV_LOG 2026-10-02): the IMD date was first taken as the start of
+  its 24 h; the one-day-shift check showed r = 0.36–0.94 for the other alignment on all 10 days vs
+  −0.04–0.32, so the IMD date labels the 24 h ending at 03 UTC. Fixed.
+- Didn't work: the IMD server serves ~4 KB/s and drops transfers; only 2020 downloaded fully. Partial
+  year files are read directly (whole days; reader verified identical to imdlib on 20 May 2020).
+  Phailin (2013), Hudhud (2014) and Bulbul (Nov 2019) still lack their days; downloads keep running
+  and a rerun of the script adds them. GEFS rainfall not compared (the skill run has no precipitation).

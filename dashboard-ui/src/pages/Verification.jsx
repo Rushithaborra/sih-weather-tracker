@@ -4,6 +4,7 @@ import { CASES } from '../data/cases'
 import { ENSO } from '../data/enso'
 import { DETECTION_SKILL } from '../data/detectionSkill'
 import { QUIET_PERIODS } from '../data/quietPeriods'
+import { RAINFALL_VS_IMD } from '../data/rainfallVsImd'
 import { useCase } from '../context/CaseContext'
 
 export default function Verification() {
@@ -68,6 +69,8 @@ export default function Verification() {
       <DetectionSkill />
 
       <QuietPeriods />
+
+      <RainfallVsImd />
 
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-2">Planned, not yet implemented</h3>
@@ -234,6 +237,78 @@ function QuietPeriods() {
             depressions (3–6 and 20–23 March).
           </li>
         ))}
+      </ul>
+    </div>
+  )
+}
+
+function RainfallVsImd() {
+  const { rows, pooled: P } = RAINFALL_VS_IMD
+  const label = (id) => (CASES[id]?.label ?? id).split(',')[0]
+  const done = rows.filter((r) => r.peakRetention != null)
+  const missing = [...new Set(rows.filter((r) => r.peakRetention == null).map((r) => label(r.storm)))]
+  const cats = [['heavy', '≥ 64.5'], ['veryHeavy', '≥ 115.6'], ['extremelyHeavy', '≥ 204.5']]
+  return (
+    <div className="bg-card rounded-card px-5 py-4">
+      <h3 className="font-bold text-ink text-[14.5px] mb-1">Done: rainfall vs IMD observations — how much of the peak ERA5 keeps</h3>
+      <p className="text-[12px] text-muted mb-3">
+        IMD 0.25° daily gridded rainfall (gauge-based) against ERA5 hourly rain summed over the same IMD day
+        (03–03 UTC), on IMD land cells inside each storm's track box + 1°, for the landfall day and the day after.
+      </p>
+      <table className="w-full text-[12px]">
+        <thead>
+          <tr className="text-left text-muted border-b border-line">
+            {['Storm', 'IMD day (ending 03 UTC)', 'IMD max (mm)', 'ERA5 max (mm)', 'Peak kept', 'Correlation r', 'Bias (mm)'].map((h) => (
+              <th key={h} className="py-2 pr-4 font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {done.map((r) => (
+            <tr key={r.storm + r.imdDay} className="border-b border-line">
+              <td className="py-2 pr-4 text-ink font-medium">{label(r.storm)}</td>
+              <td className="py-2 pr-4 text-ink">{r.imdDay}</td>
+              <td className="py-2 pr-4 text-ink">{r.imdMaxMm}</td>
+              <td className="py-2 pr-4 text-ink">{r.era5MaxMm}</td>
+              <td className="py-2 pr-4 text-ink">{Math.round(r.peakRetention * 100)}%</td>
+              <td className="py-2 pr-4 text-ink">{r.r}</td>
+              <td className="py-2 pr-4 text-ink">{r.biasMm}</td>
+            </tr>
+          ))}
+          <tr className="font-semibold">
+            <td className="py-2 pr-4 text-ink">Pooled, {P.storms} storms</td>
+            <td className="py-2 pr-4 text-ink">{P.stormDays} storm-days</td>
+            <td className="py-2 pr-4 text-ink" colSpan={2}>{P.cells} land cells</td>
+            <td className="py-2 pr-4 text-ink">median {Math.round(P.peakRetentionMedian * 100)}%</td>
+            <td className="py-2 pr-4 text-ink">{P.r}</td>
+            <td className="py-2 pr-4 text-ink">{P.biasMm}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div className="flex gap-6 flex-wrap mt-3 text-[12px]">
+        {cats.map(([k, t]) => (
+          <div key={k} className="bg-bg rounded-lg px-3 py-2">
+            <div className="text-[10.5px] text-muted">Cells {t} mm (IMD vs ERA5)</div>
+            <div className="font-bold text-brand tabular-nums">{P.cellsAtOrAbove[k].imd} vs {P.cellsAtOrAbove[k].era5}</div>
+          </div>
+        ))}
+      </div>
+      <ul className="text-[11.5px] text-muted mt-3 space-y-1.5 list-disc pl-4">
+        <li>
+          ERA5 places the rain well (pooled r = {P.r}) and the average is close (bias {P.biasMm} mm), but it keeps a median
+          of {Math.round(P.peakRetentionMedian * 100)}% of the observed peak and almost none of the extremely heavy area
+          ({P.cellsAtOrAbove.extremelyHeavy.era5} vs {P.cellsAtOrAbove.extremelyHeavy.imd} cells ≥ 204.5 mm) — the smoothing
+          problem a downscaler has to fix.
+        </li>
+        {done.some((r) => r.peakRetention < 0.25) && (
+          <li>
+            Lowest: {done.filter((r) => r.peakRetention < 0.25).map((r) => `${label(r.storm)} ${r.imdDay} (${Math.round(r.peakRetention * 100)}%)`).join(', ')} —
+            all the day after landfall, when the storm is decaying inland; ERA5 dries out faster than the gauges there.
+          </li>
+        )}
+        {missing.length > 0 && (
+          <li>Not yet compared: {missing.join(', ')} — the IMD server dropped those year files before the needed days arrived.</li>
+        )}
       </ul>
     </div>
   )

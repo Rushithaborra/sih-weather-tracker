@@ -154,6 +154,38 @@ within the window ± 2 days. ERA5, anomalies against `data/clim/era5_monthly_sta
   (3–6 and 20–23 March). December was swapped from 2020-12-15 to 2021-12-09 (16 swaps, all recorded).
 
 
+
+### Rainfall vs IMD observations: how much of the peak ERA5 keeps
+
+`scripts/rainfall_vs_imd.py`, results in `data/processed/rainfall_vs_imd.json`. IMD 0.25° daily gridded rainfall
+(gauge-based, Pai et al. 2014) against ERA5 hourly precipitation summed over the same IMD day — the 24 h ending
+03 UTC (08:30 IST) — on IMD land cells inside each storm's main-track box + 1°, for the landfall day and the day after.
+
+| Storm | IMD day (ending 03 UTC) | IMD max (mm) | ERA5 max (mm) | Peak kept | r | Bias (mm) |
+|---|---|---|---|---|---|---|
+| Amphan | 2020-05-21 | 229.6 | 151.5 | 66% | 0.835 | -9.2 |
+| Amphan | 2020-05-22 | 119.2 | 16.5 | 14% | 0.939 | -0.9 |
+| Yaas | 2021-05-27 | 246.5 | 144.9 | 59% | 0.678 | -1.0 |
+| Yaas | 2021-05-28 | 116.2 | 21.1 | 18% | 0.513 | -7.6 |
+| Titli | 2018-10-11 | 207.5 | 155.9 | 75% | 0.734 | -16.5 |
+| Titli | 2018-10-12 | 287.2 | 224.1 | 78% | 0.7 | -13.1 |
+| Fani | 2019-05-04 | 223.5 | 179.3 | 80% | 0.885 | 0.5 |
+| Fani | 2019-05-05 | 81.8 | 7.2 | 9% | 0.363 | -1.2 |
+| Nivar | 2020-11-26 | 252.9 | 164.1 | 65% | 0.782 | -32.6 |
+| Nivar | 2020-11-27 | 235.4 | 136.3 | 58% | 0.874 | -14.2 |
+| **Pooled, 5 storms, 10 storm-days** | | | | **median 62%** | **0.862** | -5.0 |
+
+Cells at IMD thresholds (IMD vs ERA5): heavy ≥ 64.5 mm 435 vs 379, very heavy ≥ 115.6 mm
+176 vs 126, **extremely heavy ≥ 204.5 mm 29 vs 3**.
+
+- ERA5 places the rain well (pooled r = 0.862) and the average is close (bias -5.0 mm), but it keeps a median
+  62% of the observed peak (range 9–80%) and almost none of the extremely
+  heavy area — the smoothing problem the downscaler is meant to fix, now measured against Indian gauges.
+- The IMD date convention was first assumed the other way round; the built-in one-day-shift check showed it on
+  every storm-day and it was corrected (DEV_LOG 2026-10-02).
+- Not yet compared: Bulbul, Hudhud, Phailin — the IMD server (≈ 4 KB/s) dropped those year files before the needed days
+  arrived. GEFS rainfall is not compared: the forecast-skill run fetched wind and pressure only.
+
 ## Run locally
 
 ```bash

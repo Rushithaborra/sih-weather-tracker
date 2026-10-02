@@ -29,3 +29,5 @@ data/raw/bulbul_case.nc
 data/raw/nivar_case.nc
 data/raw/gefs_skill/
 data/raw/quiet_*.nc
+data/raw/imd_rain/
+data/raw/era5tp1h_*.nc
