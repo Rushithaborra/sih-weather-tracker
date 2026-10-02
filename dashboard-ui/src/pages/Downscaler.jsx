@@ -60,7 +60,7 @@ function Results() {
               </tr>
             </thead>
             <tbody>
-              {MODELS.filter(([m]) => T[m]).map(([m, label, type]) => (
+              {MODELS.filter(([m]) => T[m]?.rmseMm != null).map(([m, label, type]) => (
                 <tr key={m} className="border-b border-line">
                   <td className="py-2 pr-4 text-ink font-medium whitespace-nowrap">{label}</td>
                   <td className="py-2 pr-4 text-muted">{type}</td>
@@ -79,13 +79,15 @@ function Results() {
         </div>
       </div>
 
+      {D.testSubset && <SubsetTable S={D.testSubset} />}
+
       <div className="bg-card rounded-card px-5 py-4">
         <h3 className="font-bold text-ink text-[14.5px] mb-2">Held-out storm days: maximum rain in the storm footprint (mm)</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-[12px]">
             <thead>
               <tr className="text-left text-muted border-b border-line">
-                {['Storm', 'IMD day (ending 03 UTC)', 'IMD gauges', 'ERA5 0.25° native', ...MODELS.map(([, l]) => l)].map((h) => (
+                {['Storm', 'IMD day (ending 03 UTC)', 'IMD gauges', 'ERA5 0.25° native', ...MODELS.map(([, l]) => l), 'Diffusion members (range)'].map((h) => (
                   <th key={h} className="py-2 pr-3 font-medium whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -98,6 +100,7 @@ function Results() {
                   <td className="py-2 pr-3 font-bold text-ink">{r.imdMaxMm}</td>
                   <td className="py-2 pr-3 text-ink">{r.era5NativeMaxMm ?? '—'}</td>
                   {MODELS.map(([m]) => <td key={m} className="py-2 pr-3 text-ink">{r[m] ?? '—'}</td>)}
+                  <td className="py-2 pr-3 text-muted whitespace-nowrap">{r.diffusionMemberMaxMm ? `${Math.min(...r.diffusionMemberMaxMm)}–${Math.max(...r.diffusionMemberMaxMm)}` : '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -122,9 +125,60 @@ function Results() {
           model recovers the rain peaks coarse data smooths away.</div>
         <div><span className="font-semibold text-ink">Physics constraint:</span> "U-Net + conservation" rescales each 1.5° block to the input's
           mean rain, so the downscaler redistributes rain without creating or removing it.</div>
-        <div><span className="font-semibold text-ink">Run:</span> {D.minutes} min on GitHub Actions CPUs, {D.settings?.epochs} epochs per model,
-          {` ${D.settings?.members}`}-member diffusion ensemble with {D.settings?.ddimSteps} sampling steps.</div>
+        <div><span className="font-semibold text-ink">Run:</span> U-Net trained on GitHub Actions CPUs ({D.settings?.epochs} epochs); the diffusion
+          model trained on an Apple M3 GPU reusing that U-Net ({D.settings?.epochs} epochs, {D.settings?.members} members,
+          {` ${D.settings?.ddimSteps}`} sampling steps). The deterministic results reproduce exactly on both machines.</div>
       </div>
     </>
+  )
+}
+
+function SubsetTable({ S }) {
+  const rows = MODELS.filter(([m]) => S[m])
+  const csiBest = (k) => Math.max(...rows.map(([m]) => S[m][k].csi ?? -1))
+  const peakBest = Math.max(...rows.map(([m]) => S[m].stormPeakKeptMedian ?? -1))
+  return (
+    <div className="bg-card rounded-card px-5 py-4">
+      <h3 className="font-bold text-ink text-[14.5px] mb-1">All six models on the same {S.days} days (held-out storm days + 100 random test days)</h3>
+      <p className="text-[12px] text-muted mb-3">Diffusion sampling is expensive, so every model is scored on this same subset for a like-for-like comparison.</p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[12px]">
+          <thead>
+            <tr className="text-left text-muted border-b border-line">
+              {['Model', 'RMSE (mm)', 'r', 'CSI ≥ 64.5', 'CSI ≥ 115.6', 'CSI ≥ 204.5', 'Cells ≥ 204.5 (IMD)', 'Storm peak kept'].map((h) => (
+                <th key={h} className="py-2 pr-4 font-medium whitespace-nowrap">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([m, label]) => {
+              const peak = S[m].stormPeakKeptMedian ?? D.test[m]?.stormPeakKeptMedian
+              return (
+                <tr key={m} className="border-b border-line">
+                  <td className="py-2 pr-4 text-ink font-medium whitespace-nowrap">{label}</td>
+                  <td className="py-2 pr-4 text-ink">{S[m].rmseMm}</td>
+                  <td className="py-2 pr-4 text-ink">{S[m].r}</td>
+                  {['heavy', 'veryHeavy', 'extremelyHeavy'].map((k) => (
+                    <td key={k} className={`py-2 pr-4 ${S[m][k].csi === csiBest(k) ? 'font-bold text-brand' : 'text-ink'}`}>{S[m][k].csi ?? '—'}</td>
+                  ))}
+                  <td className="py-2 pr-4 text-ink">{S[m].cellsGe204.model} ({S[m].cellsGe204.imd})</td>
+                  <td className={`py-2 pr-4 ${peak === peakBest ? 'font-bold text-brand' : 'text-ink'}`}>{peak == null ? '—' : `${Math.round(peak * 100)}%`}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      <ul className="text-[11.5px] text-muted mt-3 space-y-1.5 list-disc pl-4">
+        <li>The plain MSE U-Net has the best correlation but the weakest peaks — the smoothing that MSE-trained models are known for.</li>
+        <li>The mass-conservation constraint gives the best placement of heavy rain (highest CSI at every threshold).</li>
+        <li>
+          A single diffusion member keeps realistic storm peaks ({Math.round((S.diffusion_member.stormPeakKeptMedian ?? 0) * 100)}% of the observed
+          maximum, and {S.diffusion_member.cellsGe204.model} extremely heavy cells vs {S.diffusion_member.cellsGe204.imd} observed) but places them less
+          precisely, so CSI and RMSE are worse; some members overshoot. Averaging the members smooths the peaks away again — the ensemble's value is
+          in its spread (exceedance probabilities), which still needs calibration.
+        </li>
+      </ul>
+    </div>
   )
 }

@@ -208,3 +208,15 @@ away, against real gauge observations.
   side by side with ERA5 at its native 0.25° (from the rainfall-vs-IMD study).
 - Limits stated in advance: the truth is 0.25°, not 5 km; IMD covers land only; a few thousand
   training days. This is a proxy for the designed 12 km -> 5 km downscaler, not that model.
+
+### Stage 2 downscaler: run record
+
+- Run 1 (GitHub Actions, CPU) cancelled after 4 h: the full-test-set diffusion sampling would not finish within the job
+  limit and logs are hidden until a job ends. Changed (after this, before any results were seen): deterministic results
+  are written before the diffusion step, and diffusion is sampled on the held-out storm days plus a fixed random sample of
+  100 test days (seed 0), with every model also scored on that same subset.
+- Run 2 (GitHub Actions): U-Net trained (20 epochs, ~2.4 h); diffusion skipped by the time budget; deterministic results
+  committed.
+- Diffusion trained on an Apple M3 GPU reusing the committed U-Net weights (20 epochs, 43 min with sampling), same data
+  and split; the deterministic metrics reproduced exactly. Results reported as they came out, including diffusion's worse
+  CSI/RMSE and overshooting members.

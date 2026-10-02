@@ -282,9 +282,13 @@ def main():
     fit, val, tst = tensors(tr, static), tensors(va, static), tensors(test, static)
     H, W = 129, 135
 
-    # U-Net (MSE on log1p)
+    # U-Net (MSE on log1p); DS_LOAD_UNET=1 reuses the committed weights (trained by the GitHub run)
     unet = UNet(3).to(DEV)
-    unet = train(unet, fit, val, EPOCHS, 2e-3, lambda m, x, y, k: masked_mse(m(x), y, k), "unet")
+    if os.environ.get("DS_LOAD_UNET") == "1" and (MODELS / "downscaler_unet.pt").exists():
+        unet.load_state_dict(torch.load(MODELS / "downscaler_unet.pt", map_location=DEV))
+        print("  [unet] loaded models/downscaler_unet.pt", flush=True)
+    else:
+        unet = train(unet, fit, val, EPOCHS, 2e-3, lambda m, x, y, k: masked_mse(m(x), y, k), "unet")
 
     def unet_pred(inp):
         unet.eval()

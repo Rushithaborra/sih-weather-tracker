@@ -296,6 +296,41 @@ Serverless functions deployed with the dashboard (`dashboard-ui/api/`), open to 
 
 Every response carries the disclaimer; CAP alerts are always `status=Exercise`. The Alerts API page has a "Try it" button for each.
 
+## Stage 2 downscaler experiment (AI)
+
+`scripts/downscale_data.py`, `scripts/downscale_train.py`, results in `data/processed/downscaler.json`, model weights in
+`models/`, page **Downscaler (AI)**. Design and split were declared in `DEV_LOG.md` before training.
+
+- **Task:** ERA5 daily rain at 1.5° (6× coarser than the target) → IMD 0.25° gauge rainfall over India. Train 2010–2017
+  (2892 days), model selection 2018–2019 (730), test 2020–2021 plus the Phailin and Hudhud windows (761 days).
+- **Models:** bilinear and bicubic (no learning); a U-Net trained with MSE; the U-Net with a mass-conservation constraint
+  (each 1.5° block keeps the input's rain); a conditional diffusion model (DDPM on the U-Net residual, 8 members).
+
+| Full test set (761 days) | RMSE (mm) | r | CSI ≥ 64.5 | CSI ≥ 115.6 | CSI ≥ 204.5 | Storm peak kept |
+|---|---|---|---|---|---|---|
+| Bilinear | 8.83 | 0.632 | 0.118 | 0.029 | 0.002 | 34% |
+| Bicubic | 8.86 | 0.627 | 0.09 | 0.012 | 0.0 | 32% |
+| U-Net (MSE) | 9.17 | 0.664 | 0.08 | 0.021 | 0.002 | 32% |
+| U-Net + conservation | 8.72 | 0.645 | 0.153 | 0.058 | 0.01 | 48% |
+
+| Same 109 days (storm days + 100 random test days) | RMSE | CSI ≥ 204.5 | Cells ≥ 204.5 (IMD 173) | Storm peak kept |
+|---|---|---|---|---|
+| Bilinear | 9.3 | 0.006 | 1 | 34% |
+| U-Net (MSE) | 9.74 | 0.0 | 0 | 32% |
+| U-Net + conservation | 9.21 | 0.028 | 10 | 48% |
+| Diffusion, 1 member | 10.66 | 0.016 | 80 | 89% |
+| Diffusion, member mean | 9.61 | 0.0 | 5 | 40% |
+
+- The plain MSE U-Net has the best correlation but the weakest peaks — the smoothing MSE-trained models are known for.
+- The mass-conservation constraint gives the best placement of heavy rain (highest CSI at every threshold) and lifts the
+  storm peaks kept from 34 % (bilinear) to 49 %.
+- A single diffusion member keeps realistic storm peaks (89 % median; e.g. Nivar 269 mm vs 253 observed, Hudhud 328 vs 359)
+  but places them less precisely, so CSI and RMSE are worse, and some members overshoot. The member mean smooths the peaks
+  away again; the ensemble's value is its spread (exceedance probabilities), which still needs calibration.
+- Limits: the truth is IMD's 0.25° gauge grid (land only), not 5 km, so this is a proxy for the designed 12 km → 5 km model.
+  The U-Net trained on GitHub Actions CPUs; the diffusion model on an Apple M3 GPU reusing that U-Net. The deterministic
+  results reproduce exactly on both machines.
+
 ## Changes from the original plan
 
 - **Climatology years**: the first download was 00 UTC only, 2010–2019 (230 samples). Comparing 06–18 UTC
