@@ -3,6 +3,7 @@ import TopBar from '../components/TopBar'
 import KpiCards from '../components/KpiCards'
 import GefsKpis from '../components/GefsKpis'
 import GnnSphereConcept from '../components/GnnSphereConcept'
+import ImpactBanner from '../components/ImpactBanner'
 import { useCase } from '../context/CaseContext'
 import { PIPELINE_META, CASES } from '../data/cases'
 import { GEFS_META, GEFS_SUMMARY } from '../data/gefsEnsemble'
@@ -14,6 +15,7 @@ export default function Overview() {
     return (
       <div className="space-y-4">
         <TopBar title="Overview" gefsSubtitle="The real ensemble-forecast step of the roadmap, actually run" />
+        <ImpactBanner />
         <GefsKpis />
         <div className="bg-card rounded-card px-5 py-4">
           <h3 className="font-bold text-ink text-[14.5px] mb-2">What this closes from the roadmap</h3>
@@ -50,6 +52,7 @@ export default function Overview() {
   return (
     <div className="space-y-4">
       <TopBar title="Overview" subtitle="SIH 2026 · PS 26078 — AI-driven spatio-temporal tracking of extreme weather anomalies" />
+      <ImpactBanner />
       <KpiCards />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-card rounded-card px-5 py-4">
