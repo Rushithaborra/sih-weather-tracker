@@ -1,7 +1,9 @@
 import React from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
+import DemoModeControl from './components/DemoModeControl'
 import { CaseProvider, useCase } from './context/CaseContext'
+import { DemoModeProvider } from './context/DemoModeContext'
 import { ThemeProvider } from './context/ThemeContext'
 import Overview from './pages/Overview'
 import ActiveAnomalies from './pages/ActiveAnomalies'
@@ -17,25 +19,28 @@ export default function App() {
   return (
     <ThemeProvider>
       <CaseProvider>
-        <div className="flex min-h-screen bg-bg">
-          <Sidebar />
-          <main className="flex-1 min-w-0 p-5 flex flex-col">
-            <Routes>
-              <Route path="/" element={<Navigate to="/tracks" replace />} />
-              <Route path="/live" element={<LiveForecast />} />
-              <Route path="/overview" element={<Overview />} />
-              <Route path="/active-anomalies" element={<ActiveAnomalies />} />
-              <Route path="/tracks" element={<TracksBoxes />} />
-              <Route path="/zoom" element={<ZoomPage />} />
-              <Route path="/downscaler" element={<Downscaler />} />
-              <Route path="/alerts-api" element={<AlertsApi />} />
-              <Route path="/verification" element={<Verification />} />
-              <Route path="/data-sources" element={<DataSources />} />
-              <Route path="*" element={<Navigate to="/tracks" replace />} />
-            </Routes>
-            <Footer />
-          </main>
-        </div>
+        <DemoModeProvider>
+          <div className="flex min-h-screen bg-bg">
+            <Sidebar />
+            <main className="flex-1 min-w-0 p-5 flex flex-col">
+              <Routes>
+                <Route path="/" element={<Navigate to="/tracks" replace />} />
+                <Route path="/live" element={<LiveForecast />} />
+                <Route path="/overview" element={<Overview />} />
+                <Route path="/active-anomalies" element={<ActiveAnomalies />} />
+                <Route path="/tracks" element={<TracksBoxes />} />
+                <Route path="/zoom" element={<ZoomPage />} />
+                <Route path="/downscaler" element={<Downscaler />} />
+                <Route path="/alerts-api" element={<AlertsApi />} />
+                <Route path="/verification" element={<Verification />} />
+                <Route path="/data-sources" element={<DataSources />} />
+                <Route path="*" element={<Navigate to="/tracks" replace />} />
+              </Routes>
+              <Footer />
+            </main>
+            <DemoModeControl />
+          </div>
+        </DemoModeProvider>
       </CaseProvider>
     </ThemeProvider>
   )
