@@ -313,5 +313,12 @@
   "membersWithSystem": 25,
   "peakSevereFraction": 0.323,
   "maxWs": 42.3
+ },
+ {
+  "init": "2026-11-14T00:00:00Z",
+  "nMembers": 31,
+  "membersWithSystem": 23,
+  "peakSevereFraction": 0.323,
+  "maxWs": 41.4
  }
 ]
